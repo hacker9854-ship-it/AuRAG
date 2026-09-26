@@ -32,6 +32,7 @@ from backend.app.api import (
     knowledge_risk,
     telemetry,
     work_orders,
+    machine_money,
 )
 from backend.app.db.database import init_db
 
@@ -117,6 +118,7 @@ app.include_router(work_orders.router, prefix="/api")
 app.include_router(events.router, prefix="/api")
 app.include_router(connectors.router, prefix="/api")
 app.include_router(automations.router, prefix="/api")
+app.include_router(machine_money.router, prefix="/api")
 
 
 # On Render free tier (512MB RAM), pre-warming torch and sentence_transformers

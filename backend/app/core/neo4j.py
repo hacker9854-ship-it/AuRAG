@@ -37,6 +37,14 @@ class FallbackNeo4jSession:
                             **wo,
                         }
                     ]
+                if "FailureEvent" in query or "failure_event" in query.lower():
+                    import json
+                    return [
+                        {
+                            "id": "FE-001",
+                            "sig": json.dumps({"vibration_mm_s": 7.8, "bearing_temp_c": 92.0}),
+                        }
+                    ]
                 if "Equipment" in query:
                     return [
                         {"id": "P-101A", "tag_id": "P-101A", "name": "Crude Charge Pump A", "type": "Centrifugal Pump"},
