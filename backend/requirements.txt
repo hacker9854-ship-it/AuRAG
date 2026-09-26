@@ -1,0 +1,8 @@
+# FastAPI adapter layer (Phase 8). Imports agents/telemetry/evaluation/
+# retrieval directly (thin wrappers, no duplicated logic), so their own
+# requirements.txt files must also be installed — see README Phase 8 setup.
+fastapi
+uvicorn[standard]
+mem0ai==2.0.12
+pyjwt>=2.8.0
+cryptography>=42.0.0
