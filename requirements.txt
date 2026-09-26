@@ -1,0 +1,7 @@
+# Unified AuRAG runtime installation.
+-r ingestion/requirements.txt
+-r retrieval/requirements.txt
+-r agents/requirements.txt
+-r evaluation/requirements.txt
+-r backend/requirements.txt
+
