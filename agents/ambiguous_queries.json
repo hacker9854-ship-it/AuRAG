@@ -1,0 +1,14 @@
+[
+  {
+    "query": "Tell me everything you know about P-101.",
+    "note": "no clear intent verb — plausibly Copilot (general Q&A) or RCA (equipment-anchored) depending on how the model weighs it"
+  },
+  {
+    "query": "What's the overall compliance and maintenance picture at the plant?",
+    "note": "mixes Compliance (regulatory framing) and Lessons Learned (cross-incident/whole-plant framing) in one question"
+  },
+  {
+    "query": "Give me a full history and analysis of everything that's gone wrong lately.",
+    "note": "mixes RCA (root-cause framing) and Lessons Learned (cross-incident, 'everything', framing) with no equipment named"
+  }
+]

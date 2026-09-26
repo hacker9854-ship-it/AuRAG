@@ -1,0 +1,44 @@
+{
+  "copilot": {
+    "CQ1": {
+      "query": "Why did P-101 fail in March 2025?",
+      "expected_any": ["FE-001", "WO-1001", "WO-1002", "DOC-LOG-001-C002"],
+      "acceptable_intents": ["copilot", "rca"]
+    },
+    "CQ2": {
+      "query": "What is the relief valve calibration requirement for PSV-701?",
+      "expected_any": ["OISD-STD-132-10.2ii", "FE-004", "WO-1007"],
+      "acceptable_intents": ["copilot", "compliance"]
+    }
+  },
+  "rca": {
+    "RQ1": {
+      "query": "What caused the P-101 failure?",
+      "expected_any": ["FE-001", "WO-1002"]
+    },
+    "RQ2": {
+      "query": "Why did compressor C-201 trip on high discharge temperature?",
+      "expected_any": ["FE-002", "WO-1003"]
+    }
+  },
+  "compliance": {
+    "CoQ1": {
+      "query": "Is PSV-701 compliant with relief valve calibration requirements?",
+      "expected_any": ["OISD-STD-132-10.2ii", "WO-1007"]
+    },
+    "CoQ2": {
+      "query": "Is compressor C-201 compliant with explosion-prevention requirements?",
+      "expected_any": ["FACT1948-S37", "WO-1003"]
+    }
+  },
+  "lessons_learned": {
+    "LQ1": {
+      "query": "What patterns do you see across equipment failures?",
+      "expected_any": ["FE-001", "FE-002", "FE-003", "FE-004"]
+    },
+    "LQ2": {
+      "query": "Which failures were caused by missed preventive maintenance?",
+      "expected_any": ["FE-001", "FE-004", "WO-1002", "WO-1007"]
+    }
+  }
+}
