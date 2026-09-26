@@ -1,0 +1,14 @@
+{
+  "ocr": {
+    "file": "data/scanned/scnd1.jpeg",
+    "required_text_terms": ["P-101", "R. Sharma"],
+    "required_mentions": ["P-101", "R. Sharma"]
+  },
+  "pid": {
+    "file": "data/pnid/sample_pnid.pdf",
+    "pages": [3, 21],
+    "minimum_entities": 40,
+    "minimum_connections": 40,
+    "required_any_tags": ["P-4-3", "FV-4-3", "V-1"]
+  }
+}

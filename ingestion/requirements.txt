@@ -1,0 +1,20 @@
+# Whole ingestion/ tree (Phase 2). Install: pip install -r ingestion/requirements.txt
+# (Duplicates the 3 Phase-1 loader libs so this one file covers the full tree.)
+neo4j>=5.24,<6
+python-dotenv>=1.0
+truststore>=0.9
+
+# Parsing
+pdfplumber>=0.11          # clean-text PDF + page->image rendering (pulls pypdfium2)
+pytesseract>=0.3.10       # local OCR (needs system `tesseract` binary)
+Pillow>=10.0              # image loading for OCR/vision
+httpx>=0.28               # Google Cloud Vision REST fallback
+
+# LLM (entity extraction, OCR fallback, P&ID vision) — one provider
+google-genai>=1.0
+
+# Continuous ingestion
+watchdog>=4.0
+redis>=5.0
+rq>=1.16
+boto3>=1.35

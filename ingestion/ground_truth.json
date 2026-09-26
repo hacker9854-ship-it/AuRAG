@@ -1,0 +1,20 @@
+{
+  "DOC-SOP-001": {
+    "equipment": ["P-101", "P-102"],
+    "person": []
+  },
+  "DOC-LOG-001": {
+    "equipment": ["P-101", "C-201", "HX-401", "V-301", "PSV-701", "T-501", "P-102"],
+    "person": ["Ramesh Kumar", "Vikram Singh", "Deepak Rao"]
+  },
+  "DOC-SCAN-001": {
+    "equipment": ["P-101"],
+    "person": [],
+    "_note": "handwritten note also names 'R. Sharma', who is not in the seeded Person roster. Expected to be extracted then correctly logged as unmatched (not linked, not phantom-created) — verified live during Phase 2 validation, not re-checked here since unmatched mentions aren't persisted to the graph by design."
+  },
+  "DOC-PID-001": {
+    "equipment": [],
+    "person": [],
+    "_note": "real public P&ID course PDF (see data/SOURCES.md) — its example diagrams use generic tags (P-4-3, FV-4-3, V-1..V-8, etc.) that don't correspond to any Rampur plant equipment, so zero real MENTIONS are expected. Validates the vision-extraction code path and closed-world matching, not plant-specific recall."
+  }
+}
