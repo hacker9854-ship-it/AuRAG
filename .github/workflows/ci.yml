@@ -1,0 +1,126 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Python tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+            agents/requirements.txt
+            backend/requirements.txt
+            evaluation/requirements.txt
+            ingestion/requirements.txt
+            retrieval/requirements.txt
+
+      - name: Install Python dependencies
+        uses: astral-sh/setup-uv@v6
+
+      - name: Install locked Python dependencies
+        run: uv pip install --system -r requirements-dev.lock
+
+      - name: Run Python tests
+        run: python -m pytest
+
+  frontend:
+    name: Frontend tests and build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Lint frontend
+        run: npm run lint
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run browser acceptance tests
+        run: npm run test:e2e
+
+  delivery:
+    name: Delivery artifacts
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Compose configuration
+        run: docker compose -f infra/docker-compose.yml config
+
+      - name: Parse PowerShell automation
+        shell: pwsh
+        run: |
+          $errors = @()
+          foreach ($script in @("scripts/bootstrap.ps1", "scripts/smoke.ps1")) {
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $script),
+              [ref]$null,
+              [ref]$errors
+            )
+          }
+          if ($errors.Count) {
+            $errors | Format-List | Out-String | Write-Error
+          }
+
+      - name: Build backend image
+        run: docker build --tag aurag-ci .
+
+      - name: Verify container liveness
+        shell: bash
+        run: |
+          docker run --detach --rm --name aurag-ci --publish 18000:8000 aurag-ci
+          trap 'docker stop aurag-ci >/dev/null 2>&1 || true' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:18000/api/health/live; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker logs aurag-ci
+          exit 1
