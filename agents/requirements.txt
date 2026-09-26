@@ -1,0 +1,3 @@
+groq
+langgraph
+boto3>=1.34.0
