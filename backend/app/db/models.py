@@ -220,3 +220,68 @@ class EvaluationRemediation(Base):
             "resolved_at": self.resolved_at.isoformat() if self.resolved_at else None,
             "resolved_by": self.resolved_by,
         }
+
+
+class PaymentRecord(Base):
+    """Persistent audit and settlement ledger for Machine Money Bitcoin/Lightning transactions."""
+    __tablename__ = "payment_records"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    payment_id = Column(String(64), unique=True, index=True, default=lambda: f"PAY-{uuid.uuid4().hex[:12]}")
+    provider = Column(String(32), nullable=False, default="mock")  # mock, lnbits, cln, nwc
+    network = Column(String(32), nullable=False, default="regtest")  # regtest, signet, testnet, mainnet
+    status = Column(String(32), nullable=False, index=True, default="PENDING")
+    # Statuses: QUOTED, INVOICE_CREATED, PENDING, PAID, FAILED, REJECTED, EXPIRED, REFUNDED, MOCK_PAID
+    invoice = Column(Text, nullable=True)  # BOLT11 payment request
+    payment_hash = Column(String(128), index=True, nullable=True)
+    preimage = Column(String(128), nullable=True)
+    amount_msat = Column(Integer, nullable=False, default=0)
+    amount_sats = Column(Integer, nullable=False, default=0)
+    fee_msat = Column(Integer, default=0)
+    fee_sats = Column(Integer, default=0)
+    recipient = Column(String(128), nullable=True)
+    service_id = Column(String(64), nullable=True)
+    quote_id = Column(String(64), nullable=True)
+    work_order_id = Column(String(64), index=True, nullable=True)
+    predictive_event_id = Column(String(64), index=True, nullable=True)
+    automation_policy_id = Column(String(64), nullable=True)
+    approval_id = Column(String(64), nullable=True)
+    idempotency_key = Column(String(128), unique=True, index=True, nullable=True)
+    error_code = Column(String(64), nullable=True)
+    error_message = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow, index=True)
+    paid_at = Column(DateTime(timezone=True), nullable=True)
+    metadata_json = Column(Text, default="{}")
+
+    def to_dict(self) -> dict:
+        try:
+            metadata = json.loads(self.metadata_json) if self.metadata_json else {}
+        except Exception:
+            metadata = {"raw": self.metadata_json}
+        return {
+            "payment_id": self.payment_id,
+            "provider": self.provider,
+            "network": self.network,
+            "status": self.status,
+            "invoice": self.invoice,
+            "payment_hash": self.payment_hash,
+            "preimage": self.preimage,
+            "amount_msat": self.amount_msat,
+            "amount_sats": self.amount_sats,
+            "fee_msat": self.fee_msat,
+            "fee_sats": self.fee_sats,
+            "recipient": self.recipient,
+            "service_id": self.service_id,
+            "quote_id": self.quote_id,
+            "work_order_id": self.work_order_id,
+            "predictive_event_id": self.predictive_event_id,
+            "automation_policy_id": self.automation_policy_id,
+            "approval_id": self.approval_id,
+            "idempotency_key": self.idempotency_key,
+            "error_code": self.error_code,
+            "error_message": self.error_message,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "paid_at": self.paid_at.isoformat() if self.paid_at else None,
+            "metadata": metadata,
+        }
+
