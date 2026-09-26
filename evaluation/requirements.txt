@@ -1,0 +1,17 @@
+# RAGAS evaluation layer (Phase 6) — reuses GROQ_API_KEY from agents/.env,
+# reuses retrieval/embeddings.py locally, no other new API keys.
+#
+# Versions pinned to the exact combination confirmed working against this
+# repo's other dependencies (agents/requirements.txt's langgraph==1.2.9 needs
+# langchain-core>=1.4.7). langchain-community is pinned explicitly, not left
+# to the resolver's default (0.4.2) — ragas==0.4.3 eagerly imports
+# `langchain_community.chat_models.vertexai` at package-init time even though
+# this repo never uses Vertex AI, and that submodule was removed from
+# langchain-community as of 0.4.1+ (part of langchain-community's ongoing
+# sunset). langchain-community==0.4.0 is the last patch that still has it,
+# and it's still compatible with the langchain-core>=1.4.7 langgraph needs —
+# a real discovered constraint, not a guess.
+ragas==0.4.3
+langchain-groq==1.1.3
+langchain-community==0.4.0
+langchain-core==1.4.9

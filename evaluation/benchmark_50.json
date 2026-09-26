@@ -1,0 +1,477 @@
+{
+  "description": "AuRAG Golden Industrial Evaluation Benchmark Suite (52 Real-World Scenarios)",
+  "total_cases": 52,
+  "cases": [
+    {
+      "id": "BM-RCA-001",
+      "query": "What caused feed pump P-101 to experience severe high vibration and mechanical seal leakage in March 2025?",
+      "category": "rca",
+      "equipment_tag": "P-101",
+      "expected_entities": ["FE-001", "P-101", "WO-1002"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must cite bearing misalignment, impeller cavitation, and delayed preventive maintenance work order WO-1002."
+    },
+    {
+      "id": "BM-RCA-002",
+      "query": "Why did process gas compressor C-201 trip automatically on high discharge temperature during peak load?",
+      "category": "rca",
+      "equipment_tag": "C-201",
+      "expected_entities": ["FE-002", "C-201", "WO-1003"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must identify stage 2 discharge valve carbon buildup and cooling water circulation drop."
+    },
+    {
+      "id": "BM-RCA-003",
+      "query": "What was the root cause of the differential pressure spike and severe fouling inside heat exchanger HX-401?",
+      "category": "rca",
+      "equipment_tag": "HX-401",
+      "expected_entities": ["FE-003", "HX-401", "WO-1005"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must reference heavy crude asphaltene deposition on tube bundles and delayed backwash cycle."
+    },
+    {
+      "id": "BM-RCA-004",
+      "query": "Why did pressure safety valve PSV-701 fail to lift at its certified set pressure of 24.5 bar on surge vessel V-301?",
+      "category": "rca",
+      "equipment_tag": "PSV-701",
+      "expected_entities": ["FE-004", "PSV-701", "V-301", "WO-1007"],
+      "acceptable_intents": ["rca", "compliance"],
+      "grounding_criteria": "Must highlight spring corrosion, polymer sticking, and overdue annual recalibration."
+    },
+    {
+      "id": "BM-RCA-005",
+      "query": "What caused the drive motor MOT-901 for pump P-101 to overheat and trip the circuit breaker?",
+      "category": "rca",
+      "equipment_tag": "MOT-901",
+      "expected_entities": ["MOT-901", "P-101"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must cite winding thermal overload caused by mechanical pump seizure and cooling fan blockage."
+    },
+    {
+      "id": "BM-RCA-006",
+      "query": "Why did control valve FCV-801 fail in the closed position during normal feed section operations?",
+      "category": "rca",
+      "equipment_tag": "FCV-801",
+      "expected_entities": ["FCV-801"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must trace pneumatic actuator diaphragm rupture and instrument air moisture contamination."
+    },
+    {
+      "id": "BM-RCA-007",
+      "query": "What led to the sudden loss of suction head and cavitation excursion in standby feed pump P-102?",
+      "category": "rca",
+      "equipment_tag": "P-102",
+      "expected_entities": ["P-102", "TK-101"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must identify suction strainer blockage and low level in feed tank TK-101."
+    },
+    {
+      "id": "BM-RCA-008",
+      "query": "What was the origin of the lubricating oil contamination detected on compressor C-202?",
+      "category": "rca",
+      "equipment_tag": "C-202",
+      "expected_entities": ["C-202"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must cite cross-head seal degradation allowing condensate ingress into the crankcase reservoir."
+    },
+    {
+      "id": "BM-RCA-009",
+      "query": "Why did separator vessel V-302 exhibit severe liquid carryover into the downstream gas header?",
+      "category": "rca",
+      "equipment_tag": "V-302",
+      "expected_entities": ["V-302", "C-201"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must identify demister pad dislodgement and faulty level control valve response."
+    },
+    {
+      "id": "BM-RCA-010",
+      "query": "What initiated the thermal cracking failure on the tube sheet of trim cooler HX-402?",
+      "category": "rca",
+      "equipment_tag": "HX-402",
+      "expected_entities": ["HX-402"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must trace cyclic thermal fatigue from rapid bypass valve switching and cooling water temperature swings."
+    },
+    {
+      "id": "BM-RCA-011",
+      "query": "Why did reflux control valve CV-110 oscillate uncontrollably on distillation tower T-501?",
+      "category": "rca",
+      "equipment_tag": "CV-110",
+      "expected_entities": ["CV-110", "T-501"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must cite valve positioner calibration drift and aggressive PID tuning constants."
+    },
+    {
+      "id": "BM-RCA-012",
+      "query": "What caused the localized hot spot and catalyst bed channeling inside primary reaction vessel R-601?",
+      "category": "rca",
+      "equipment_tag": "R-601",
+      "expected_entities": ["R-601"],
+      "acceptable_intents": ["rca", "copilot"],
+      "grounding_criteria": "Must identify feed distributor tray fouling and uneven catalyst sock-loading density."
+    },
+    {
+      "id": "BM-RCA-013",
+      "query": "Why did raw feed storage tank TK-101 experience breather valve vapor release during ambient heating?",
+      "category": "rca",
+      "equipment_tag": "TK-101",
+      "expected_entities": ["TK-101"],
+      "acceptable_intents": ["rca", "compliance", "copilot"],
+      "grounding_criteria": "Must reference thermal vapor expansion exceeding pressure-vacuum relief valve pallet seating force."
+    },
+    {
+      "id": "BM-RCA-014",
+      "query": "What root mechanism caused repetitive outboard bearing failure on crude charge pump A within 90 days?",
+      "category": "rca",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101", "WO-1001", "WO-1002"],
+      "acceptable_intents": ["rca", "lessons_learned"],
+      "grounding_criteria": "Must highlight piping strain misalignment transferring dynamic radial loads to bearing housing."
+    },
+    {
+      "id": "BM-RCA-015",
+      "query": "Why did the emergency shutdown system fail to trip fuel gas supply during flame rollout on feed heater?",
+      "category": "rca",
+      "equipment_tag": "HX-401",
+      "expected_entities": ["HX-401"],
+      "acceptable_intents": ["rca", "compliance"],
+      "grounding_criteria": "Must cite single-point failure in bypassed flame scanner voting logic."
+    },
+
+    {
+      "id": "BM-COMP-001",
+      "query": "Is pressure safety valve PSV-701 compliant with statutory inspection and recalibration requirements under OISD-STD-132?",
+      "category": "compliance",
+      "equipment_tag": "PSV-701",
+      "expected_entities": ["OISD-STD-132-10.2ii", "PSV-701", "WO-1007"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must cite OISD-STD-132 Clause 10.2(ii) mandating documented testing history prior to recalibration."
+    },
+    {
+      "id": "BM-COMP-002",
+      "query": "Does operating surge vessel V-301 above design pressure violate Section 31 of the Indian Factories Act 1948?",
+      "category": "compliance",
+      "equipment_tag": "V-301",
+      "expected_entities": ["FACT1948-S31", "V-301"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must cite Factories Act Section 31 requiring effective measures to ensure safe working pressure is never exceeded."
+    },
+    {
+      "id": "BM-COMP-003",
+      "query": "What are the statutory explosion prevention and ventilation mandates under Factories Act Section 37 for compressor C-201?",
+      "category": "compliance",
+      "equipment_tag": "C-201",
+      "expected_entities": ["FACT1948-S37", "C-201"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must cite enclosure of machinery, prevention of gas accumulation, and exclusion of ignition sources."
+    },
+    {
+      "id": "BM-COMP-004",
+      "query": "What medium is legally permitted for hydrostatic testing of pressure relief valves according to OISD-STD-132?",
+      "category": "compliance",
+      "equipment_tag": "PSV-701",
+      "expected_entities": ["OISD-STD-132-TESTMED"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must state that clean water, air, or nitrogen is required, and hydrocarbons/natural gas are strictly prohibited."
+    },
+    {
+      "id": "BM-COMP-005",
+      "query": "Under PESO SMPV Rule 18, what is the mandatory inspection interval for pressurized hydrocarbon storage vessels?",
+      "category": "compliance",
+      "equipment_tag": "V-301",
+      "expected_entities": ["V-301"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must cite statutory 2-year visual inspection and 5-year hydraulic proof test intervals under PESO."
+    },
+    {
+      "id": "BM-COMP-006",
+      "query": "Are we legally compliant if a safety valve bench test record is missing the inspector's stamp and test certificate?",
+      "category": "compliance",
+      "equipment_tag": "PSV-701",
+      "expected_entities": ["OISD-STD-132-10.2ii", "PSV-701"],
+      "acceptable_intents": ["compliance"],
+      "grounding_criteria": "Must flag non-compliance due to absence of authorized third-party certification and historical logs."
+    },
+    {
+      "id": "BM-COMP-007",
+      "query": "What does OISD-116 mandate regarding fire water pump auto-start response times during main power failure?",
+      "category": "compliance",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must mandate diesel secondary fire pump auto-start within 30 seconds of ring header pressure drop."
+    },
+    {
+      "id": "BM-COMP-008",
+      "query": "Does reactor R-601 require an emergency depressurization system under OSHA 1910.119 Process Safety Management?",
+      "category": "compliance",
+      "equipment_tag": "R-601",
+      "expected_entities": ["R-601"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must reference OSHA PSM emergency relief system requirements for runaway reaction mitigation."
+    },
+    {
+      "id": "BM-COMP-009",
+      "query": "What statutory documentation is required before returning distillation tower T-501 to service after hot work?",
+      "category": "compliance",
+      "equipment_tag": "T-501",
+      "expected_entities": ["T-501"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must list gas-free certification, confined space permit closure, and structural weld radiograph signoffs."
+    },
+    {
+      "id": "BM-COMP-010",
+      "query": "What are the regulatory requirements under OISD-156 for mechanical seal barrier fluid pressurization on toxic pumps?",
+      "category": "compliance",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must specify barrier pressure maintained at minimum 1.5 bar above maximum seal chamber pressure."
+    },
+    {
+      "id": "BM-COMP-011",
+      "query": "Is operating separator V-302 with a disabled high-level alarm permitted under the site safety management plan?",
+      "category": "compliance",
+      "equipment_tag": "V-302",
+      "expected_entities": ["V-302"],
+      "acceptable_intents": ["compliance"],
+      "grounding_criteria": "Must classify alarm defeat without formal Management of Change (MOC) as a critical safety violation."
+    },
+    {
+      "id": "BM-COMP-012",
+      "query": "What are the earthing and bonding statutory guidelines for atmospheric storage tank TK-101 to prevent static ignition?",
+      "category": "compliance",
+      "equipment_tag": "TK-101",
+      "expected_entities": ["TK-101"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must cite maximum resistance to ground (<10 ohms) and continuous cross-bonding of floating roof shunts."
+    },
+    {
+      "id": "BM-COMP-013",
+      "query": "What calibration frequency is mandated for combustible gas detectors installed around compressor C-201?",
+      "category": "compliance",
+      "equipment_tag": "C-201",
+      "expected_entities": ["C-201", "FACT1948-S37"],
+      "acceptable_intents": ["compliance", "copilot"],
+      "grounding_criteria": "Must specify quarterly bump test and annual multi-point calibration with certified methane gas."
+    },
+    {
+      "id": "BM-COMP-014",
+      "query": "Under the Factories Act, what mandatory medical surveillance records must be maintained for chemical operators?",
+      "category": "compliance",
+      "equipment_tag": "R-601",
+      "expected_entities": ["R-601"],
+      "acceptable_intents": ["compliance"],
+      "grounding_criteria": "Must cite annual health checkups, pulmonary function tests, and permanent retention of exposure records."
+    },
+    {
+      "id": "BM-COMP-015",
+      "query": "Can emergency shutdown valves (ESDVs) be isolated for online maintenance without plant throughput reduction?",
+      "category": "compliance",
+      "equipment_tag": "FCV-801",
+      "expected_entities": ["FCV-801"],
+      "acceptable_intents": ["compliance"],
+      "grounding_criteria": "Must mandate risk assessment, physical bypass gagging authorization, and dedicated operator surveillance."
+    },
+
+    {
+      "id": "BM-LESS-001",
+      "query": "What recurring maintenance patterns have been observed across centrifugal pumps over the last two years?",
+      "category": "lessons_learned",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101", "P-102", "FE-001"],
+      "acceptable_intents": ["lessons_learned", "copilot"],
+      "grounding_criteria": "Must summarize repeated coupling misalignment, seal face thermocracking, and delayed lube oil top-ups."
+    },
+    {
+      "id": "BM-LESS-002",
+      "query": "Which equipment failures were directly traced to deferred preventive maintenance work orders?",
+      "category": "lessons_learned",
+      "equipment_tag": "PSV-701",
+      "expected_entities": ["FE-001", "FE-004", "WO-1002", "WO-1007"],
+      "acceptable_intents": ["lessons_learned", "rca"],
+      "grounding_criteria": "Must correlate pump bearing catastrophic damage and safety valve failure with deferred PM orders."
+    },
+    {
+      "id": "BM-LESS-003",
+      "query": "What lessons were documented following the heat exchanger tube bundle leak in the 2024 turnaround?",
+      "category": "lessons_learned",
+      "equipment_tag": "HX-401",
+      "expected_entities": ["HX-401", "FE-003"],
+      "acceptable_intents": ["lessons_learned", "copilot"],
+      "grounding_criteria": "Must cite aggressive chloride stress corrosion cracking and recommend upgrading tubes to duplex stainless steel."
+    },
+    {
+      "id": "BM-LESS-004",
+      "query": "How did previous maintenance crews resolve repeated valve hunting on reflux loop CV-110?",
+      "category": "lessons_learned",
+      "equipment_tag": "CV-110",
+      "expected_entities": ["CV-110"],
+      "acceptable_intents": ["lessons_learned", "copilot"],
+      "grounding_criteria": "Must document the installation of a digital smart positioner with integral derivative damping."
+    },
+    {
+      "id": "BM-LESS-005",
+      "query": "What systemic human error factors contributed to past compressor trip incidents during shift handover?",
+      "category": "lessons_learned",
+      "equipment_tag": "C-201",
+      "expected_entities": ["C-201", "FE-002"],
+      "acceptable_intents": ["lessons_learned", "rca"],
+      "grounding_criteria": "Must highlight uncommunicated lube oil filter bypass changes between incoming and outgoing operator crews."
+    },
+    {
+      "id": "BM-LESS-006",
+      "query": "What post-incident recommendations were implemented after the storage tank level transmitter freezing event?",
+      "category": "lessons_learned",
+      "equipment_tag": "TK-101",
+      "expected_entities": ["TK-101"],
+      "acceptable_intents": ["lessons_learned", "copilot"],
+      "grounding_criteria": "Must cite the mandatory addition of steam tracing jackets and redundant radar level transmitters."
+    },
+    {
+      "id": "BM-LESS-007",
+      "query": "Have we experienced repeated vendor part defects in Sulzer pump mechanical seal replacement cartridges?",
+      "category": "lessons_learned",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101", "P-102"],
+      "acceptable_intents": ["lessons_learned"],
+      "grounding_criteria": "Must identify silicon carbide seal face flatness deviation in 2024 Q3 replacement batch."
+    },
+    {
+      "id": "BM-LESS-008",
+      "query": "What preventive actions were taken to stop repeat fouling on reactor feed distribution nozzles?",
+      "category": "lessons_learned",
+      "equipment_tag": "R-601",
+      "expected_entities": ["R-601"],
+      "acceptable_intents": ["lessons_learned", "copilot"],
+      "grounding_criteria": "Must document installation of dual 50-micron upstream basket strainers with differential pressure alarms."
+    },
+    {
+      "id": "BM-LESS-009",
+      "query": "What historical trends link motor vibration spikes to seasonal monsoon moisture ingress?",
+      "category": "lessons_learned",
+      "equipment_tag": "MOT-901",
+      "expected_entities": ["MOT-901"],
+      "acceptable_intents": ["lessons_learned", "copilot"],
+      "grounding_criteria": "Must cite insulation resistance degradation in outdoor terminal boxes and mandate pre-monsoon space heater checks."
+    },
+    {
+      "id": "BM-LESS-010",
+      "query": "What best practices were captured for managing catalyst changeout in reactor vessels without inert gas asphyxiation risks?",
+      "category": "lessons_learned",
+      "equipment_tag": "R-601",
+      "expected_entities": ["R-601"],
+      "acceptable_intents": ["lessons_learned", "compliance"],
+      "grounding_criteria": "Must mandate continuous nitrogen purge monitoring and dual air-line supplied breathing respirators."
+    },
+    {
+      "id": "BM-LESS-011",
+      "query": "What root corrections prevented recurring false trips on compressor high vibration probes?",
+      "category": "lessons_learned",
+      "equipment_tag": "C-201",
+      "expected_entities": ["C-201"],
+      "acceptable_intents": ["lessons_learned", "copilot"],
+      "grounding_criteria": "Must cite replacement of unshielded sensor cable with twisted shielded pairs to eliminate electromagnetic noise."
+    },
+
+    {
+      "id": "BM-COP-001",
+      "query": "What is the standard step-by-step operating procedure for safely starting feed pump P-101 from cold condition?",
+      "category": "copilot",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101", "MOT-901"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must specify opening suction valve, priming pump casing, verifying lube oil level, starting motor, and throttling discharge valve."
+    },
+    {
+      "id": "BM-COP-002",
+      "query": "What are the safe operating temperature and pressure thresholds for process gas compressor C-201?",
+      "category": "copilot",
+      "equipment_tag": "C-201",
+      "expected_entities": ["C-201"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must cite max discharge temperature 135°C and max operating differential pressure 22 bar."
+    },
+    {
+      "id": "BM-COP-003",
+      "query": "How do I perform a manual emergency shutdown of distillation tower T-501 during feed loss?",
+      "category": "copilot",
+      "equipment_tag": "T-501",
+      "expected_entities": ["T-501", "CV-110"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must detail cutting reboiler steam, stopping reflux, closing bottoms isolation valve, and venting to flare."
+    },
+    {
+      "id": "BM-COP-004",
+      "query": "What is the recommended lube oil grade and viscosity for Sulzer centrifugal feed pumps in Unit 100?",
+      "category": "copilot",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must specify ISO VG 46 mineral turbine oil with anti-wear and anti-foaming additive package."
+    },
+    {
+      "id": "BM-COP-005",
+      "query": "What is the proper procedure to line up the bypass around control valve FCV-801 during maintenance?",
+      "category": "copilot",
+      "equipment_tag": "FCV-801",
+      "expected_entities": ["FCV-801"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must specify manual bypass throttling to match flow transmitter reading before isolating block valves."
+    },
+    {
+      "id": "BM-COP-006",
+      "query": "What are the pre-commissioning pressure leak test criteria for separator vessel V-301?",
+      "category": "copilot",
+      "equipment_tag": "V-301",
+      "expected_entities": ["V-301", "PSV-701"],
+      "acceptable_intents": ["copilot", "compliance"],
+      "grounding_criteria": "Must specify pneumatic soap bubble leak check at 1.1x design pressure with 30-minute hold."
+    },
+    {
+      "id": "BM-COP-007",
+      "query": "How should an operator respond if feed surge vessel V-301 high-pressure alarm sounds at 22 bar?",
+      "category": "copilot",
+      "equipment_tag": "V-301",
+      "expected_entities": ["V-301", "PSV-701"],
+      "acceptable_intents": ["copilot", "rca"],
+      "grounding_criteria": "Must instruct immediately opening manual flare vent, checking upstream feed rate, and verifying PSV readiness."
+    },
+    {
+      "id": "BM-COP-008",
+      "query": "What is the maintenance torque specification for cylinder head studs on reciprocating compressor C-201?",
+      "category": "copilot",
+      "equipment_tag": "C-201",
+      "expected_entities": ["C-201"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must specify cross-pattern torquing in 3 stages up to 450 Nm with calibrated hydraulic wrench."
+    },
+    {
+      "id": "BM-COP-009",
+      "query": "What are the chemical cleaning flushing guidelines for descaling shell & tube exchanger HX-401?",
+      "category": "copilot",
+      "equipment_tag": "HX-401",
+      "expected_entities": ["HX-401"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must mandate 5% inhibited sulfamic acid circulation at 60°C followed by soda ash neutralization rinse."
+    },
+    {
+      "id": "BM-COP-010",
+      "query": "How do I verify that atmospheric storage tank TK-101 inert nitrogen blanketing regulator is functioning?",
+      "category": "copilot",
+      "equipment_tag": "TK-101",
+      "expected_entities": ["TK-101"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must specify checking headspace pressure gauge maintains 20-30 mmWC positive pressure."
+    },
+    {
+      "id": "BM-COP-011",
+      "query": "What are the safe vibration alarm and trip setpoints under ISO 10816 for large centrifugal pumps?",
+      "category": "copilot",
+      "equipment_tag": "P-101",
+      "expected_entities": ["P-101"],
+      "acceptable_intents": ["copilot"],
+      "grounding_criteria": "Must cite ISO 10816-3 Category 2 limits: Alert at 4.5 mm/s RMS, Emergency Trip at 7.1 mm/s RMS."
+    }
+  ]
+}
