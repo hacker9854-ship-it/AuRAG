@@ -1,0 +1,57 @@
+# syntax=docker/dockerfile:1.4
+# Multi-stage security-hardened production Dockerfile for AuRAG Backend API
+
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt requirements.lock ./
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# --- Final Production Stage ---
+FROM python:3.12-slim AS runner
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/app/.venv/bin:$PATH"
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root system user for CIS benchmark compliance
+RUN groupadd -g 1001 aurag && \
+    useradd -u 1001 -g aurag -s /bin/bash -m aurag
+
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
+
+COPY backend ./backend
+COPY agents ./agents
+COPY ingestion ./ingestion
+COPY retrieval ./retrieval
+COPY telemetry ./telemetry
+COPY evaluation ./evaluation
+
+RUN chown -R aurag:aurag /app
+
+USER aurag
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=20s --timeout=5s --start-period=10s --retries=3 \
+    CMD curl -f http://localhost:8000/api/health/live || exit 1
+
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "4", "--proxy-headers"]
