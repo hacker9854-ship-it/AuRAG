@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
+from backend.app.core.neo4j import get_session
 from backend.app.db.database import get_db
 from backend.app.services.machine_money.schemas import (
     InvoiceRequest,
@@ -31,6 +32,8 @@ class PayInvoiceRequest(BaseModel):
     quote_id: Optional[str] = None
     idempotency_key: Optional[str] = None
     bypass_policy: bool = False
+    vendor_name: Optional[str] = None
+    confidence: Optional[float] = 0.95
 
 
 @router.get("/health", response_model=ProviderHealth)
@@ -72,6 +75,8 @@ async def pay_invoice(req: PayInvoiceRequest, db: Session = Depends(get_db)):
             quote_id=req.quote_id,
             idempotency_key=req.idempotency_key,
             bypass_policy=req.bypass_policy,
+            vendor_name=req.vendor_name,
+            confidence=req.confidence if req.confidence is not None else 0.95,
         )
         return record.to_dict()
     except Exception as exc:
@@ -92,3 +97,14 @@ def get_payment(payment_id: str, db: Session = Depends(get_db)):
     if not record:
         raise HTTPException(status_code=404, detail="Payment record not found")
     return record.to_dict()
+
+
+@router.get("/payments/{payment_id}/trail")
+def get_payment_trail(
+    payment_id: str,
+    db: Session = Depends(get_db),
+    neo4j_session = Depends(get_session),
+):
+    """Retrieve operational evidence graph trail explaining why this payment was made."""
+    return service.get_payment_trail(db, payment_id, neo4j_session=neo4j_session)
+

@@ -65,3 +65,18 @@ OPTIONS {indexConfig: {
   `vector.dimensions`: 384,
   `vector.similarity_function`: 'cosine'
 }};
+
+// BOSS Battle: Machine Money Bitcoin/Lightning Payment Schema
+CREATE CONSTRAINT payment_id IF NOT EXISTS
+FOR (p:Payment) REQUIRE p.id IS UNIQUE;
+
+CREATE CONSTRAINT payment_hash IF NOT EXISTS
+FOR (p:Payment) REQUIRE p.payment_hash IS UNIQUE;
+
+CREATE CONSTRAINT service_provider_id IF NOT EXISTS
+FOR (sp:ServiceProvider) REQUIRE sp.id IS UNIQUE;
+
+CREATE INDEX payment_status IF NOT EXISTS FOR (p:Payment) ON (p.status);
+CREATE INDEX payment_created_at IF NOT EXISTS FOR (p:Payment) ON (p.created_at);
+CREATE INDEX payment_work_order IF NOT EXISTS FOR (p:Payment) ON (p.work_order_id);
+

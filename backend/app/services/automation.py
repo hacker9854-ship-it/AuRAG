@@ -55,14 +55,26 @@ DEFAULT_POLICIES = [
         "parameters": {"vibration_threshold_mms": 4.5, "order_type": "PM01", "priority": "2"},
         "rollback_guidance": "SAP PM Rollback: Cancel maintenance order via transaction IW38 or archive work order record.",
     },
+    {
+        "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
+        "site_id": "*",
+        "name": "Autonomous Lightning Settlement for Approved Diagnostic Dispatch",
+        "description": "Authorizes automated Bitcoin Lightning micro-settlement up to configured satoshi cap when high-confidence predictive failure triggers vendor telemetry service.",
+        "trigger_type": "PREDICTIVE_RISK_HIGH",
+        "action_type": "PAY_LIGHTNING_INVOICE",
+        "target_system": "LIGHTNING",
+        "approval_threshold": "AUTONOMOUS",
+        "parameters": {"max_amount_sats": 500, "min_confidence": 0.85, "allowed_vendors": ["*"]},
+        "rollback_guidance": "Lightning Rollback: Lightning transactions are mathematically final. Issue refund request or raise dispute ticket in vendor portal.",
+    },
 ]
 
 
 def seed_default_policies_if_empty(db: Session) -> None:
     """Ensure baseline industrial automation policies are populated."""
-    count = db.query(AutomationPolicy).count()
-    if count == 0:
-        for p in DEFAULT_POLICIES:
+    for p in DEFAULT_POLICIES:
+        exists = db.query(AutomationPolicy).filter(AutomationPolicy.policy_id == p["policy_id"]).first()
+        if not exists:
             policy = AutomationPolicy(
                 policy_id=p["policy_id"],
                 site_id=p["site_id"],
@@ -77,7 +89,7 @@ def seed_default_policies_if_empty(db: Session) -> None:
                 is_active=True,
             )
             db.add(policy)
-        db.commit()
+    db.commit()
 
 
 def list_automation_policies(db: Session, site_id: str | None = None) -> list[dict[str, Any]]:
@@ -192,6 +204,13 @@ def evaluate_automation_trigger(
                 should_trigger = True
                 reason = f"Vibration ({vib} mm/s) exceeded ISO 10816 threshold ({thresh} mm/s)"
 
+        elif trigger_type == "PREDICTIVE_RISK_HIGH":
+            min_conf = params.get("min_confidence", 0.85)
+            conf = context_data.get("confidence", 0.9)
+            if conf >= min_conf:
+                should_trigger = True
+                reason = f"High-confidence predictive failure risk ({conf:.2f} >= {min_conf:.2f}) triggers diagnostic dispatch"
+
         else:
             # Generic trigger fallback
             should_trigger = True
@@ -219,6 +238,16 @@ def evaluate_automation_trigger(
                     "issue_summary": f"Statutory audit overdue for {equipment_tag}: {reason}",
                     "target_due_days": params.get("due_days", 14),
                     "site_id": site_id,
+                }
+            elif policy.action_type == "PAY_LIGHTNING_INVOICE":
+                payload = {
+                    "equipment_tag": equipment_tag,
+                    "target_system": "LIGHTNING",
+                    "amount_sats": context_data.get("amount_sats", params.get("max_amount_sats", 150)),
+                    "service_provider": context_data.get("service_provider", "Industrial Dynamics Specialist Node"),
+                    "work_order_id": context_data.get("work_order_id"),
+                    "predictive_event_id": context_data.get("event_id"),
+                    "reason": reason,
                 }
             else:
                 payload = {
@@ -377,3 +406,74 @@ def review_approval(
     db.commit()
     db.refresh(approval)
     return approval.to_dict()
+
+
+def evaluate_lightning_payment_policy(
+    db: Session,
+    amount_sats: int,
+    site_id: str = "*",
+    vendor_name: str | None = None,
+    confidence: float = 0.95,
+    autopay_enabled: bool = True,
+    max_cap: int = 500,
+) -> dict[str, Any]:
+    """Evaluate whether an autonomous Lightning payment can proceed or requires human approval.
+
+    Safety Model (Section 10):
+    - amount <= auto-pay cap
+    - approved service provider
+    - evidence confidence >= required threshold
+    - payment not already executed
+    - invoice is valid
+    -> autonomous payment
+    Otherwise -> approval queue
+    """
+    seed_default_policies_if_empty(db)
+    policy = (
+        db.query(AutomationPolicy)
+        .filter(AutomationPolicy.policy_id == "POL-LIGHTNING-MACHINE-MONEY")
+        .first()
+    )
+    params = json.loads(policy.parameters_json) if (policy and policy.parameters_json) else {}
+    min_confidence = float(params.get("min_confidence", 0.85))
+    allowed_vendors = params.get("allowed_vendors", ["*"])
+
+    if not autopay_enabled:
+        return {
+            "authorized": False,
+            "requires_approval": True,
+            "reason": "Autonomous Lightning settlement is disabled globally or for this site. Human approval required.",
+            "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
+        }
+
+    if amount_sats > max_cap:
+        return {
+            "authorized": False,
+            "requires_approval": True,
+            "reason": f"Payment amount ({amount_sats} sats) exceeds autonomous threshold cap ({max_cap} sats). Human sign-off required.",
+            "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
+        }
+
+    if confidence < min_confidence:
+        return {
+            "authorized": False,
+            "requires_approval": True,
+            "reason": f"Diagnostic confidence ({confidence:.2f}) is below the required policy threshold ({min_confidence:.2f}). Human sign-off required.",
+            "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
+        }
+
+    if "*" not in allowed_vendors and vendor_name and vendor_name not in allowed_vendors:
+        return {
+            "authorized": False,
+            "requires_approval": True,
+            "reason": f"Vendor '{vendor_name}' is not in the approved service provider whitelist. Human sign-off required.",
+            "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
+        }
+
+    return {
+        "authorized": True,
+        "requires_approval": False,
+        "reason": f"Autonomous Lightning micro-settlement authorized (amount: {amount_sats} sats <= {max_cap} sats cap, confidence: {confidence:.2f} >= {min_confidence:.2f}).",
+        "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
+    }
+

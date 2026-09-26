@@ -14,6 +14,28 @@ class FallbackNeo4jSession:
     def run(self, query: str, **kwargs):
         class FallbackResult:
             def data(self):
+                if "Payment" in query or "payment" in query.lower():
+                    p_node = {
+                        "id": kwargs.get("payment_id", "PAY-DEMO-001"),
+                        "payment_hash": kwargs.get("payment_hash", "4a5e1e4baab89f3a32518a88c31bc87f618f76673e2cc77ab2127b7afdeda33b"),
+                        "preimage": kwargs.get("preimage", "1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff"),
+                        "amount_sats": kwargs.get("amount_sats", 150),
+                        "status": "SETTLED",
+                        "provider": "mock",
+                        "work_order_id": kwargs.get("work_order_id", "WO-2026-P101"),
+                        "predictive_event_id": kwargs.get("event_id", "EVT-VIB-001"),
+                    }
+                    return [
+                        {
+                            "p": p_node,
+                            "wo": {"id": "WO-2026-P101", "description": "Bearing vibration corrective overhaul"},
+                            "evt": {"id": "EVT-VIB-001", "event_type": "VIBRATION_SPIKE", "confidence": 0.94},
+                            "fe": {"id": "FE-001", "description": "Bearing Failure Mode"},
+                            "eq": {"id": "P-101A", "name": "Crude Charge Pump A"},
+                            "sp": {"id": "SP-001", "name": "Industrial Dynamics Specialist Node"},
+                            **p_node,
+                        }
+                    ]
                 if "WorkOrder" in query or "work_order" in query.lower():
                     wo = {
                         "id": "WO-2025-03-14",
