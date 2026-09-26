@@ -80,3 +80,38 @@ class ServiceQuote(BaseModel):
     parts_included: List[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=utcnow)
     valid_until: datetime
+
+
+class ServiceDefinition(BaseModel):
+    service_id: str
+    name: str
+    provider_id: str
+    provider_name: str
+    price_sats: int
+    equipment_class: str
+    description: str
+    estimated_duration_hours: float = 2.0
+    parts_included: List[str] = Field(default_factory=list)
+    is_mock: bool = True
+
+
+class SimulationRequest(BaseModel):
+    site_id: str = "plant-mumbai-01"
+    equipment_id: str = "P-101A"
+    service_id: Optional[str] = "bearing-inspection"
+    predictive_event_id: Optional[str] = "EVT-VIB-001"
+    work_order_id: Optional[str] = "WO-2026-P101"
+    amount_sats: Optional[int] = None
+    confidence: float = 0.94
+
+
+class SimulationResult(BaseModel):
+    dry_run: bool = True
+    equipment_id: str
+    service_name: str
+    amount_sats: int
+    idempotency_key: str
+    policy_evaluation: Dict[str, Any]
+    projected_action: str
+    explanation: str
+

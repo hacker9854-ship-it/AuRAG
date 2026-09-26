@@ -23,13 +23,22 @@ from backend.app.services.machine_money.graph import (
     record_payment_in_graph,
 )
 from backend.app.services.machine_money.providers import get_payment_provider
+from backend.app.services.machine_money.registry import (
+    generate_idempotency_key,
+    get_provider_registry_info,
+    get_service,
+    list_services,
+)
 from backend.app.services.machine_money.schemas import (
     BOLT11Invoice,
     InvoiceRequest,
     PaymentReceipt,
     PaymentStatus,
     ProviderHealth,
+    ServiceDefinition,
     ServiceQuote,
+    SimulationRequest,
+    SimulationResult,
 )
 
 logger = logging.getLogger(__name__)
@@ -48,20 +57,38 @@ class MachineMoneyService:
     def generate_quote(
         self,
         equipment_id: str,
-        service_description: str,
-        cost_sats: int = 150,
-        vendor_name: str = "Industrial Dynamics Specialist Node",
+        service_description: Optional[str] = None,
+        cost_sats: Optional[int] = None,
+        vendor_name: Optional[str] = None,
+        service_id: Optional[str] = None,
     ) -> ServiceQuote:
         """Create a verifiable maintenance service quotation for an operational need."""
         now = utcnow()
         quote_id = f"QTE-{uuid.uuid4().hex[:8].upper()}"
+
+        if service_id:
+            svc = get_service(service_id)
+            if svc:
+                return ServiceQuote(
+                    quote_id=quote_id,
+                    vendor_node_id=f"03vendor{uuid.uuid4().hex[:20]}",
+                    vendor_name=svc.provider_name,
+                    equipment_id=equipment_id,
+                    service_description=service_description or svc.name,
+                    cost_sats=cost_sats if cost_sats is not None else svc.price_sats,
+                    estimated_duration_hours=svc.estimated_duration_hours,
+                    parts_included=svc.parts_included,
+                    created_at=now,
+                    valid_until=now + timedelta(hours=24),
+                )
+
         return ServiceQuote(
             quote_id=quote_id,
             vendor_node_id=f"03vendor{uuid.uuid4().hex[:20]}",
-            vendor_name=vendor_name,
+            vendor_name=vendor_name or "Industrial Dynamics Specialist Node",
             equipment_id=equipment_id,
-            service_description=service_description,
-            cost_sats=cost_sats,
+            service_description=service_description or "General mechanical diagnostic",
+            cost_sats=cost_sats if cost_sats is not None else 150,
             estimated_duration_hours=2.5,
             parts_included=["bearing_assembly_6205", "high_temp_synthetic_grease", "vibration_gasket"],
             created_at=now,
@@ -330,3 +357,158 @@ class MachineMoneyService:
             "found": False,
             "explanation": "No graph session available",
         }
+
+    def get_providers_and_services(self) -> dict:
+        """Expose catalog of demo service providers and verifiable services."""
+        return get_provider_registry_info()
+
+    async def approve_payment(
+        self,
+        db: Session,
+        payment_id: str,
+        reviewer_id: str = "operator-lead",
+        review_notes: Optional[str] = None,
+        neo4j_session = None,
+    ) -> PaymentRecord:
+        """Operator approval: approves a PENDING_APPROVAL payment and settles the Lightning invoice."""
+        record = self.get_payment(db, payment_id)
+        if not record:
+            raise MachineMoneyError(f"Payment record {payment_id} not found")
+
+        if record.status in (PaymentStatus.SETTLED.value, PaymentStatus.MOCK_PAID.value):
+            return record
+
+        if record.status != PaymentStatus.PENDING_APPROVAL.value:
+            raise MachineMoneyError(f"Payment {payment_id} is in status '{record.status}', not PENDING_APPROVAL")
+
+        # Update ApprovalRecord if linked
+        if record.approval_id:
+            approval = db.query(ApprovalRecord).filter(ApprovalRecord.approval_id == record.approval_id).first()
+            if approval:
+                approval.status = "APPROVED"
+                approval.reviewed_by = reviewer_id
+                approval.reviewed_at = utcnow()
+
+        # Execute payment through provider (bypassing spending cap policy since explicitly authorized by operator)
+        receipt = await self.provider.pay_invoice(record.invoice)
+        record.status = receipt.status.value
+        record.payment_hash = receipt.payment_hash
+        record.preimage = receipt.preimage
+        record.fee_sats = receipt.fee_sats
+        record.fee_msat = receipt.fee_sats * 1000
+        record.paid_at = utcnow()
+
+        meta = json.loads(record.metadata_json) if record.metadata_json else {}
+        meta["approved_by"] = reviewer_id
+        meta["approved_at"] = utcnow().isoformat()
+        if review_notes:
+            meta["review_notes"] = review_notes
+        record.metadata_json = json.dumps(meta)
+
+        # Audit event
+        audit = AuditEvent(
+            event_id=f"AUDIT-APPV-{uuid.uuid4().hex[:10]}",
+            user_id=reviewer_id,
+            site_id="plant-mumbai-01",
+            role="OPERATOR_HUMAN_IN_THE_LOOP",
+            action_type="PAYMENT_APPROVAL_SETTLED",
+            resource_type="PAYMENT",
+            resource_id=record.payment_id,
+            details_json=json.dumps({
+                "payment_id": record.payment_id,
+                "amount_sats": record.amount_sats,
+                "preimage": receipt.preimage,
+                "approval_id": record.approval_id,
+            }),
+            status="SUCCESS",
+        )
+        db.add(audit)
+        db.commit()
+        db.refresh(record)
+
+        # Graph persistence
+        try:
+            if neo4j_session is not None:
+                record_payment_in_graph(
+                    session=neo4j_session,
+                    payment_id=record.payment_id,
+                    payment_hash=receipt.payment_hash,
+                    preimage=receipt.preimage,
+                    amount_sats=record.amount_sats,
+                    provider=record.provider,
+                    status=record.status,
+                    work_order_id=record.work_order_id,
+                    predictive_event_id=record.predictive_event_id,
+                    service_provider_name="Industrial Dynamics Specialist Node",
+                )
+            else:
+                for graph_sess in get_session():
+                    record_payment_in_graph(
+                        session=graph_sess,
+                        payment_id=record.payment_id,
+                        payment_hash=receipt.payment_hash,
+                        preimage=receipt.preimage,
+                        amount_sats=record.amount_sats,
+                        provider=record.provider,
+                        status=record.status,
+                        work_order_id=record.work_order_id,
+                        predictive_event_id=record.predictive_event_id,
+                        service_provider_name="Industrial Dynamics Specialist Node",
+                    )
+                    break
+        except Exception as graph_err:
+            logger.warning(f"Graph update notice on payment approval: {graph_err}")
+
+        return record
+
+    def simulate_m2m_transaction(self, db: Session, req: SimulationRequest) -> SimulationResult:
+        """Dry-run simulation of machine event -> policy evaluation -> projected settlement without DB mutation."""
+        svc = get_service(req.service_id) if req.service_id else None
+        amount_sats = req.amount_sats if req.amount_sats is not None else (svc.price_sats if svc else 250)
+        svc_name = svc.name if svc else "Custom Diagnostics Dispatch"
+        vendor_name = svc.provider_name if svc else "Industrial Dynamics Specialist Node"
+
+        idempotency_key = generate_idempotency_key(
+            site_id=req.site_id,
+            equipment_id=req.equipment_id,
+            service_id=req.service_id or "custom",
+            predictive_event_id=req.predictive_event_id or "generic-evt",
+        )
+
+        max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
+        autopay_enabled = os.environ.get("MACHINE_MONEY_AUTO_PAY_ENABLED", "false").lower() == "true"
+
+        policy_eval = evaluate_lightning_payment_policy(
+            db=db,
+            amount_sats=amount_sats,
+            site_id=req.site_id,
+            vendor_name=vendor_name,
+            confidence=req.confidence,
+            autopay_enabled=autopay_enabled,
+            max_cap=max_autopay,
+        )
+
+        if policy_eval["authorized"]:
+            projected_action = "AUTONOMOUS_EXECUTE_LIGHTNING_PAYMENT"
+            explanation = (
+                f"Machine event on {req.equipment_id} triggered {svc_name}. Amount ({amount_sats} sats) "
+                f"is within the {max_autopay} sats autonomous cap with {req.confidence:.0%} confidence. "
+                f"BOLT11 invoice will be settled autonomously without human delay."
+            )
+        else:
+            projected_action = "ROUTE_TO_HUMAN_APPROVAL_QUEUE"
+            explanation = (
+                f"Machine event on {req.equipment_id} requires human review. Reason: {policy_eval['reason']}. "
+                f"Payment intent will be held in PENDING_APPROVAL status until plant operator approval."
+            )
+
+        return SimulationResult(
+            dry_run=True,
+            equipment_id=req.equipment_id,
+            service_name=svc_name,
+            amount_sats=amount_sats,
+            idempotency_key=idempotency_key,
+            policy_evaluation=policy_eval,
+            projected_action=projected_action,
+            explanation=explanation,
+        )
