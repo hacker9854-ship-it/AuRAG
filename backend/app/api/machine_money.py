@@ -164,3 +164,92 @@ def get_payment_trail(
     return service.get_payment_trail(db, payment_id, neo4j_session=neo4j_session)
 
 
+class TelemetryTriggerRequest(BaseModel):
+    equipment_tag: str = Field(default="P-101A", description="Equipment identifier")
+    event_id: Optional[str] = Field(default="EVT-VIB-001", description="Predictive event identifier")
+    failure_event_id: Optional[str] = Field(default="FE-001", description="Matched failure signature")
+    confidence: float = Field(default=0.94, ge=0.0, le=1.0)
+    work_order_id: Optional[str] = Field(default="WO-2026-P101")
+    bypass_policy: bool = False
+
+
+class AgentPaymentProposal(BaseModel):
+    action: str = Field(default="PAY_FOR_SERVICE", description="Must be 'PAY_FOR_SERVICE'")
+    service_id: str = Field(default="bearing-inspection", description="Target service from catalog")
+    equipment_tag: str = Field(default="P-101A", description="Equipment tag")
+    reason: str = Field(default="High-confidence vibration excursion matches FE-001")
+    evidence: List[str] = Field(default_factory=lambda: ["FE-001", "WO-1002", "PROC-001"])
+    confidence: float = Field(default=0.94, ge=0.0, le=1.0)
+    event_id: Optional[str] = None
+    work_order_id: Optional[str] = None
+
+
+@router.post("/trigger-from-telemetry")
+async def trigger_from_telemetry(
+    req: TelemetryTriggerRequest,
+    db: Session = Depends(get_db),
+    neo4j_session = Depends(get_session),
+):
+    """Autonomous bridge: triggers quote -> policy -> invoice -> settlement from predictive telemetry (Section 16)."""
+    try:
+        from backend.app.services.machine_money.bridge import trigger_m2m_settlement_for_event
+        return await trigger_m2m_settlement_for_event(
+            db=db,
+            equipment_tag=req.equipment_tag,
+            event_id=req.event_id,
+            failure_event_id=req.failure_event_id,
+            confidence=req.confidence,
+            work_order_id=req.work_order_id,
+            bypass_policy=req.bypass_policy,
+            neo4j_session=neo4j_session,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/agent-tool")
+async def agent_payment_tool(
+    proposal: AgentPaymentProposal,
+    db: Session = Depends(get_db),
+    neo4j_session = Depends(get_session),
+):
+    """Governed agent action boundary: LLM proposes service payment, backend policy engine enforces (Section 17)."""
+    try:
+        from backend.app.services.machine_money.bridge import handle_agent_payment_proposal
+        return await handle_agent_payment_proposal(
+            db=db,
+            proposal=proposal.model_dump(),
+            neo4j_session=neo4j_session,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+
+@router.get("/evidence/{payment_id}")
+def get_payment_evidence_package(payment_id: str, db: Session = Depends(get_db)):
+    """Retrieve structured cross-layer evidence package answering 'Why did the agent spend money?' (Section 18)."""
+    record = service.get_payment(db, payment_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Payment record not found")
+
+    import json
+    meta = json.loads(record.metadata_json) if record.metadata_json else {}
+    evidence = meta.get("evidence_package")
+    if not evidence:
+        from backend.app.services.machine_money.bridge import build_operational_evidence_package
+        evidence = build_operational_evidence_package(
+            session=None,
+            equipment_tag=meta.get("equipment_id", "P-101A"),
+            event_id=record.predictive_event_id,
+        )
+
+    return {
+        "payment_id": payment_id,
+        "amount_sats": record.amount_sats,
+        "status": record.status,
+        "paid_at": record.paid_at.isoformat() if record.paid_at else None,
+        "evidence_package": evidence,
+    }
+
+
+

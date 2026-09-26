@@ -149,13 +149,20 @@ class MachineMoneyService:
     ) -> PaymentRecord:
         """Evaluate spending governance and execute Lightning payment if within autonomous limits."""
         # 1. Idempotency Check
+        existing_record = None
         if idempotency_key:
             existing = db.query(PaymentRecord).filter(
                 PaymentRecord.idempotency_key == idempotency_key
             ).first()
             if existing:
-                logger.info(f"Payment record already exists for idempotency key {idempotency_key} with status {existing.status}")
-                return existing
+                if existing.status in (PaymentStatus.SETTLED.value, PaymentStatus.MOCK_PAID.value):
+                    logger.info(f"Payment already settled for idempotency key {idempotency_key}")
+                    return existing
+                elif existing.status == PaymentStatus.PENDING_APPROVAL.value:
+                    logger.info(f"Payment already pending approval for idempotency key {idempotency_key}")
+                    return existing
+                elif existing.status == PaymentStatus.INVOICE_CREATED.value:
+                    existing_record = existing
 
         # 2. Programmatic Spending Policy Check (Section 10 Governance)
         max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
@@ -199,22 +206,30 @@ class MachineMoneyService:
             )
             db.add(approval)
 
-            record = PaymentRecord(
-                payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
-                provider=provider_name,
-                network=network,
-                status=PaymentStatus.PENDING_APPROVAL.value,
-                invoice=bolt11,
-                amount_sats=amount_sats,
-                amount_msat=amount_sats * 1000,
-                work_order_id=work_order_id,
-                predictive_event_id=event_id,
-                quote_id=quote_id,
-                approval_id=approval_id,
-                idempotency_key=idempotency_key,
-                metadata_json=json.dumps({"reason": policy_decision["reason"]}),
-            )
-            db.add(record)
+            if existing_record:
+                record = existing_record
+                record.status = PaymentStatus.PENDING_APPROVAL.value
+                record.approval_id = approval_id
+                meta = json.loads(record.metadata_json) if record.metadata_json else {}
+                meta["reason"] = policy_decision["reason"]
+                record.metadata_json = json.dumps(meta)
+            else:
+                record = PaymentRecord(
+                    payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
+                    provider=provider_name,
+                    network=network,
+                    status=PaymentStatus.PENDING_APPROVAL.value,
+                    invoice=bolt11,
+                    amount_sats=amount_sats,
+                    amount_msat=amount_sats * 1000,
+                    work_order_id=work_order_id,
+                    predictive_event_id=event_id,
+                    quote_id=quote_id,
+                    approval_id=approval_id,
+                    idempotency_key=idempotency_key,
+                    metadata_json=json.dumps({"reason": policy_decision["reason"]}),
+                )
+                db.add(record)
             db.commit()
             db.refresh(record)
             return record
@@ -228,50 +243,72 @@ class MachineMoneyService:
             fee_sats = receipt.fee_sats
         except Exception as exc:
             logger.error(f"Lightning payment failed: {exc}")
-            record = PaymentRecord(
-                payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
-                provider=provider_name,
-                network=network,
-                status=PaymentStatus.FAILED.value,
-                invoice=bolt11,
-                amount_sats=amount_sats,
-                amount_msat=amount_sats * 1000,
-                work_order_id=work_order_id,
-                predictive_event_id=event_id,
-                error_code="PROVIDER_PAY_FAILED",
-                error_message=str(exc),
-                idempotency_key=idempotency_key,
-            )
-            db.add(record)
+            if existing_record:
+                record = existing_record
+                record.status = PaymentStatus.FAILED.value
+                record.error_code = "PROVIDER_PAY_FAILED"
+                record.error_message = str(exc)
+            else:
+                record = PaymentRecord(
+                    payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
+                    provider=provider_name,
+                    network=network,
+                    status=PaymentStatus.FAILED.value,
+                    invoice=bolt11,
+                    amount_sats=amount_sats,
+                    amount_msat=amount_sats * 1000,
+                    work_order_id=work_order_id,
+                    predictive_event_id=event_id,
+                    error_code="PROVIDER_PAY_FAILED",
+                    error_message=str(exc),
+                    idempotency_key=idempotency_key,
+                )
+                db.add(record)
             db.commit()
             db.refresh(record)
             return record
 
         # 4. Save Settled Record & Audit Event
-        record = PaymentRecord(
-            payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
-            provider=provider_name,
-            network=network,
-            status=final_status,
-            invoice=bolt11,
-            payment_hash=payment_hash,
-            preimage=preimage,
-            amount_sats=amount_sats,
-            amount_msat=amount_sats * 1000,
-            fee_sats=fee_sats,
-            fee_msat=fee_sats * 1000,
-            work_order_id=work_order_id,
-            predictive_event_id=event_id,
-            quote_id=quote_id,
-            idempotency_key=idempotency_key,
-            paid_at=utcnow(),
-            metadata_json=json.dumps({
+        if existing_record:
+            record = existing_record
+            record.status = final_status
+            record.payment_hash = payment_hash
+            record.preimage = preimage
+            record.fee_sats = fee_sats
+            record.fee_msat = fee_sats * 1000
+            record.paid_at = utcnow()
+            meta = json.loads(record.metadata_json) if record.metadata_json else {}
+            meta.update({
                 "settled_at": receipt.settled_at.isoformat(),
                 "receipt_id": receipt.receipt_id,
                 "vendor_name": vendor_name or "Industrial Dynamics Specialist Node",
-            }),
-        )
-        db.add(record)
+            })
+            record.metadata_json = json.dumps(meta)
+        else:
+            record = PaymentRecord(
+                payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
+                provider=provider_name,
+                network=network,
+                status=final_status,
+                invoice=bolt11,
+                payment_hash=payment_hash,
+                preimage=preimage,
+                amount_sats=amount_sats,
+                amount_msat=amount_sats * 1000,
+                fee_sats=fee_sats,
+                fee_msat=fee_sats * 1000,
+                work_order_id=work_order_id,
+                predictive_event_id=event_id,
+                quote_id=quote_id,
+                idempotency_key=idempotency_key,
+                paid_at=utcnow(),
+                metadata_json=json.dumps({
+                    "settled_at": receipt.settled_at.isoformat(),
+                    "receipt_id": receipt.receipt_id,
+                    "vendor_name": vendor_name or "Industrial Dynamics Specialist Node",
+                }),
+            )
+            db.add(record)
 
         # Write immutable audit event
         audit = AuditEvent(

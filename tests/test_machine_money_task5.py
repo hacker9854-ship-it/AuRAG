@@ -137,6 +137,11 @@ def test_dry_run_simulation_mode():
 
 def test_operator_approval_workflow():
     """Verify operator can approve a payment previously queued under policy, settling the Lightning invoice."""
+    import uuid
+    suffix = uuid.uuid4().hex[:8]
+    idemp_inv = f"idemp-overhaul-inv-{suffix}"
+    idemp_pay = f"idemp-overhaul-pay-{suffix}"
+
     # 1. Create invoice for 1500 sats (exceeds 500 sats cap)
     inv_res = client.post(
         "/api/machine-money/invoice",
@@ -144,7 +149,7 @@ def test_operator_approval_workflow():
             "amount_sats": 1500,
             "memo": "Complete pump mechanical seal overhaul",
             "equipment_id": "P-101A",
-            "idempotency_key": "idemp-overhaul-high-001",
+            "idempotency_key": idemp_inv,
         },
     )
     assert inv_res.status_code == 200
@@ -157,7 +162,7 @@ def test_operator_approval_workflow():
             "bolt11": invoice,
             "amount_sats": 1500,
             "work_order_id": "WO-SEAL-1500",
-            "idempotency_key": "idemp-pay-overhaul-001",
+            "idempotency_key": idemp_pay,
         },
     )
     assert pay_res.status_code == 200
