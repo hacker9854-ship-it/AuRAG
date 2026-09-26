@@ -1,0 +1,22 @@
+{
+  "Q1": {
+    "query": "Why did P-101 fail in March 2025?",
+    "expected_any": ["FE-001", "WO-1001", "WO-1002", "DOC-LOG-001-C002"]
+  },
+  "Q2": {
+    "query": "What is the relief valve calibration requirement for PSV-701?",
+    "expected_any": ["OISD-STD-132-10.2ii", "FE-004", "WO-1007"]
+  },
+  "Q3": {
+    "query": "Who performed the mechanical seal replacement on P-102?",
+    "expected_any": ["WO-1010", "FE-006"]
+  },
+  "Q4": {
+    "query": "What caused the heat exchanger HX-401 fouling?",
+    "expected_any": ["FE-003", "WO-1005"]
+  },
+  "Q5": {
+    "query": "Why did compressor C-201 trip on high discharge temperature?",
+    "expected_any": ["FE-002", "WO-1003"]
+  }
+}
