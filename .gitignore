@@ -21,6 +21,10 @@ coverage/
 .env.local
 *.env
 *.db
+*.key
+*.pem
+*.macaroon
+
 
 # OS
 .DS_Store
