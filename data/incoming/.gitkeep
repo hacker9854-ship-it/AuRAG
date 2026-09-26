@@ -1,0 +1,2 @@
+# Watched by ingestion/workers/watcher.py — drop new documents here for
+# continuous ingestion. Kept in git so the folder exists on fresh clones.
