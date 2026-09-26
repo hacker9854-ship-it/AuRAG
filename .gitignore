@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.venv-broken-*/
+venv/
+*.egg-info/
+.uv-cache/
+.uv-python/
+.python312/
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+.npm-cache/
+coverage/
+
+# Env / secrets
+.env
+.env.local
+*.env
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+.claude/
+
+# Data artifacts (raw synthetic docs are tracked; generated/derived outputs are not)
+data/**/*.tmp
+*.log
+.runtime/
+.pytest_tmp/

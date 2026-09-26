@@ -1,0 +1,148 @@
+envVarGroups:
+  - name: aurag-runtime
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: NEO4J_DATABASE
+        value: c7c5e203
+
+      - key: GROQ_ROUTING_MODEL
+        value: openai/gpt-oss-20b
+      - key: GROQ_REASONING_MODEL
+        value: openai/gpt-oss-120b
+      - key: GROQ_JUDGE_MODEL
+        value: openai/gpt-oss-20b
+
+      - key: RAGAS_JUDGE_TIMEOUT_SECONDS
+        value: "45"
+      - key: RAGAS_JUDGE_MAX_RETRIES
+        value: "2"
+      - key: RAGAS_CASE_MAX_RETRIES
+        value: "2"
+      - key: RAGAS_CASE_RETRY_DELAY_SECONDS
+        value: "2"
+      - key: RAGAS_CASE_MAX_RETRY_DELAY_SECONDS
+        value: "900"
+      - key: GEMINI_REASONING_MODEL
+        value: gemini-3.1-flash-lite
+      - key: GEMINI_INGESTION_MODEL
+        value: gemini-3.1-flash-lite
+      - key: CLOUD_OCR_PROVIDER
+        value: google_vision
+      - key: GOOGLE_VISION_TIMEOUT_SECONDS
+        value: "60"
+      - key: RERANK_PROVIDER
+        value: cohere
+      - key: COHERE_RERANK_MODEL
+        value: rerank-v4.0-pro
+      - key: MEM0_DIR
+        value: /app/.runtime/mem0
+      - key: TELEMETRY_INTERVAL_SECONDS
+        value: "15"
+      - key: TELEMETRY_EQUIPMENT_TAGS
+        value: P-101,C-201,HX-401,PSV-701,T-501,P-102
+      - key: INGEST_STORAGE_BACKEND
+        value: s3
+      - key: INGEST_WORK_DIR
+        value: /app/.runtime/ingest-work
+      - key: INGEST_S3_PREFIX
+        value: aurag-ingest
+
+services:
+  - type: web
+    name: aurag-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health/live
+    autoDeployTrigger: checksPass
+    envVars:
+      - fromGroup: aurag-runtime
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USERNAME
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_VISION_API_KEY
+        sync: false
+      - key: COHERE_API_KEY
+        sync: false
+      - key: MEM0_API_KEY
+        sync: false
+      - key: BACKEND_CORS_ORIGINS
+        sync: false
+      - key: INGEST_S3_BUCKET
+        sync: false
+      - key: INGEST_S3_ENDPOINT
+        sync: false
+      - key: INGEST_S3_REGION
+        sync: false
+      - key: INGEST_S3_ACCESS_KEY_ID
+        sync: false
+      - key: INGEST_S3_SECRET_ACCESS_KEY
+        sync: false
+
+  - type: worker
+    name: aurag-telemetry
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: python -m telemetry.worker
+    autoDeployTrigger: checksPass
+    envVars:
+      - fromGroup: aurag-runtime
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USERNAME
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+      - key: REDIS_URL
+        sync: false
+
+  - type: worker
+    name: aurag-ingest-queue
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    dockerCommand: rq worker aurag-ingest --url $REDIS_URL
+    autoDeployTrigger: checksPass
+    envVars:
+      - fromGroup: aurag-runtime
+      - key: NEO4J_URI
+        sync: false
+      - key: NEO4J_USERNAME
+        sync: false
+      - key: NEO4J_PASSWORD
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: REDIS_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GOOGLE_VISION_API_KEY
+        sync: false
+      - key: INGEST_S3_BUCKET
+        sync: false
+      - key: INGEST_S3_ENDPOINT
+        sync: false
+      - key: INGEST_S3_REGION
+        sync: false
+      - key: INGEST_S3_ACCESS_KEY_ID
+        sync: false
+      - key: INGEST_S3_SECRET_ACCESS_KEY
+        sync: false
