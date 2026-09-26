@@ -1,17 +1,25 @@
-# AuRAG — Industrial Knowledge Intelligence
+# AuRAG — Autonomous Industrial Intelligence with Machine Money
 
-AuRAG connects plant equipment, failures, work orders, procedures, people,
-documents, and regulatory clauses in a Neo4j knowledge graph. A LangGraph
-supervisor routes operator questions to Copilot, RCA, Compliance, or Lessons
-Learned agents, returning cited answers and an inspectable graph trail.
+> AuRAG is an industrial GraphRAG agent that detects operational risk, reasons over plant evidence, and can autonomously settle approved maintenance/service transactions over Lightning while preserving the decision and payment trail in the plant knowledge graph.
 
-The current product also includes continuous ingestion, proactive telemetry,
-persistent work-order decisions, cross-session mem0 memory, GraphRAG versus
-dense-only comparison, knowledge-retirement risk, and a durable RAGAS
-evaluation dashboard.
+```text
+  DETECT        →       REASON       →     AUTHORIZE      →        PAY        →      RECORD
+Sensor Excursion   GraphRAG Ontology    Policy Engine Cap   Bitcoin Lightning    Dual-Layer Audit
+  (P-101A)        (FE-001 / WO-1002)     (POL-LIGHTNING)      (BOLT11 / Sats)     (Neo4j + SQL)
+```
 
-See [PRD.md](./PRD.md), [PRD_CLOSURE.md](./PRD_CLOSURE.md), and
-[docs/ACCEPTANCE_REPORT.md](./docs/ACCEPTANCE_REPORT.md).
+AuRAG bridges physical plant telemetry, multi-agent LLM reasoning, and autonomous M2M financial settlement. It connects plant equipment, failures, work orders, procedures, people, documents, and regulatory clauses in a Neo4j knowledge graph. A LangGraph supervisor routes operator questions to Copilot, RCA, Compliance, or Lessons Learned agents, returning cited answers and an inspectable graph trail.
+
+For the **Bitshala BOSS Battle 2026 (Machine Money Track)**, AuRAG extends its predictive telemetry bridge into an autonomous Bitcoin Lightning Network micro-settlement protocol governed by zero-trust spending policies, deterministic idempotency guards, and human-in-the-loop oversight gates.
+
+### Machine Money Subsystem Documentation
+- [Eligibility & Migration Architecture](./docs/BOSS_ELIGIBILITY_NOTE.md)
+- [Machine Money System Architecture](./docs/ARCHITECTURE_MACHINE_MONEY.md)
+- [Environment, Keys & Dependencies Inventory](./docs/MACHINE_MONEY_ENV_INVENTORY.md)
+- [Official Acceptance & Settlement Proof](./docs/MACHINE_MONEY_ACCEPTANCE.md)
+- [End-to-End Verification Test Report (34 Tests)](./docs/E2E_VERIFICATION_REPORT.md)
+- [3-Minute Video Demo Script & Storyboard](./docs/BOSS_MACHINE_MONEY_DEMO.md)
+- [Baseline PRD & Acceptance](./PRD.md) | [PRD Closure](./PRD_CLOSURE.md)
 
 ## Runtime architecture
 
