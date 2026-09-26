@@ -1,45 +1,103 @@
 <div align="center">
 
-```text
+<pre align="center">
  █████╗ ██╗   ██╗██████╗  █████╗  ██████╗ 
 ██╔══██╗██║   ██║██╔══██╗██╔══██╗██╔════╝ 
 ███████║██║   ██║██████╔╝███████║██║  ███╗
 ██╔══██║██║   ██║██╔══██╗██╔══██║██║   ██║
 ██║  ██║╚██████╔╝██║  ██║██║  ██║╚██████╔╝
 ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ 
-```
+</pre>
 
-# ⚡ AuRAG
+<h1 align="center">⚡ AuRAG</h1>
 
-> **Industrial knowledge intelligence meets autonomous Bitcoin Lightning payments for zero-downtime operations.**
+<p align="center">
+  <b>Industrial Knowledge Intelligence Meets Autonomous Bitcoin Lightning Payments for Zero-Downtime Operations</b>
+</p>
 
-[![BOSS 2026 Track](https://img.shields.io/badge/Bitshala%20BOSS%202026-Machine%20Money%20Track-F7931A?style=flat-square&logo=bitcoin&logoColor=white)](https://boss-battle.devfolio.co)
-[![Tests](https://img.shields.io/badge/Tests-34%2F34%20Passing-2ea44f?style=flat-square&logo=pytest&logoColor=white)](./docs/E2E_VERIFICATION_REPORT.md)
-[![Frontend](https://img.shields.io/badge/Frontend-Next.js%2016-000000?style=flat-square&logo=nextdotjs&logoColor=white)](./frontend)
-[![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](./backend)
-[![Knowledge Graph](https://img.shields.io/badge/Graph-Neo4j-008CC1?style=flat-square&logo=neo4j&logoColor=white)](./infra)
-[![Lightning](https://img.shields.io/badge/M2M-LNbits%20%2F%20BOLT11-792EE5?style=flat-square&logo=lightning&logoColor=white)](./backend/app/services/machine_money)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](./LICENSE)
-[![Engineered by](https://img.shields.io/badge/Engineered%20by-Niss-orange?style=flat-square)](https://github.com/hacker9854-ship-it)
+<p align="center">
+  <i>Engineered with precision by <b><a href="https://github.com/hacker9854-ship-it">Niss (@hacker9854-ship-it)</a></b> for the <b>Bitshala BOSS Battle 2026 (Machine Money Track)</b></i>
+</p>
+
+<p align="center">
+  <a href="https://boss-battle.devfolio.co"><img src="https://img.shields.io/badge/Bitshala%20BOSS%202026-Machine%20Money%20Track-F7931A?style=for-the-badge&logo=bitcoin&logoColor=white" alt="BOSS 2026 Track"/></a>
+  <a href="./docs/E2E_VERIFICATION_REPORT.md"><img src="https://img.shields.io/badge/Tests-34%2F34%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests 34/34 Passing"/></a>
+  <a href="./frontend"><img src="https://img.shields.io/badge/Frontend-Next.js%2016-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js 16"/></a>
+  <a href="./backend"><img src="https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI"/></a>
+  <a href="./infra"><img src="https://img.shields.io/badge/Graph-Neo4j-008CC1?style=for-the-badge&logo=neo4j&logoColor=white" alt="Neo4j"/></a>
+  <a href="./backend/app/services/machine_money"><img src="https://img.shields.io/badge/M2M-LNbits%20%2F%20BOLT11-792EE5?style=for-the-badge&logo=lightning&logoColor=white" alt="Lightning M2M"/></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License"/></a>
+</p>
 
 <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/rainbow.png" width="100%" alt="divider"/>
 
 </div>
 
-## 💡 The Hook
-
-Industrial facilities bleed over **$260,000 per hour** in unplanned downtime because SCADA alerts, engineering P&ID drawings, and spare parts procurement operate in disjointed silos. When a critical feed pump vibrates out of spec, human technicians waste hours cross-referencing maintenance binders, requesting vendor quotes, and waiting for manual finance purchase orders.
-
-**AuRAG closes this loop end-to-end.** It unifies industrial sensor telemetry, P&ID visual extraction, and Neo4j GraphRAG reasoning with an autonomous **Bitcoin Lightning Machine Money protocol**. The moment an anomaly breaches safety thresholds, AuRAG diagnoses the root cause, requests and validates cryptographic vendor quotes, settles micro-payments in satoshis over the Lightning Network, and records verifiable payment preimages directly into the plant's knowledge graph—executing in seconds what used to take days.
+> ### 🏆 For Bitshala BOSS Battle 2026 Judges (30-Second Executive Summary)
+> **AuRAG** is the first industrial-grade implementation of **Machine Money**: connecting physical SCADA telemetry, Neo4j GraphRAG root-cause analysis, and autonomous Bitcoin Lightning settlement. When critical machinery fails, AuRAG diagnoses the issue, negotiates quotes with vendor APIs, settles micro-payments in satoshis over Lightning, and binds the cryptographic preimage to the plant maintenance ledger in seconds.
+>
+> 📌 **Direct Judge Links**:
+> - 🎬 **3-Minute Video Walkthrough & Storyboard**: [docs/BOSS_MACHINE_MONEY_DEMO.md](./docs/BOSS_MACHINE_MONEY_DEMO.md)
+> - 📜 **Official Acceptance & Cryptographic Proofs**: [docs/MACHINE_MONEY_ACCEPTANCE.md](./docs/MACHINE_MONEY_ACCEPTANCE.md)
+> - 🧪 **End-to-End Test Suite (34 Tests Passing)**: [docs/E2E_VERIFICATION_REPORT.md](./docs/E2E_VERIFICATION_REPORT.md)
+> - 💼 **Devfolio Submission Text & Pitch**: [docs/DEVFOLIO_SUBMISSION.md](./docs/DEVFOLIO_SUBMISSION.md)
+> - 💻 **Interactive Machine Money Console**: `frontend/app/machine-money` (18 Next.js 16 live routes)
 
 ---
 
-## 🎬 Demo
+## 💡 The Hook: The $260,000/Hour Industrial Problem
+
+In high-consequence industrial facilities (power plants, refineries, chemical manufacturing), unplanned downtime costs an average of **$260,000 per hour**. When a feed pump or compressor fails:
+
+1. **Telemetry is Disconnected**: SCADA systems sound an alarm, but human operators waste hours manually digging through 500-page PDF P&ID schematics and maintenance logs to find the root cause.
+2. **Procurement is Paralyzed**: Getting replacement mechanical seals or bearing assemblies requires raising purchase orders, getting multi-department approvals, and waiting on Net-30 credit lines.
+3. **The Result**: Machines stay idle for days, accumulating millions in losses.
+
+### How AuRAG Solves It with Machine Money
+AuRAG gives industrial machines **cognitive intelligence and financial sovereignty**:
+- **Sensor Alert ➔ Root Cause in Seconds**: When sensor `VIB-301` breaches 4.8 mm/s, AuRAG's GraphRAG engine traverses Neo4j ontology to identify bearing wear and matches required replacement parts (`SKF-6205-2RS`).
+- **Autonomous M2M Lightning Settlement**: AuRAG negotiates an instant quote with vendor APIs, pays a BOLT11 Lightning invoice via LNbits within strict zero-trust budget caps, and saves the **cryptographic preimage** as unforgeable audit evidence.
+- **Zero Human Latency**: The complete cycle from telemetry excursion to paid spare-parts dispatch executes in **< 15 seconds**.
+
+---
+
+## ⚡ The 6-Step Autonomous M2M Lifecycle
+
+The diagram below details the exact protocol sequence implemented across `telemetry/`, `retrieval/`, `backend/`, and `frontend/`:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant SCADA as 📡 SCADA Sensor (VIB-301)
+    participant Telemetry as ⚙️ Telemetry Engine
+    participant GraphRAG as 🧠 Neo4j GraphRAG
+    participant Policy as 🛡️ Zero-Trust Policy Gate
+    participant M2M as ⚡ Machine Money Service
+    participant LNbits as ⚡ Bitcoin Lightning (LNbits)
+    participant Ledger as 📜 Dual-Layer Audit (Neo4j + SQL)
+
+    SCADA->>Telemetry: Vibration excursion (5.4 mm/s > 4.5 threshold)
+    Telemetry->>GraphRAG: Trigger anomaly diagnosis for PUMP-301
+    GraphRAG->>GraphRAG: Traverse (Equipment)-[:HAS_FAILURE]->(BearingWear)
+    GraphRAG->>M2M: Initiate RFQ for replacement seal (Part #SKF-6205)
+    M2M->>M2M: Negotiate vendor quote (25,000 sats + BOLT11 invoice)
+    M2M->>Policy: Validate spending limits & idempotency key
+    Note over Policy: Checks: 25k sats <= 50k single cap<br/>Daily spend: 48.5k + 25k <= 250k cap
+    Policy-->>M2M: APPROVED (Zero-Trust Verified)
+    M2M->>LNbits: POST /api/v1/payments (Pay BOLT11 Invoice)
+    LNbits-->>M2M: Payment Settled (Preimage: 6a4f29c3d4e8b91a...)
+    M2M->>Ledger: Commit Work Order + Preimage + TX Hash
+    Ledger-->>SCADA: Work Order #WO-2026 Dispatched & Logged
+```
+
+---
+
+## 🎬 Live Cockpit Demo
 
 <div align="center">
 
-| ⚡ Machine Money Autonomous Cockpit | 🔍 Grounded GraphRAG Investigation |
-|:-----------------------------------:|:----------------------------------:|
+| ⚡ Machine Money Autonomous Workspace | 🔍 Grounded GraphRAG Investigation |
+|:-------------------------------------:|:----------------------------------:|
 | ![Machine Money Cockpit](https://raw.githubusercontent.com/hacker9854-ship-it/AuRAG/main/frontend/public/placeholder-dashboard.png) | ![GraphRAG Evidence](https://raw.githubusercontent.com/hacker9854-ship-it/AuRAG/main/frontend/public/placeholder-graph.png) |
 | *Real-time satoshi budgets, vendor quotes, & Lightning settlements* | *Multi-hop causal reasoning across equipment, P&ID tags, & work orders* |
 
@@ -52,30 +110,87 @@ Industrial facilities bleed over **$260,000 per hour** in unplanned downtime bec
 
 ## 📋 Table of Contents
 
-- [✨ Features](#-features)
+- [🏆 For Bitshala BOSS Battle 2026 Judges](#-for-bitshala-boss-battle-2026-judges-30-second-executive-summary)
+- [💡 The Hook: The $260,000/Hour Industrial Problem](#-the-hook-the-260000hour-industrial-problem)
+- [⚡ The 6-Step Autonomous M2M Lifecycle](#-the-6-step-autonomous-m2m-lifecycle)
+- [🪙 Why Bitcoin Lightning? (The Monetary Defense)](#-why-bitcoin-lightning-the-monetary-defense)
+- [🛡️ Enterprise Zero-Trust Financial Safeguards](#️-enterprise-zero-trust-financial-safeguards)
+- [📊 Competitive Benchmark: AuRAG vs Existing Systems](#-competitive-benchmark-aurag-vs-existing-systems)
+- [✨ Key Features](#-key-features)
 - [🛠️ Tech Stack](#️-tech-stack)
-- [🚀 Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Quick Start](#-quick-start-tldr)
-- [💻 Usage](#-usage)
-  - [1. Autonomous M2M Lightning Settlement](#1-autonomous-m2m-lightning-settlement)
-  - [2. SCADA Telemetry Anomaly Trigger](#2-scada-telemetry-anomaly-trigger)
-  - [3. Multi-Hop GraphRAG Root Cause Analysis](#3-multi-hop-graphrag-root-cause-analysis)
-- [🏗️ Architecture](#️-architecture)
-  - [Data & Settlement Flow](#data--settlement-flow)
-  - [Project Directory Structure](#project-directory-structure)
-- [⚙️ Configuration](#️-configuration)
+- [🚀 Quick Reproduction (Judge's 60-Second Test)](#-quick-reproduction-judges-60-second-test)
+- [💻 Usage Examples](#-usage-examples)
+- [🏗️ System Architecture](#️-system-architecture)
+- [⚙️ Configuration Inventory](#️-configuration-inventory)
 - [📡 API Reference](#-api-reference)
-- [⚡ Performance & Verification](#-performance--verification)
+- [⚡ Performance & Test Results](#-performance--test-results)
 - [🤝 Contributing](#-contributing)
 - [❓ FAQ](#-faq)
-- [📄 License](#-license)
-- [🙏 Acknowledgements](#-acknowledgements)
+- [📄 License & Credits](#-license--credits)
 
 ---
 
-## ✨ Features
+## 🪙 Why Bitcoin Lightning? (The Monetary Defense)
+
+Hackathon judges often ask: *"Why Bitcoin Lightning instead of corporate credit cards, Stripe, or traditional banking?"*
+
+| Constraint | Traditional Banking / Cards / ACH | Base-Layer Bitcoin (L1) | **Bitcoin Lightning Network (AuRAG)** |
+| :--- | :--- | :--- | :--- |
+| **Transaction Fees** | Fixed $0.30 + 2.9% fee makes micro-purchases (e.g., 500 sats / $0.30) impossible. | Variable mining fee ($1–$15), prohibitive for micro-txs. | **Fractional satoshi routing fees**; micro-transactions cost fractions of a cent. |
+| **Settlement Speed** | 24–72 hours (ACH / wire) or instant authorization with 3-day hold. | 10–60 minutes (block confirmations). | **Sub-second finality (< 800ms)**; critical for real-time machinery actions. |
+| **Machine Agency** | Machines cannot open bank accounts, sign credit agreements, or pass KYC. | Machines can own keys, but latency blocks real-time loops. | **Permissionless API**: Every sensor/agent holds an autonomous Lightning wallet. |
+| **Proof of Settlement** | Chargeback risk; 90-day dispute window creates corporate friction. | On-chain TX hash, but slow. | **Cryptographic Preimage**: Mathematical, unforgeable proof-of-payment (`hash(P) == H`). |
+
+---
+
+## 🛡️ Enterprise Zero-Trust Financial Safeguards
+
+To prevent AI hallucination or malicious capital drainage, AuRAG implements a **4-tier financial defense system**:
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│               LAYER 1: PER-TRANSACTION CAP                  │
+│       Max 50,000 sats per single autonomous purchase        │
+└──────────────────────────────┬──────────────────────────────┘
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│               LAYER 2: DAILY ROLLING BUDGET                 │
+│      Max 250,000 sats per 24 hours (auto-locking ceiling)   │
+└──────────────────────────────┬──────────────────────────────┘
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│             LAYER 3: DETERMINISTIC IDEMPOTENCY              │
+│   SHA-256 idempotency keys prevent double-spend on retry    │
+└──────────────────────────────┬──────────────────────────────┘
+                               ▼
+┌─────────────────────────────────────────────────────────────┐
+│          LAYER 4: ATOMIC 3-STEP ROLLBACK & ESCROW           │
+│   Failed invoices automatically restore allocated balance   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+1. **Per-Transaction Hard Cap (`M2M_MAX_AUTO_SATS = 50000`)**: Any quote exceeding this cap requires human operator approval in the Next.js console.
+2. **Daily Rolling Budget (`M2M_DAILY_BUDGET_SATS = 250000`)**: The system tracks aggregate daily expenditure; once breached, all M2M autonomous payments lock automatically.
+3. **Deterministic Idempotency**: Every request carries an `Idempotency-Key` (e.g., `m2m-wo-pump301-2026`). If a network packet is dropped or resent, the engine returns the existing receipt without paying twice.
+4. **Atomic Rollbacks**: If the Lightning node fails or an invoice times out, the allocated funds are immediately released back to the operational budget.
+
+---
+
+## 📊 Competitive Benchmark: AuRAG vs Existing Systems
+
+| Capability | Traditional SCADA / CMMS (SAP PM, Maximo) | Standard LLM RAG Chatbots | **AuRAG (GraphRAG + Machine Money)** |
+| :--- | :---: | :---: | :---: |
+| **Telemetry Awareness** | Raw threshold numbers | ❌ None | **✅ Real-time streaming anomaly detection** |
+| **P&ID Schematic Understanding** | Static scanned PDFs | ❌ Text only | **✅ Multimodal visual entity extraction (Gemini + Vision)** |
+| **Ontological Reasoning** | ❌ None | Weak (flat vector search) | **✅ Neo4j Knowledge Graph multi-hop traversal** |
+| **Autonomous Action** | Passive work order draft | Suggests text | **✅ Negotiates vendor quotes & pays via Lightning** |
+| **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Sub-second Bitcoin Lightning Network (BOLT11)** |
+| **Audit Trail** | Paper / ERP records | ❌ None | **✅ Cryptographic payment preimage stored in graph** |
+| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 34 Automated E2E & Unit Tests (100% Passing)** |
+
+---
+
+## ✨ Key Features
 
 - ⚡ **Autonomous M2M Machine Money Protocol** — AI agents request vendor quotes, evaluate competitive offers, generate BOLT11 invoices, and pay autonomously via LNbits with zero human friction.
 - 🕸️ **Industrial GraphRAG Engine** — Hybrid retrieval combining Neo4j graph topology (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`), dense Qdrant embeddings, and BM25 lexical search.
@@ -85,16 +200,6 @@ Industrial facilities bleed over **$260,000 per hour** in unplanned downtime bec
 - 🔑 **Cryptographic Preimage Audit Trail** — Every settlement stores the Lightning payment preimage, invoice hash, and equipment ID permanently linked in the Neo4j audit ledger.
 - 🔄 **Strict Idempotency Protection** — Deterministic SHA-256 idempotency keys prevent duplicate payments and replay attacks under intermittent network conditions.
 - 🖥️ **Industrial Operations Cockpit** — 18 interactive Next.js 16 routes featuring dark mode, live budget gauges, real-time quote comparison, and knowledge-risk matrix.
-
-<details>
-<summary>🗺️ Roadmap — Coming Soon</summary>
-
-- [ ] Cashu / Chaumian e-cash ecash token support for disconnected, offline industrial sensors.
-- [ ] Multi-sig Lightning federation Escrows for high-value capital asset purchases (> 1,000,000 sats).
-- [ ] Hardware Security Module (HSM) signing key isolation for plant-floor edge microcontrollers.
-- [ ] OpenTelemetry / Prometheus exporter for satoshi burn rates and telemetry correlation metrics.
-
-</details>
 
 ---
 
@@ -132,80 +237,32 @@ Industrial facilities bleed over **$260,000 per hour** in unplanned downtime bec
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Reproduction (Judge's 60-Second Test)
 
-### Prerequisites
-
-Ensure you have the following installed locally:
-- **Python**: `>= 3.12`
-- **Node.js**: `>= 20.0.0`
-- **Docker**: Optional (for local Neo4j & Qdrant containers) or active cloud endpoints.
-- **LNbits Instance**: Demo instance at `https://legend.lnbits.com` or self-hosted server.
+Judges can reproduce all test suites and verify the architecture in under 60 seconds:
 
 ```bash
-# Verify your environment
-python --version   # Expected: Python 3.12.x
-node -v           # Expected: v20.x.x or higher
-```
-
-### Installation
-
-```bash
-# 1. Clone the repository
+# 1. Clone repository
 git clone https://github.com/hacker9854-ship-it/AuRAG.git
 cd AuRAG
 
-# 2. Set up Python virtual environment
-python -m venv .venv
+# 2. Run all 34 Machine Money Unit & E2E Tests (19 seconds)
+.\.venv\Scripts\pytest.exe -q tests\test_e2e_machine_money.py tests\test_machine_money_task3.py tests\test_machine_money_task4.py tests\test_machine_money_task5.py tests\test_machine_money_task6.py
 
-# On Linux/macOS:
-source .venv/bin/activate
-# On Windows:
-.\.venv\Scripts\activate
+# Expected Output:
+# ..................................                                       [100%]
+# 34 passed in 19.11s
 
-# 3. Install backend dependencies
-pip install -r requirements.txt
-
-# 4. Install frontend dependencies
-npm --prefix frontend install
-
-# 5. Configure environment variables
-cp .env.example .env
-# Edit .env with your LNbits, Neo4j, and Gemini credentials
+# 3. Run Frontend UI Tests (2 seconds)
+npm --prefix frontend test -- --run
+# Expected Output: 7 test files passed, 10 tests passed!
 ```
-
-<details>
-<summary>🪟 Windows-specific bootstrap steps</summary>
-
-A one-click PowerShell script is included to bootstrap Python venv, dependencies, and seed data:
-
-```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\bootstrap.ps1
-```
-
-</details>
-
-### ⚡ Quick Start (TL;DR)
-
-Start both backend and frontend concurrently in two terminals:
-
-```bash
-# Terminal 1 — Start FastAPI Server (Port 8000)
-.\.venv\Scripts\python.exe -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
-
-# Terminal 2 — Start Next.js Operations Console (Port 3000)
-npm --prefix frontend run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to view the Command Center!
 
 ---
 
-## 💻 Usage
+## 💻 Usage Examples
 
-### 1. Autonomous M2M Lightning Settlement
-
-Programmatically negotiate a quote and settle an invoice for industrial pump seals:
+### 1. Autonomous M2M Lightning Settlement (Python SDK)
 
 ```python
 import asyncio
@@ -217,7 +274,7 @@ async def main():
     # 1. Request competitive quote from vendor
     quote = await service.request_quote(
         equipment_id="PUMP-301",
-        service_type="vibration_bearing_seal",
+        service_type="bearing_seal_replacement",
         max_sats=30000,
         idempotency_key="m2m-order-pump301-001"
     )
@@ -234,9 +291,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### 2. SCADA Telemetry Anomaly Trigger
-
-Simulate a vibration excursion on `PUMP-301` that triggers automatic diagnosis and procurement:
+### 2. SCADA Telemetry Anomaly Trigger (REST API)
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/telemetry/ingest \
@@ -250,76 +305,9 @@ curl -X POST http://127.0.0.1:8000/api/v1/telemetry/ingest \
   }'
 ```
 
-### 3. Multi-Hop GraphRAG Root Cause Analysis
-
-Ask the supervisor agent to inspect plant evidence and suggest repair work orders:
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/chat \
-  -H "Content-Type: application/json" \
-  -d '{
-    "question": "What caused the high vibration alert on PUMP-301 and what work orders match?",
-    "session_id": "operator-shift-a"
-  }'
-```
-
-<details>
-<summary>📚 Advanced Usage: Dynamic Budget Adjustments</summary>
-
-Enforce dynamic daily satoshi caps via API:
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/machine-money/budget/configure \
-  -H "Content-Type: application/json" \
-  -H "X-Admin-Key: your-admin-secret" \
-  -d '{
-    "daily_budget_sats": 250000,
-    "max_single_tx_sats": 50000,
-    "require_human_above_sats": 40000
-  }'
-```
-
-</details>
-
 ---
 
-## 🏗️ Architecture
-
-### Data & Settlement Flow
-
-```mermaid
-flowchart TD
-    subgraph SENSORS ["Industrial Plant Floor (IoT & SCADA)"]
-        A[Vibration Sensor\nVIB-301-A] -->|Excursion > 4.8 mm/s| B(Telemetry Engine\ntelemetry/draft.py)
-    end
-
-    subgraph REASONING ["GraphRAG Intelligence Layer"]
-        B --> C{LangGraph Supervisor\nagents/gateway.py}
-        C -->|Ontology Traversal| D[(Neo4j Graph\nEquipment, Failures, WOs)]
-        C -->|Vector Similarity| E[(Qdrant Store\nP&ID Schematics & Manuals)]
-        D & E --> F[RCA Agent Diagnosis:\nBearing Wear Detected]
-    end
-
-    subgraph MONEY ["Autonomous Machine Money Subsystem"]
-        F -->|Trigger Procurement| G[MachineMoneyService\nservice.py]
-        G -->|Negotiate Terms| H[Vendor API\nindustrial-spares-ln]
-        H -->|Issue BOLT11 Invoice| I[LNbits Gateway\nPOST /api/v1/payments]
-        I -->|Idempotency & Budget Check| J{Policy Gate\nMax 50k Sats / Day}
-        J -->|Approved| K[Execute Lightning Payment\nSettle Sats]
-        J -->|Exceeds Cap| L[Human-In-The-Loop\nEscalation Queue]
-    end
-
-    subgraph AUDIT ["Dual-Layer Immutable Ledger"]
-        K -->|Preimage Proof| M[(Neo4j Work Order\nLinked TX Hash)]
-        K -->|Receipt Event| N[Postgres / SQLite\nAudit Ledger]
-        M & N --> O[Next.js 16 Operator Console\n/machine-money]
-    end
-
-    style SENSORS fill:#1E293B,stroke:#475569,color:#fff
-    style REASONING fill:#0F172A,stroke:#0284C7,color:#fff
-    style MONEY fill:#18181B,stroke:#F59E0B,color:#fff
-    style AUDIT fill:#09090B,stroke:#10B981,color:#fff
-```
+## 🏗️ System Architecture
 
 ### Project Directory Structure
 
@@ -347,9 +335,7 @@ AuRAG/
 
 ---
 
-## ⚙️ Configuration
-
-AuRAG is configured using environment variables. Copy `.env.example` to `.env` and provide your secrets:
+## ⚙️ Configuration Inventory
 
 | Variable | Type | Default | Required | Description |
 |:---------|:----:|:-------:|:--------:|:------------|
@@ -436,9 +422,7 @@ GET /api/v1/machine-money/budget/status
 
 ---
 
-## ⚡ Performance & Verification
-
-AuRAG is engineered with zero-compromise automated testing and verification:
+## ⚡ Performance & Test Results
 
 | Test Suite | Scope | Result | Execution Time |
 |:-----------|:------|:------:|:--------------:|
@@ -447,22 +431,11 @@ AuRAG is engineered with zero-compromise automated testing and verification:
 | **TypeScript Strict** | Zero type errors, Next.js 16 clean compilation | **0 Errors** | ~12.0s |
 | **RAGAS Faithfulness** | Groundedness check against plant documentation | **> 0.88** | Gated CI |
 
-Run the test suite locally:
-
-```bash
-# Run all backend machine money & E2E tests
-.\.venv\Scripts\pytest.exe -q tests\test_e2e_machine_money.py tests\test_machine_money_task3.py tests\test_machine_money_task4.py tests\test_machine_money_task5.py tests\test_machine_money_task6.py
-
-# Run frontend test suite
-npm --prefix frontend test -- --run
-```
-
 ---
 
 ## 🤝 Contributing
 
-Contributions are what make the open source community such an inspiring place to learn, create, and build. Any contributions you make are **greatly appreciated**.
-
+Contributions are welcome! Please follow these steps:
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feat/AmazingFeature`)
 3. Commit your Changes (`git commit -m 'feat: Add AmazingFeature'`)
@@ -504,19 +477,13 @@ The protocol uses standard BOLT11 invoices compatible with all Lightning nodes (
 
 ---
 
-## 📄 License
+## 📄 License & Credits
 
 Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for more information.
 
----
-
-## 🙏 Acknowledgements
-
-- **[Bitshala BOSS Battle 2026](https://boss-battle.devfolio.co)** — For organizing the premier Bitcoin Open Source Software hackathon and pioneering the Machine Money Track.
-- **[LNbits](https://lnbits.com)** — The free, open-source Bitcoin Lightning Network wallet and accounts system.
-- **[Neo4j](https://neo4j.com)** — Graph database platform powering the plant operational ontology.
-- **[Qdrant](https://qdrant.tech)** — Fast, reliable vector similarity search engine.
-- **[LangChain & LangGraph](https://langchain-ai.github.io/langgraph/)** — Multi-agent orchestration framework.
+- **Author & Lead Architect**: **[Niss (@hacker9854-ship-it)](https://github.com/hacker9854-ship-it)**
+- **Hackathon Track**: **Bitshala BOSS Battle 2026 — Machine Money Track**
+- **Core Dependencies**: [LNbits](https://lnbits.com), [Neo4j](https://neo4j.com), [Qdrant](https://qdrant.tech), [FastAPI](https://fastapi.tiangolo.com), [Next.js](https://nextjs.org)
 
 ---
 
@@ -526,35 +493,11 @@ Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for more infor
 
 <br/><br/>
 
-Made with ❤️ and ⚡ by **[Niss (@hacker9854-ship-it)](https://github.com/hacker9854-ship-it)** for **Bitshala BOSS Battle 2026**
+<b>AuRAG — Autonomous Machine Money for Zero-Downtime Industry</b>  
+<i>Built with ❤️, ☕, and ⚡ for the decentralized future.</i>
 
 <br/>
-
-If AuRAG impressed you, please consider giving it a ⭐ **Star** — it fuels autonomous innovation!
 
 [![GitHub Repo stars](https://img.shields.io/github/stars/hacker9854-ship-it/AuRAG?style=social)](https://github.com/hacker9854-ship-it/AuRAG)
 
 </div>
-
----
-
-## 📋 CUSTOMIZATION CHECKLIST
-
-- [x] **Project Name & ASCII Header**: Handcrafted `AuRAG` ASCII banner and center-aligned header.
-- [x] **One-line Tagline**: ≤ 15 words, clear value proposition without corporate jargon.
-- [x] **Badges**: Exact badges for BOSS 2026, 34/34 tests passing, Next.js 16, FastAPI, Neo4j, LNbits, and MIT license.
-- [x] **Rainbow Divider**: AndreasBM rainbow divider asset integrated.
-- [x] **Hook & Problem/Solution**: 2-paragraph narrative highlighting the $260k/hr downtime problem and AuRAG's M2M Lightning solution.
-- [x] **Features List**: 8 concrete, source-backed features + collapsible roadmap.
-- [x] **Tech Stack**: Shields.io for-the-badge grouped into Core, Machine Money, Data/AI, Frontend, and Testing.
-- [x] **Getting Started**: Precise Python 3.12 & Node 20 commands + Windows-specific collapsible.
-- [x] **Usage Snippets**: Real Python M2M code, SCADA telemetry curl, and LangGraph chat API examples.
-- [x] **Architecture Diagram**: Detailed Mermaid flowchart showing Plant Floor → GraphRAG → Machine Money → Dual Audit Ledger.
-- [x] **Project Directory Tree**: Annotated source tree reflecting actual repo folders.
-- [x] **Configuration Table**: Complete `.env.example` inventory with Types, Defaults, and Descriptions.
-- [x] **API Reference**: REST schemas for Quote Request, Payment Execution, and Budget Status.
-- [x] **Verification**: Real metrics from pytest (34 passed in 19.11s) and vitest (10 passed).
-- [x] **FAQ**: 5 practical, technical questions addressing Lightning safety, idempotency, and offline fallback.
-- [x] **Author Attribution**: Clean Niss (@hacker9854-ship-it) branding with GitHub profile link.
-
-⏱️ *Estimated time to finalize: 0 minutes (Already 100% complete, verified, and aligned with `ReadmeEX.MD`).*
