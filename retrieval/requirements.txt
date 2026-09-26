@@ -1,0 +1,8 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+rank_bm25
+qdrant-client
+sentence-transformers
+cohere>=5.20
+# Keep local embeddings/reranking CPU-only in CI and container deployments.
+torch==2.13.0+cpu
