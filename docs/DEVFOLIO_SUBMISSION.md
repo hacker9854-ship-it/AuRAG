@@ -3,7 +3,7 @@
 **Track:** Machine Money Track ($1,000 Prize)  
 **Project Name:** AuRAG — Autonomous Industrial Intelligence with Machine Money  
 **Repository:** [https://github.com/hacker9854-ship-it/AuRAG](https://github.com/hacker9854-ship-it/AuRAG)  
-**Author / Team:** `hacker9854-ship-it` (`nishant.ai.eng@gmail.com`)
+**Author / Team:** Niss (@hacker9854-ship-it) <nishant.ai.eng@gmail.com>
 
 ---
 

@@ -2,7 +2,7 @@
 
 **Document ID:** `DOC-ACCEPTANCE-BOSS-2026`  
 **Track:** Machine Money ($1,000 Prize) — Bitshala BOSS Battle 2026 (Devfolio)  
-**Author:** `hacker9854-ship-it <nishant.ai.eng@gmail.com>`  
+**Author:** Niss (@hacker9854-ship-it) <nishant.ai.eng@gmail.com>  
 **Repository:** [https://github.com/hacker9854-ship-it/AuRAG](https://github.com/hacker9854-ship-it/AuRAG)  
 **System Status:** **ACCEPTED & VERIFIED (All 34 Unit & E2E Integration Tests Passing)**
 

@@ -4,8 +4,8 @@ import AppShell from "@/components/AppShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
-  title: "AuRAG | Unified Operations",
-  description: "Industrial knowledge intelligence for evidence-led operations.",
+  title: "AuRAG | Unified Operations by Niss",
+  description: "Industrial knowledge intelligence and autonomous Machine Money for evidence-led operations. Engineered by Niss.",
 };
 
 export default function RootLayout({

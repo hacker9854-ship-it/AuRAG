@@ -1,4 +1,5 @@
 # AuRAG — Autonomous Industrial Intelligence with Machine Money
+*Engineered by Niss for Bitshala BOSS Battle 2026 (Machine Money Track)*
 
 > AuRAG is an industrial GraphRAG agent that detects operational risk, reasons over plant evidence, and can autonomously settle approved maintenance/service transactions over Lightning while preserving the decision and payment trail in the plant knowledge graph.
 

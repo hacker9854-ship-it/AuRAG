@@ -11,6 +11,7 @@ import {
   ShieldCheckIcon,
   SparklesIcon,
   WorkflowIcon,
+  ZapIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -74,10 +75,15 @@ export default function CommandCenterPage() {
         <section className="overflow-hidden rounded-xl bg-card shadow-xs ring-1 ring-foreground/10">
           <div className="grid lg:grid-cols-[minmax(0,1.25fr)_minmax(360px,0.75fr)]">
             <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
-              <Badge variant="warning" className="w-fit">
-                <SparklesIcon data-icon="inline-start" />
-                Unified operations intelligence
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="warning" className="w-fit">
+                  <SparklesIcon data-icon="inline-start" />
+                  Unified operations intelligence
+                </Badge>
+                <Badge variant="outline" className="text-xs font-mono border-border/80">
+                  by Niss
+                </Badge>
+              </div>
               <h1 className="mt-4 max-w-3xl font-heading text-3xl font-semibold tracking-tight sm:text-4xl">
                 Operational knowledge is scattered. AuRAG restores the relationships.
               </h1>
@@ -94,6 +100,16 @@ export default function CommandCenterPage() {
                 <Button size="lg" variant="outline" nativeButton={false} render={<Link href="/predictive-watch" />}>
                   Open Predictive Watch
                   <GaugeIcon data-icon="inline-start" />
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-amber-500/40 hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium"
+                  nativeButton={false}
+                  render={<Link href="/machine-money" />}
+                >
+                  <ZapIcon data-icon="inline-start" className="size-4" />
+                  Machine Money Console
                 </Button>
               </div>
             </div>

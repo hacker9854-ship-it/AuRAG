@@ -65,7 +65,7 @@ export default function AppSidebar({ readiness }: { readiness: ReadinessResponse
               </div>
               <div className="flex min-w-0 flex-col items-start group-data-[collapsible=icon]:hidden">
                 <span className="font-heading text-base font-semibold tracking-tight">AuRAG</span>
-                <span className="truncate text-xs text-muted-foreground">Operations intelligence</span>
+                <span className="truncate text-xs text-muted-foreground">Operations intelligence · by Niss</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -124,6 +124,10 @@ export default function AppSidebar({ readiness }: { readiness: ReadinessResponse
               {readiness?.ready ? "Dependencies ready" : "Open health status for details"}
             </div>
           </div>
+        </div>
+        <div className="flex items-center justify-between px-2.5 pt-2 pb-1 text-[10px] text-muted-foreground/80 group-data-[collapsible=icon]:hidden font-mono border-t border-border/40">
+          <span>AuRAG by Niss</span>
+          <span className="text-amber-500 font-semibold">BOSS 2026</span>
         </div>
       </SidebarFooter>
       <SidebarRail />

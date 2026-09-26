@@ -43,6 +43,9 @@ export default function DashboardHeader({
           <FlaskConicalIcon data-icon="inline-start" />
           Demo environment
         </Badge>
+        <Badge variant="outline" className="hidden md:inline-flex text-[11px] font-mono border-border/80">
+          Niss
+        </Badge>
         {readiness === null ? (
           <Badge variant="warning">
             <LoaderCircleIcon className="animate-spin" data-icon="inline-start" />

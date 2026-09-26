@@ -301,10 +301,13 @@ export default function MachineMoneyPage() {
             <Badge variant="warning" className="uppercase font-semibold tracking-wider text-[10px]">
               Bitshala BOSS Battle
             </Badge>
+            <Badge variant="outline" className="text-[10px] font-mono border-amber-500/40 text-amber-500">
+              by Niss
+            </Badge>
           </div>
           <p className="text-sm text-muted-foreground max-w-3xl">
-            Autonomous Lightning micro-settlement protocol for industrial telemetry excursions. Governed by
-            deterministic GraphRAG evidence, automated spending policies, and human-in-the-loop oversight.
+            Autonomous Lightning micro-settlement protocol for industrial telemetry excursions. Engineered by Niss.
+            Governed by deterministic GraphRAG evidence, automated spending policies, and human-in-the-loop oversight.
           </p>
         </div>
 

@@ -2,7 +2,7 @@
 
 **Video Target Duration:** 3 minutes 45 seconds  
 **Track:** Machine Money Track ($1,000 Prize) — Bitshala BOSS Battle 2026 (Devfolio)  
-**Presenter:** Project Lead / Engineer  
+**Presenter:** Niss (@hacker9854-ship-it) <nishant.ai.eng@gmail.com>  
 **Live Demo Route:** [`http://localhost:3000/machine-money`](http://localhost:3000/machine-money)
 
 ---
