@@ -6,6 +6,7 @@ describe("getWorkspaceTitle", () => {
   it("maps top-level and nested workspace routes", () => {
     expect(getWorkspaceTitle("/")).toBe("Command Center");
     expect(getWorkspaceTitle("/investigate")).toBe("Investigate");
+    expect(getWorkspaceTitle("/machine-money")).toBe("Machine Money");
     expect(getWorkspaceTitle("/work-orders")).toBe("Work Orders");
     expect(getWorkspaceTitle("/work-orders/WO-AI-1")).toBe("Work Order");
   });

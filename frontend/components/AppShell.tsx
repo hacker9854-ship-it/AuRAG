@@ -13,6 +13,8 @@ const routeTitles: Array<[prefix: string, title: string]> = [
   ["/work-orders/", "Work Order"],
   ["/work-orders", "Work Orders"],
   ["/predictive-watch", "Predictive Watch"],
+  ["/operations", "Operations & Governance"],
+  ["/machine-money", "Machine Money"],
   ["/knowledge-risk", "Knowledge Risk"],
   ["/comparison", "RAG Comparison"],
   ["/evaluation", "Evaluation"],

@@ -554,3 +554,174 @@ export async function updateRemediationStatus(
   return res.json();
 }
 
+// ---------------------------------------------------------------------------
+// Bitshala BOSS Battle: Machine Money Micro-Settlement Layer (Sections 11-20)
+// ---------------------------------------------------------------------------
+
+export interface MachineMoneyHealth {
+  provider_name: string;
+  is_connected: boolean;
+  network: string;
+  balance_sats?: number;
+  node_pubkey?: string;
+  latency_ms?: number;
+  details: Record<string, any>;
+}
+
+export interface ServiceDefinition {
+  service_id: string;
+  name: string;
+  provider_id: string;
+  provider_name: string;
+  price_sats: number;
+  equipment_class: string;
+  description: string;
+  estimated_duration_hours: number;
+  parts_included: string[];
+  is_mock: boolean;
+}
+
+export interface ProviderRegistryResponse {
+  registry_title: string;
+  disclosure: string;
+  total_services: number;
+  total_providers: number;
+  providers: Array<{
+    provider_id: string;
+    provider_name: string;
+    supported_services: string[];
+    network: string;
+    status: string;
+  }>;
+  services: ServiceDefinition[];
+}
+
+export interface M2MTriggerResult {
+  status: string;
+  payment_id: string;
+  idempotency_key: string;
+  amount_sats: number;
+  service?: {
+    id: string;
+    name: string;
+    provider: string;
+  };
+  evidence_package: {
+    reason: string;
+    confidence: number;
+    evidence: string[];
+    equipment: string;
+    matched_failure_event?: string;
+    related_work_order?: string;
+    governing_procedure?: string;
+    cross_layer_justification?: string;
+  };
+  approval_id?: string | null;
+  payment_hash?: string;
+  preimage?: string;
+  paid_at?: string;
+  is_duplicate_prevented: boolean;
+}
+
+export interface PaymentTrailResponse {
+  payment_id: string;
+  found: boolean;
+  status?: string;
+  amount_sats?: number;
+  payment_hash?: string;
+  preimage?: string;
+  service_provider?: string;
+  work_order?: { id?: string; description?: string };
+  predictive_trigger?: { event_id?: string; event_type?: string; confidence?: number };
+  failure_signature?: { failure_id?: string; title?: string };
+  equipment?: { tag_id?: string; name?: string };
+  graph_story?: string[];
+  explanation?: string;
+}
+
+export async function getMachineMoneyHealth(): Promise<MachineMoneyHealth> {
+  const res = await fetch(`${API_URL}/api/machine-money/health`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch Machine Money health.");
+  return res.json();
+}
+
+export async function getMachineMoneyProviders(): Promise<ProviderRegistryResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/providers`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch Machine Money provider registry.");
+  return res.json();
+}
+
+export async function triggerMachineMoneyFromTelemetry(payload: {
+  equipment_tag: string;
+  event_id?: string;
+  failure_event_id?: string;
+  confidence?: number;
+  work_order_id?: string;
+  bypass_policy?: boolean;
+}): Promise<M2MTriggerResult> {
+  const res = await fetch(`${API_URL}/api/machine-money/trigger-from-telemetry`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Telemetry trigger failed" }));
+    throw new Error(err.detail || "Failed to trigger Machine Money settlement");
+  }
+  return res.json();
+}
+
+export async function simulateMachineMoney(payload: {
+  site_id?: string;
+  equipment_id: string;
+  service_id?: string;
+  predictive_event_id?: string;
+  amount_sats?: number;
+  confidence?: number;
+}): Promise<any> {
+  const res = await fetch(`${API_URL}/api/machine-money/simulate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Failed to run Machine Money simulation.");
+  return res.json();
+}
+
+export async function approveMachineMoneyPayment(
+  paymentId: string,
+  reviewerId: string = "lead-operator-mumbai",
+  reviewNotes: string = "Operator approved high-value maintenance dispatch."
+): Promise<any> {
+  const res = await fetch(`${API_URL}/api/machine-money/payments/${paymentId}/approve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reviewer_id: reviewerId, review_notes: reviewNotes }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Approval failed" }));
+    throw new Error(err.detail || "Failed to approve payment");
+  }
+  return res.json();
+}
+
+export async function getPaymentGraphTrail(paymentId: string): Promise<PaymentTrailResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/payments/${paymentId}/trail`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch payment graph trail.");
+  return res.json();
+}
+
+export async function listMachineMoneyPayments(limit: number = 20): Promise<any[]> {
+  const res = await fetch(`${API_URL}/api/machine-money/payments?limit=${limit}`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to list Machine Money payments.");
+  return res.json();
+}
+
+export async function getPaymentEvidence(paymentId: string): Promise<any> {
+  const res = await fetch(`${API_URL}/api/machine-money/evidence/${paymentId}`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch payment evidence package.");
+  return res.json();
+}
+
+
+

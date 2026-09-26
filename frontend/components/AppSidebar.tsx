@@ -9,6 +9,7 @@ import {
   SearchIcon,
   SlidersIcon,
   UserRoundSearchIcon,
+  ZapIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -33,6 +34,7 @@ const workspaceItems = [
   { label: "Command Center", icon: LayoutDashboardIcon, href: "/" },
   { label: "Investigate", icon: SearchIcon, href: "/investigate" },
   { label: "Predictive Watch", icon: GaugeIcon, href: "/predictive-watch" },
+  { label: "Machine Money", icon: ZapIcon, href: "/machine-money" },
   { label: "Operations & Governance", icon: SlidersIcon, href: "/operations" },
   { label: "Knowledge Risk", icon: UserRoundSearchIcon, href: "/knowledge-risk" },
   { label: "RAG Comparison", icon: GitCompareArrowsIcon, href: "/comparison" },

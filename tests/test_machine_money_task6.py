@@ -50,11 +50,14 @@ def test_telemetry_service_mapping():
     assert map_telemetry_to_service("PRV-04", symptom="valve seat chatter") == "valve-integrity-test"
 
 
+import uuid
+
 def test_autonomous_trigger_from_telemetry():
     """Verify telemetry trigger automates Quote -> Policy -> Invoice -> Payment -> Graph (Section 16)."""
+    test_evt_id = f"EVT-VIB-TEST-{uuid.uuid4().hex[:8]}"
     payload = {
         "equipment_tag": "P-101A",
-        "event_id": "EVT-VIB-TEST-TASK6",
+        "event_id": test_evt_id,
         "failure_event_id": "FE-001",
         "confidence": 0.94,
         "work_order_id": "WO-2026-P101",
