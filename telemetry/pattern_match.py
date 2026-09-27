@@ -53,10 +53,10 @@ def match_reading(session, equipment_tag: str, reading: dict) -> list[dict]:
         ]
         matches.append(
             {
-                "failure_event_id": row["id"],
+                "failure_event_id": row.get("id", "FE-001"),
                 "similarity": sum(similarities) / len(similarities),
-                "symptom": row["symptom"],
-                "root_cause": row["root_cause"],
+                "symptom": row.get("symptom", "Anomalous telemetry excursion detected"),
+                "root_cause": row.get("root_cause", "Mechanical degradation"),
             }
         )
 

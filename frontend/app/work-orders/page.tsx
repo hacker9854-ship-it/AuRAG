@@ -45,7 +45,7 @@ export default function WorkOrdersPage() {
     let active = true;
     getWorkOrders(status === "All" ? undefined : status)
       .then((result) => {
-        if (active) setItems(result);
+        if (active) setItems(Array.isArray(result) ? result : []);
       })
       .catch((reason) => {
         if (active) setError(reason instanceof Error ? reason.message : "Work orders are unavailable.");
@@ -115,7 +115,7 @@ export default function WorkOrdersPage() {
               <Skeleton key={index} className="h-48 rounded-xl" />
             ))}
           </div>
-        ) : items.length ? (
+        ) : items?.length ? (
           <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3" aria-label="Work orders">
             {items.map((item) => (
               <Card key={item.id}>

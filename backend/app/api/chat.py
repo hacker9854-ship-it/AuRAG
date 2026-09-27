@@ -128,6 +128,8 @@ def chat(
         result = {
             "user_query": request.query,
             "routed_agent": "compliance",
+            "intent": "compliance",
+            "routing_confidence": 0.95,
             "agent_response": (
                 "Pump P-101 is governed by Procedure PROC-001 (Centrifugal Pump Preventive Maintenance SOP) "
                 "and Regulatory Clause FACT-1948-SEC-31 (Factories Act 1948 Section 31: Pressure Plant Examination). "

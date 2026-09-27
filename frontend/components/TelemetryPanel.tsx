@@ -105,8 +105,19 @@ function MetricGrid({
   reading: ScanResponse["reading"];
   meta: Record<string, ReadingMeta>;
 }) {
+  if (!reading || typeof reading !== "object") {
+    return (
+      <Empty className="min-h-40 border">
+        <EmptyHeader>
+          <EmptyTitle>No sensor reading available</EmptyTitle>
+          <EmptyDescription>Telemetry reading is currently unavailable for this equipment.</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
   const dimensions = Object.keys(reading).filter(
-    (key) => key !== "equipment" && meta[key] && typeof reading[key] === "number"
+    (key) => key !== "equipment" && meta && meta[key] && typeof reading[key] === "number"
   );
 
   if (dimensions.length === 0) {

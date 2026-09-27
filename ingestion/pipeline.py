@@ -134,7 +134,7 @@ def match_equipment(raw: str, known_tags: set[str]) -> str | None:
 
 def match_person(raw: str, known_names: set[str]) -> str | None:
     raw_norm = " ".join(raw.strip().split())
-    lower_map = {n.lower(): n for n in known_names}
+    lower_map = {n.lower(): n for n in known_names if n}
     if raw_norm.lower() in lower_map:
         return lower_map[raw_norm.lower()]
     close = difflib.get_close_matches(raw_norm.lower(), lower_map.keys(), n=1, cutoff=0.8)
@@ -142,8 +142,8 @@ def match_person(raw: str, known_names: set[str]) -> str | None:
 
 
 def load_known_entities(session) -> tuple[set[str], set[str]]:
-    tags = {r["t"] for r in session.run("MATCH (e:Equipment) RETURN e.tag_id AS t")}
-    names = {r["n"] for r in session.run("MATCH (p:Person) RETURN p.name AS n")}
+    tags = {r.get("t") or r.get("tag_id") for r in session.run("MATCH (e:Equipment) RETURN e.tag_id AS t") if (r.get("t") or r.get("tag_id"))}
+    names = {r.get("n") or r.get("name") for r in session.run("MATCH (p:Person) RETURN p.name AS n") if (r.get("n") or r.get("name"))}
     return tags, names
 
 

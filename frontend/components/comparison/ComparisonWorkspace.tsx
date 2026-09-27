@@ -83,7 +83,13 @@ function AnswerPane({
 }
 
 export default function ComparisonWorkspace({ data }: { data: ComparisonResponse }) {
-  const relationshipCount = data.comparison_metrics.graph_relationship_evidence;
+  const metrics = data?.comparison_metrics || {
+    source_overlap_pct: 0,
+    graph_relationship_evidence: 0,
+    graph_only_sources: [],
+    plain_only_sources: [],
+  };
+  const relationshipCount = metrics.graph_relationship_evidence || 0;
 
   return (
     <div className="flex flex-col gap-5">
@@ -93,7 +99,7 @@ export default function ComparisonWorkspace({ data }: { data: ComparisonResponse
             <CardTitle>Source overlap</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="data-mono text-2xl font-semibold">{data.comparison_metrics.source_overlap_pct}%</div>
+            <div className="data-mono text-2xl font-semibold">{metrics.source_overlap_pct || 0}%</div>
             <p className="mt-1 text-xs text-muted-foreground">Same evidence retrieved by both approaches</p>
           </CardContent>
         </Card>

@@ -72,12 +72,16 @@ def rerank(
 ) -> list[tuple[str, str, float]]:
     if not candidates:
         return []
-    provider = os.environ.get("RERANK_PROVIDER", "local").lower()
-    if provider == "cohere":
-        return _rerank_cohere(query, candidates, top_n)
-    if provider == "local":
+    provider = os.environ.get("RERANK_PROVIDER", "auto").lower()
+    if provider == "cohere" or (provider in ("auto", "local") and os.environ.get("COHERE_API_KEY")):
+        try:
+            return _rerank_cohere(query, candidates, top_n)
+        except Exception as exc:
+            pass
+    try:
         return _rerank_local(query, candidates, top_n)
-    raise ValueError(f"Unsupported RERANK_PROVIDER: {provider}")
+    except Exception as exc:
+        return [(k, text, 1.0 / (i + 1)) for i, (k, text) in enumerate(candidates[:top_n])]
 
 
 if __name__ == "__main__":

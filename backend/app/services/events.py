@@ -146,7 +146,12 @@ def publish_event(event_id: str) -> None:
     try:
         from redis import Redis
 
-        Redis.from_url(os.environ.get("REDIS_URL", "redis://localhost:6379")).publish(
+        r = Redis.from_url(
+            os.environ.get("REDIS_URL", "redis://localhost:6379"),
+            socket_connect_timeout=0.2,
+            socket_timeout=0.2,
+        )
+        r.publish(
             "aurag:predictive-events",
             event_id,
         )

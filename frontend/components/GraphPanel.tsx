@@ -129,11 +129,17 @@ export default function GraphPanel({
     if (!key || !graphPaths) return;
     let ignore = false;
     fetchGraph(graphPaths)
-      .then((graph) => {
-        if (!ignore) setResult({ key, graph });
+      .then((data: any) => {
+        if (!ignore) {
+          if (data && (data.error || !Array.isArray(data.nodes))) {
+            setResult({ key, error: data.detail || data.error || "The evidence graph could not be loaded for this answer." });
+          } else {
+            setResult({ key, graph: data });
+          }
+        }
       })
-      .catch(() => {
-        if (!ignore) setResult({ key, error: "The evidence graph could not be loaded for this answer." });
+      .catch((err) => {
+        if (!ignore) setResult({ key, error: err?.message || "The evidence graph could not be loaded for this answer." });
       });
     return () => {
       ignore = true;
@@ -176,19 +182,19 @@ export default function GraphPanel({
     return <LoadingGraph />;
   }
 
-  if ("error" in result) {
+  if ("error" in result || !result.graph?.nodes || !Array.isArray(result.graph.nodes)) {
     return (
       <div className="p-4">
         <Alert variant="destructive">
           <TriangleAlertIcon />
           <AlertTitle>Evidence service unavailable</AlertTitle>
-          <AlertDescription>{result.error}</AlertDescription>
+          <AlertDescription>{"error" in result ? result.error : "The evidence graph could not be rendered."}</AlertDescription>
         </Alert>
       </div>
     );
   }
 
-  const nodes: CanvasNode[] = result.graph.nodes.map((node) => ({
+  const nodes: CanvasNode[] = (result.graph.nodes || []).map((node) => ({
     id: node.id,
     caption: `${node.type}: ${label(node)}`,
     color: TYPE_COLORS[node.type] ?? "#718096",

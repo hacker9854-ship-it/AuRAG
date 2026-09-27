@@ -47,13 +47,20 @@ def _fetch_node(session, node_type: str, node_id: str) -> dict | None:
     ).single()
     if not row:
         return None
+    raw_props = None
+    if isinstance(row, dict):
+        raw_props = row.get("props") or {k: v for k, v in row.items() if k != "eid"}
+        raw_eid = row.get("eid", f"eid:{node_type}:{node_id}")
+    else:
+        raw_props = getattr(row, "props", None) or getattr(row, "_props", {})
+        raw_eid = getattr(row, "eid", f"eid:{node_type}:{node_id}")
     props = {
         key: value
-        for key, value in row["props"].items()
+        for key, value in (raw_props or {}).items()
         if key not in _EXCLUDED_PROPS
     }
     return {
-        "eid": row["eid"],
+        "eid": raw_eid,
         "id": f"{node_type}:{node_id}",
         "type": node_type,
         "properties": props,

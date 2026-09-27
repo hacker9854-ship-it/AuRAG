@@ -2,6 +2,7 @@
 sentence-transformers, not a hosted embed API — no per-query external call,
 no quota risk (same reasoning as the Groq/local-Qdrant/local-rerank choices,
 see NOTES.md).
+"""
 MODEL_NAME = "all-MiniLM-L6-v2"
 EMBED_DIM = 384
 

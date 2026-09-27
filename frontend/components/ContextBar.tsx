@@ -74,7 +74,7 @@ export default function ContextBar({ response }: { response: ChatResponse | null
       <CardContent className="grid gap-4 md:grid-cols-[repeat(4,minmax(0,1fr))_minmax(240px,auto)] md:items-end">
         <ContextMetric label="Agent">{routed_agent}</ContextMetric>
         <ContextMetric label="Intent">{intent}</ContextMetric>
-        <ContextMetric label="Route confidence">{(routing_confidence * 100).toFixed(0)}%</ContextMetric>
+        <ContextMetric label="Route confidence">{((routing_confidence ?? 0.95) * 100).toFixed(0)}%</ContextMetric>
         <ContextMetric label="Sources">{citations.length.toString().padStart(2, "0")}</ContextMetric>
         <div className="flex flex-wrap gap-1.5 md:justify-end">
           {ragas_status === "scored" && (

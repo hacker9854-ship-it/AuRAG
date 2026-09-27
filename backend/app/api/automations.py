@@ -61,6 +61,8 @@ class RemediationStatusRequest(BaseModel):
     status: str  # "PENDING_REINDEX", "REINDEXED", "RESOLVED"
 
 
+@router.get("")
+@router.get("/")
 @router.get("/policies")
 def get_policies(
     db: Session = Depends(get_db),

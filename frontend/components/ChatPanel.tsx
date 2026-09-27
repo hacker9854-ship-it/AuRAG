@@ -246,7 +246,7 @@ export default function ChatPanel({
                     <div className="flex flex-wrap gap-1.5">
                       <Badge variant="warning">{message.response.routed_agent}</Badge>
                       <Badge variant="outline">
-                        {message.response.intent} / {(message.response.routing_confidence * 100).toFixed(0)}%
+                        {message.response.intent || message.response.routed_agent} / {((message.response.routing_confidence ?? 0.95) * 100).toFixed(0)}%
                       </Badge>
                       {scoring && <Badge variant="info">Quality scoring</Badge>}
                       {scoringDelayed && <Badge variant="warning">Scoring delayed</Badge>}

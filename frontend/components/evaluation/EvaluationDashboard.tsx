@@ -217,17 +217,17 @@ export default function EvaluationDashboard({
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4" aria-label="Evaluation summary">
         <MetricCard
           label="Faithfulness"
-          value={summary.averages.faithfulness}
+          value={summary?.averages?.faithfulness}
           description="Claims supported by retrieved evidence"
         />
         <MetricCard
           label="Context precision"
-          value={summary.averages.context_precision}
+          value={summary?.averages?.context_precision}
           description="Retrieved context that was actually relevant"
         />
         <MetricCard
           label="Answer relevancy"
-          value={summary.averages.answer_relevancy}
+          value={summary?.averages?.answer_relevancy}
           description="How directly answers address the question"
         />
         <Card size="sm">
@@ -238,7 +238,7 @@ export default function EvaluationDashboard({
             </CardAction>
           </CardHeader>
           <CardContent>
-            <div className="data-mono text-2xl font-semibold">{summary.low_faithfulness_count}</div>
+            <div className="data-mono text-2xl font-semibold">{summary?.low_faithfulness_count ?? 0}</div>
             <p className="mt-1 text-xs leading-5 text-muted-foreground">
               Low-faithfulness answers requiring review
             </p>
@@ -255,7 +255,7 @@ export default function EvaluationDashboard({
           </CardAction>
         </CardHeader>
         <CardContent className="pt-5">
-          <TrendChart points={summary.trend} />
+          <TrendChart points={summary?.trend ?? []} />
         </CardContent>
       </Card>
 

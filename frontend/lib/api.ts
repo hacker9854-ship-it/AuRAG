@@ -179,7 +179,7 @@ export async function getWorkOrders(status?: string): Promise<WorkOrderRecord[]>
   const res = await fetch(`${API_URL}/api/work-orders${query}`);
   if (!res.ok) throw new Error("Failed to load work orders.");
   const body = await res.json();
-  return body.items;
+  return Array.isArray(body?.items) ? body.items : Array.isArray(body) ? body : [];
 }
 
 export async function getWorkOrder(workOrderId: string): Promise<WorkOrderRecord> {
@@ -349,11 +349,11 @@ export async function postComparison(query: string): Promise<ComparisonResponse>
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query }),
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({}));
-    throw new Error(body?.detail ?? "Comparison failed.");
+  const data = await res.json();
+  if (data && data.error) {
+    throw new Error(data.detail || data.error);
   }
-  return res.json();
+  return data;
 }
 
 export interface EvaluationRecord {

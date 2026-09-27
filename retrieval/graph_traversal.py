@@ -65,39 +65,43 @@ def traverse(session, query: str, top_k: int = 5) -> list[tuple[str, str]]:
 
     for tag in tags:
         row = session.run(_EQUIPMENT_CYPHER, tag=tag).single()
-        for fe in row["failure_events"]:
-            if fe["id"]:
+        if not row:
+            continue
+        for fe in (row.get("failure_events") or []):
+            if fe and fe.get("id"):
                 seen[fe["id"]] = (
-                    f"{fe['id']} ({fe['date']}): {fe['symptom']} "
-                    f"— root cause: {fe['root_cause']}"
+                    f"{fe['id']} ({fe.get('date', '')}): {fe.get('symptom', '')} "
+                    f"— root cause: {fe.get('root_cause', '')}"
                 )
-        for wo in row["work_orders"]:
-            if wo["id"]:
+        for wo in (row.get("work_orders") or []):
+            if wo and wo.get("id"):
                 seen[wo["id"]] = (
-                    f"{wo['id']} ({wo['date']}, {wo['type']}, "
-                    f"{wo['status']}): {wo['description']}"
+                    f"{wo['id']} ({wo.get('date', '')}, {wo.get('type', '')}, "
+                    f"{wo.get('status', '')}): {wo.get('description', '')}"
                 )
-        for rc in row["clauses"]:
-            if rc["id"]:
-                seen[rc["id"]] = f"{rc['id']} ({rc['source']}): {rc['text']}"
-        for proc in row["procedures"]:
-            if proc["id"]:
-                seen[proc["id"]] = f"{proc['id']} v{proc['version']}: {proc['title']}"
-        for c in row["chunks"]:
-            if c["id"]:
-                seen[c["id"]] = c["text"]
+        for rc in (row.get("clauses") or []):
+            if rc and rc.get("id"):
+                seen[rc["id"]] = f"{rc['id']} ({rc.get('source', '')}): {rc.get('text', '')}"
+        for proc in (row.get("procedures") or []):
+            if proc and proc.get("id"):
+                seen[proc["id"]] = f"{proc['id']} v{proc.get('version', '')}: {proc.get('title', '')}"
+        for c in (row.get("chunks") or []):
+            if c and c.get("id"):
+                seen[c["id"]] = c.get("text", "")
 
     for name in names:
         row = session.run(_PERSON_CYPHER, name=name).single()
-        for wo in row["work_orders"]:
-            if wo["id"]:
+        if not row:
+            continue
+        for wo in (row.get("work_orders") or []):
+            if wo and wo.get("id"):
                 seen[wo["id"]] = (
-                    f"{wo['id']} ({wo['date']}, {wo['type']}, "
-                    f"{wo['status']}): {wo['description']}"
+                    f"{wo['id']} ({wo.get('date', '')}, {wo.get('type', '')}, "
+                    f"{wo.get('status', '')}): {wo.get('description', '')}"
                 )
-        for c in row["chunks"]:
-            if c["id"]:
-                seen[c["id"]] = c["text"]
+        for c in (row.get("chunks") or []):
+            if c and c.get("id"):
+                seen[c["id"]] = c.get("text", "")
 
     return list(seen.items())[:top_k] if top_k else list(seen.items())
 

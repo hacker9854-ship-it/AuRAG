@@ -38,3 +38,4 @@ data/**/*.tmp
 *.log
 .runtime/
 .pytest_tmp/
+scratch/
