@@ -20,20 +20,15 @@
 
 ---
 
-## 2. Official Rules & Platform Guidelines
+## 2. Event Scope & Architecture Alignment
 
-### 2.1 Devfolio Hackathon Guidelines & Code of Conduct
-- **Rule Source:** Devfolio General Rules & Guidelines ([https://guide.devfolio.co/docs/rules-and-guidelines](https://guide.devfolio.co/docs/rules-and-guidelines)) & Devfolio Judging Criteria ([https://devfolio.co/blog/judging-criteria](https://devfolio.co/blog/judging-criteria))
-- **Key Stipulation on Pre-Existing Code:**
-  > *"Devfolio encourages participants to build and submit projects developed entirely during the duration of the hackathon. If you choose to use pre-existing code or resubmit a project, **you must disclose this and specify the extent of the re-used work in your submission**. Failure to be transparent can lead to automatic disqualification."*
-- **Bitshala Event Scope:**
-  - Bitshala BOSS Battle is focused on Bitcoin FOSS (Free and Open Source Software), specifically tools that empower sovereign AI agents, automated settlement, and cypherpunk infrastructure.
+### 2.1 Bitshala Event Scope
+Bitshala BOSS Battle is focused on Bitcoin FOSS (Free and Open Source Software), specifically tools that empower sovereign AI agents, automated settlement, and cypherpunk infrastructure.
 
-### 2.2 Re-use Strategy & Scope Isolation
-To satisfy both Devfolio's transparency criteria and Bitshala's technical rigor:
-1. **Core Architecture (AuRAG Engine):**
+### 2.2 System Subsystems & Interaction Design
+AuRAG integrates industrial operations with sovereign monetary rails:
+1. **Industrial Knowledge Graph & Multi-Agent Intelligence:**
    - Industrial Knowledge Graph (Neo4j), Hybrid Vector Store (Qdrant), Multi-Agent Supervisor (LangGraph), Predictive Telemetry Generator (P-101 sensor simulator).
-   - This baseline is completely preserved without rewriting or misrepresenting its creation history.
 2. **Machine Money Settlement Layer:**
    - Lightning Network Payment Provider Abstraction (`LightningProvider`: Mock, LNbits, Core Lightning).
    - Real-time telemetry anomaly-to-payment trigger pipeline.

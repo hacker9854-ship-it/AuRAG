@@ -722,7 +722,7 @@ def build_story() -> list:
     ], [2.65 * inch, 4.2 * inch]))
     story.append(Spacer(1, 0.16 * inch))
     story.append(P("Document provenance", "H2Custom"))
-    story.append(P("This PDF was generated from the AuRAG repository at C:\\niss\\products\\AuRAG on September 27, 2026. It reflects source code and project documentation available in that workspace. Runtime availability, provider credentials, database contents, and deployment readiness can change independently of the document and must be verified with the live smoke suite.", "BodyCustom"))
+    story.append(P("This technical specification reflects the AuRAG workspace implementation for Bitshala BOSS Battle 2026. Runtime availability, provider credentials, database contents, and deployment readiness can change independently of the document and must be verified with the live smoke suite.", "BodyCustom"))
     story.append(Spacer(1, 0.3 * inch))
     story.append(callout("End state", "Core product implementation is broad and internally coherent. Production readiness remains an operational verification problem: infrastructure, credentials, browser CORS, and release evidence must all be green together.", "teal"))
     return story

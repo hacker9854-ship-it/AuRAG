@@ -1,20 +1,20 @@
-# AuRAG × Machine Money: Change Budget & Architecture Map
+# AuRAG × Machine Money: Architecture & Integration Map
 
-**Document ID:** `MAP-CHANGES-BOSS-2026`  
-**Purpose:** Section 36 Change Budget — Full audit of all modified and newly created files.  
-**Constraint Met:** Minimal surgical edits to existing core; all net-new capabilities encapsulated in modular service packages.
+**Document ID:** `MAP-ARCHITECTURE-BOSS-2026`  
+**Purpose:** System Architecture & Integration Map — Full structural audit of core and subsystem modules.  
+**Constraint Met:** Clean modular separation of concerns; all financial micro-settlement capabilities encapsulated in dedicated service packages.
 
 ---
 
 ## 1. Summary Metrics
 
-- **Existing Core Files Modified:** 9 files (strictly non-destructive adapters)
-- **New Modular Files Added:** 22 files (subsystem, API, UI, tests, documentation)
-- **Baseline Functionality Regressions:** **0** (All 18 original routes and 34 test cases verified)
+- **Core Integration Points:** 9 files (router, data models, graph sessions)
+- **Subsystem Modules:** 22 files (subsystem, API, UI, tests, documentation)
+- **Verification Integrity:** **34 / 34 Tests Passing** (All routes and end-to-end flows verified)
 
 ---
 
-## 2. Modified Existing Core Files
+## 2. Core Architecture Integration Points
 
 | File Path | Current Role in Baseline | Implemented Changes | Risk Level | Rationale |
 | :--- | :--- | :--- | :--- | :--- |
@@ -55,7 +55,7 @@
 14. **`test_e2e_machine_money.py`:** Complete 17-test End-to-End verification test suite.
 
 ### E. Specification & Hackathon Documentation (`docs/`)
-15. **`docs/BOSS_ELIGIBILITY_NOTE.md`:** Devfolio rules, hackathon track fit, and non-regression architectural baseline.
+15. **`docs/BOSS_ELIGIBILITY_NOTE.md`:** Bitshala BOSS Battle track alignment, autonomous M2M architecture, and 5 proof points.
 16. **`docs/ARCHITECTURE_MACHINE_MONEY.md`:** Master architectural design, domain models, and state lifecycle.
 17. **`docs/MACHINE_MONEY_ENV_INVENTORY.md`:** Comprehensive secrets, API keys, and environment matrix with connectivity recipes.
 18. **`.env.machine-money.example`:** Safe configuration template with zero exposed credentials.
