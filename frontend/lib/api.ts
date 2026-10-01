@@ -723,5 +723,84 @@ export async function getPaymentEvidence(paymentId: string): Promise<any> {
   return res.json();
 }
 
+// ---------------------------------------------------------------------------
+// Judge Mode Orchestration Types & Client Endpoints (Phase 2)
+// ---------------------------------------------------------------------------
+
+export type ExecutionStage =
+  | "ANOMALY_DETECTED"
+  | "EVIDENCE_MATCHED"
+  | "QUOTE_RESOLVED"
+  | "POLICY_EVALUATED"
+  | "INVOICE_GENERATED"
+  | "PAYMENT_AUTHORIZED"
+  | "SETTLEMENT_CONFIRMED"
+  | "GRAPH_LINKED"
+  | "OUTCOME_RESOLVED";
+
+export interface ExecutionStageEvent {
+  stage: ExecutionStage;
+  status: "SUCCESS" | "PENDING_APPROVAL" | "FAILED" | "RUNNING";
+  elapsed_ms: number;
+  message: string;
+  evidence_refs: string[];
+  data: Record<string, any>;
+  timestamp: string;
+}
+
+export interface JudgeExecutionRequest {
+  scenario?: "INDUSTRIAL_EMERGENCY" | "POLICY_ESCALATION" | "PROVIDER_FAILURE";
+  equipment_id?: string;
+  override_cost_sats?: number;
+  auto_approve?: boolean;
+}
+
+export interface JudgeExecutionResponse {
+  execution_id: string;
+  scenario: string;
+  status: "SUCCESS" | "PENDING_APPROVAL" | "FAILED";
+  total_elapsed_ms: number;
+  events: ExecutionStageEvent[];
+  payment_record?: {
+    payment_id?: string;
+    amount_sats?: number;
+    status?: string;
+    payment_hash?: string;
+    preimage?: string;
+    bolt11?: string;
+    work_order_id?: string;
+    event_id?: string;
+    vendor_name?: string;
+    paid_at?: string;
+  } | null;
+  evidence_package?: Record<string, any> | null;
+  provider_mode: string;
+  summary: string;
+}
+
+export async function executeJudgeMode(
+  payload: JudgeExecutionRequest = { scenario: "INDUSTRIAL_EMERGENCY", equipment_id: "P-101A" }
+): Promise<JudgeExecutionResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/judge/execute`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Judge Mode execution failed." }));
+    throw new Error(err.detail || "Judge Mode execution failed.");
+  }
+  return res.json();
+}
+
+export async function resetJudgeMode(): Promise<{ status: string; message: string; ready: boolean }> {
+  const res = await fetch(`${API_URL}/api/machine-money/judge/reset`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+  });
+  if (!res.ok) throw new Error("Failed to reset Judge Mode scenario.");
+  return res.json();
+}
+
 
 

@@ -76,3 +76,18 @@ cd frontend && npm test
 | **Crypto Unit Tests** | 4 tests covering hex/bytes and SHA-256 test vectors | PASS | `frontend/lib/crypto.test.ts` |
 | **Total Frontend Tests** | 10 test files, 22 tests passing | PASS | Vitest run: 22 passed in 12.98s |
 | **Backend Regression** | 34 existing Machine Money tests | PASS | Pytest run: 34 passed in 9.28s |
+
+---
+
+## 5. Phase 2 Verification Results (Judge Mode Orchestration)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Execution Event Contract** | 9-stage `ExecutionStage` enum & `ExecutionStageEvent` schema | PASS | `backend/app/services/machine_money/schemas.py` |
+| **Judge Mode Orchestrator** | `execute_judge_scenario` with real service calls & measured elapsed timings | PASS | `backend/app/services/machine_money/service.py` |
+| **Judge Mode API Routes** | `POST /api/machine-money/judge/execute` & `/judge/reset` | PASS | `backend/app/api/machine_money.py` |
+| **Backend Suite (Pytest)** | 3 tests for autonomous emergency, policy escalation (>500 sats), and API endpoint | PASS | `tests/test_machine_money_judge_mode.py` (3 passed in 3.35s) |
+| **Execution Timeline UI** | Renders 9 stages with measured elapsed seconds, status badges, and citations | PASS | `frontend/components/machine-money/ExecutionTimeline.tsx` |
+| **Judge Mode Console UI** | `▶ RUN INDUSTRIAL EMERGENCY` CTA, escalation trigger, and reset action | PASS | `frontend/components/machine-money/JudgeMode.tsx` |
+| **Frontend Suite (Vitest)** | 5 tests for timeline empty/populated states, button actions, and scenario reset | PASS | `frontend/components/machine-money/JudgeMode.test.tsx` (5 passed in 255ms) |
+| **Total Test Suite** | 37 Backend Pytest tests & 27 Frontend Vitest tests passing | PASS | Zero regressions across whole codebase |

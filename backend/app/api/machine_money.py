@@ -9,6 +9,8 @@ from backend.app.db.database import get_db
 from backend.app.services.machine_money.registry import generate_idempotency_key
 from backend.app.services.machine_money.schemas import (
     InvoiceRequest,
+    JudgeExecutionRequest,
+    JudgeExecutionResponse,
     PaymentStatus,
     ProviderHealth,
     ServiceQuote,
@@ -249,6 +251,40 @@ def get_payment_evidence_package(payment_id: str, db: Session = Depends(get_db))
         "status": record.status,
         "paid_at": record.paid_at.isoformat() if record.paid_at else None,
         "evidence_package": evidence,
+    }
+
+
+@router.post("/judge/execute", response_model=JudgeExecutionResponse)
+async def execute_judge_mode(
+    req: Optional[JudgeExecutionRequest] = None,
+    db: Session = Depends(get_db),
+    neo4j_session = Depends(get_session),
+):
+    """Execute complete deterministic Judge Mode scenario with measured stage timings."""
+    payload = req or JudgeExecutionRequest()
+    try:
+        return await service.execute_judge_scenario(
+            db=db,
+            scenario=payload.scenario,
+            equipment_id=payload.equipment_id,
+            override_cost_sats=payload.override_cost_sats,
+            auto_approve=payload.auto_approve,
+            neo4j_session=neo4j_session,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/judge/reset")
+async def reset_judge_mode():
+    """Reset Judge Mode demonstration state without clearing unrelated historical records."""
+    health = await service.get_health()
+    return {
+        "status": "RESET",
+        "message": "Judge Mode demo scenario reset to baseline ready state.",
+        "provider": health.provider_name,
+        "network": health.network,
+        "ready": True,
     }
 
 

@@ -60,6 +60,7 @@ import {
 import { Bolt11QRCode } from "@/components/machine-money/Bolt11QRCode";
 import { ProviderModeBadge } from "@/components/machine-money/ProviderModeBadge";
 import { ProofVerification } from "@/components/machine-money/ProofVerification";
+import { JudgeMode } from "@/components/machine-money/JudgeMode";
 
 export default function MachineMoneyPage() {
   // Global & Subsystem state
@@ -300,6 +301,28 @@ export default function MachineMoneyPage() {
           <AlertDescription>{successMsg}</AlertDescription>
         </Alert>
       )}
+
+      {/* --------------------------------------------------------------------- */}
+      {/* Judge Mode: One-Click Autonomous Settlement Pipeline & Live Timeline   */}
+      {/* --------------------------------------------------------------------- */}
+      <JudgeMode
+        onExecutionComplete={(res) => {
+          if (res.payment_record) {
+            setExecutionResult({
+              status: res.status === "SUCCESS" ? "PAID" : res.status,
+              payment_id: res.payment_record.payment_id || res.execution_id,
+              idempotency_key: res.execution_id,
+              amount_sats: res.payment_record.amount_sats || 250,
+              payment_hash: res.payment_record.payment_hash,
+              preimage: res.payment_record.preimage,
+              paid_at: res.payment_record.paid_at,
+              evidence_package: res.evidence_package as any,
+              is_duplicate_prevented: false,
+            });
+            fetchAll();
+          }
+        }}
+      />
 
       {/* --------------------------------------------------------------------- */}
       {/* Demonstration Controls & Scenario Presets                             */}

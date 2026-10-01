@@ -115,3 +115,44 @@ class SimulationResult(BaseModel):
     projected_action: str
     explanation: str
 
+
+class ExecutionStage(str, Enum):
+    ANOMALY_DETECTED = "ANOMALY_DETECTED"
+    EVIDENCE_MATCHED = "EVIDENCE_MATCHED"
+    QUOTE_RESOLVED = "QUOTE_RESOLVED"
+    POLICY_EVALUATED = "POLICY_EVALUATED"
+    INVOICE_GENERATED = "INVOICE_GENERATED"
+    PAYMENT_AUTHORIZED = "PAYMENT_AUTHORIZED"
+    SETTLEMENT_CONFIRMED = "SETTLEMENT_CONFIRMED"
+    GRAPH_LINKED = "GRAPH_LINKED"
+    OUTCOME_RESOLVED = "OUTCOME_RESOLVED"
+
+
+class ExecutionStageEvent(BaseModel):
+    stage: ExecutionStage
+    status: str = Field(default="SUCCESS", description="SUCCESS, PENDING_APPROVAL, or FAILED")
+    elapsed_ms: int = Field(default=0, ge=0, description="Measured elapsed milliseconds from scenario start")
+    message: str = Field(..., description="Human-readable explanation of this stage")
+    evidence_refs: List[str] = Field(default_factory=list, description="IDs of graph entities or policies cited")
+    data: Dict[str, Any] = Field(default_factory=dict, description="Structured non-secret payload")
+    timestamp: datetime = Field(default_factory=utcnow)
+
+
+class JudgeExecutionRequest(BaseModel):
+    scenario: str = Field(default="INDUSTRIAL_EMERGENCY", description="INDUSTRIAL_EMERGENCY or POLICY_ESCALATION")
+    equipment_id: str = Field(default="P-101A", description="Equipment tag identifier")
+    override_cost_sats: Optional[int] = Field(default=None, description="Optional override satoshi amount")
+    auto_approve: bool = Field(default=True, description="Whether to auto-pay if under spending cap")
+
+
+class JudgeExecutionResponse(BaseModel):
+    execution_id: str
+    scenario: str
+    status: str = Field(..., description="SUCCESS, PENDING_APPROVAL, or FAILED")
+    total_elapsed_ms: int
+    events: List[ExecutionStageEvent]
+    payment_record: Optional[Dict[str, Any]] = None
+    evidence_package: Optional[Dict[str, Any]] = None
+    provider_mode: str = Field(default="MOCK / SIMULATION")
+    summary: str
+
