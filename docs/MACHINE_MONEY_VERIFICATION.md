@@ -64,8 +64,15 @@ cd frontend && npm test
 
 ---
 
-## 4. Known Issues & Remediation Target for Next Phases
+## 4. Phase 1 Verification Results (QR Correctness + Payment Honesty)
 
-1. **Pseudo-Grid QR (Phase 1 Target):** Current `Bolt11QRCode` in `frontend/app/machine-money/page.tsx` renders a synthetic pattern instead of a standards-compliant matrix. Will be replaced in Phase 1 with a real encoder.
-2. **Provider Mode Visual Clarity (Phase 1 Target):** Ensure prominent `MOCK / SIMULATION` label is visible across all payment views.
-3. **Cryptographic Proof Utility (Phase 1 Target):** Expose deterministic `SHA256(preimage) == payment_hash` verification.
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Standards-compliant QR** | Real SVG QR encoding exact BOLT11 payload, responsive sizing, copy button, raw fallback | PASS | `frontend/components/machine-money/Bolt11QRCode.tsx` |
+| **Optical QR Decode Test** | Real QR decoder (`jsQR`) decodes SVG matrix to exact invoice string | PASS | `frontend/components/machine-money/Bolt11QRCode.decode.test.ts` (1 test passed) |
+| **Provider Mode Disclosure** | Backend-derived `MOCK / SIMULATION` badge with network and balance | PASS | `frontend/components/machine-money/ProviderModeBadge.tsx` |
+| **Cryptographic Preimage Proof** | `SHA-256(preimage) == payment_hash` verified via Web Crypto API | PASS | `frontend/lib/crypto.ts` & `frontend/components/machine-money/ProofVerification.tsx` |
+| **Component Unit Tests** | 7 tests covering QR, Badge, and Proof verification | PASS | `frontend/components/machine-money/MachineMoneyComponents.test.tsx` |
+| **Crypto Unit Tests** | 4 tests covering hex/bytes and SHA-256 test vectors | PASS | `frontend/lib/crypto.test.ts` |
+| **Total Frontend Tests** | 10 test files, 22 tests passing | PASS | Vitest run: 22 passed in 12.98s |
+| **Backend Regression** | 34 existing Machine Money tests | PASS | Pytest run: 34 passed in 9.28s |

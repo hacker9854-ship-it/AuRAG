@@ -57,60 +57,9 @@ import {
   type ProviderRegistryResponse,
 } from "@/lib/api";
 
-// Reusable SVG QR Matrix renderer for BOLT11 Invoices
-function Bolt11QRCode({ value }: { value: string }) {
-  // Deterministic pseudo-grid derived from string hash for clean aesthetic visualization
-  const size = 21;
-  const hash = Array.from(value).reduce((acc, char) => (acc * 31 + char.charCodeAt(0)) % 1000000007, 42);
-  const cells: boolean[][] = Array.from({ length: size }, (_, r) =>
-    Array.from({ length: size }, (_, c) => {
-      // Corners are finder patterns
-      if ((r < 7 && c < 7) || (r < 7 && c >= size - 7) || (r >= size - 7 && c < 7)) {
-        const inOuter = r === 0 || r === 6 || c === 0 || c === 6 ||
-                        (r < 7 && (c === size - 7 || c === size - 1)) ||
-                        (r >= size - 7 && (c === 0 || c === 6));
-        const inInner = (r >= 2 && r <= 4 && c >= 2 && c <= 4) ||
-                        (r >= 2 && r <= 4 && c >= size - 5 && c <= size - 3) ||
-                        (r >= size - 5 && r <= size - 3 && c >= 2 && c <= 4);
-        return inOuter || inInner;
-      }
-      // Timing patterns
-      if (r === 6 || c === 6) return (r + c) % 2 === 0;
-      // Deterministic data cell
-      const pseudoBit = ((hash * (r * size + c + 13)) ^ ((r + 3) * (c + 7))) % 7;
-      return pseudoBit === 0 || pseudoBit === 2 || pseudoBit === 5;
-    })
-  );
-
-  return (
-    <div className="relative flex flex-col items-center justify-center p-3 bg-white rounded-lg shadow-inner border border-border">
-      <svg
-        viewBox={`0 0 ${size} ${size}`}
-        className="w-36 h-36 sm:w-44 sm:h-44 shape-rendering-crispEdges"
-      >
-        {cells.map((row, r) =>
-          row.map((active, c) =>
-            active ? (
-              <rect
-                key={`${r}-${c}`}
-                x={c}
-                y={r}
-                width="1"
-                height="1"
-                fill="#0f172a"
-              />
-            ) : null
-          )
-        )}
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="bg-amber-500 text-slate-950 p-1 rounded-full shadow-md border-2 border-white">
-          <ZapIcon className="w-4 h-4 fill-current" />
-        </div>
-      </div>
-    </div>
-  );
-}
+import { Bolt11QRCode } from "@/components/machine-money/Bolt11QRCode";
+import { ProviderModeBadge } from "@/components/machine-money/ProviderModeBadge";
+import { ProofVerification } from "@/components/machine-money/ProofVerification";
 
 export default function MachineMoneyPage() {
   // Global & Subsystem state
@@ -313,29 +262,14 @@ export default function MachineMoneyPage() {
 
         {/* Live Subsystem Health Strip */}
         <div className="flex flex-wrap items-center gap-2">
-          <Card size="sm" className="bg-card/60 backdrop-blur-sm border-border/80 shadow-xs">
-            <div className="flex items-center gap-3 px-3 py-1.5 text-xs">
-              <div className="flex items-center gap-1.5 font-medium">
-                <span className={`inline-block size-2 rounded-full ${health?.is_connected ? "bg-emerald-500 animate-pulse" : "bg-red-500"}`} />
-                <span className="text-muted-foreground">Provider:</span>
-                <span className="font-mono text-foreground">{health?.provider_name || "MockLightning"}</span>
-              </div>
-              <div className="h-3 w-px bg-border" />
-              <div className="flex items-center gap-1 font-medium">
-                <span className="text-muted-foreground">Network:</span>
-                <Badge variant="outline" className="text-[10px] uppercase font-mono px-1 py-0">
-                  {health?.network || "regtest"}
-                </Badge>
-              </div>
-              <div className="h-3 w-px bg-border" />
-              <div className="flex items-center gap-1.5 font-medium">
-                <WalletIcon className="size-3.5 text-amber-500" />
-                <span className="font-mono font-bold text-amber-500">
-                  {health?.balance_sats?.toLocaleString() ?? "1,000,000"} sats
-                </span>
-              </div>
-            </div>
-          </Card>
+          <ProviderModeBadge
+            providerName={health?.provider_name || "mock"}
+            network={health?.network || "regtest"}
+            isMock={health?.provider_name?.toLowerCase().includes("mock") ?? true}
+            balanceSats={health?.balance_sats ?? 1000000}
+            latencyMs={health?.latency_ms ?? 1.2}
+            showDetails={true}
+          />
 
           <Button
             variant="outline"
@@ -664,6 +598,15 @@ export default function MachineMoneyPage() {
                 <span className="text-muted-foreground">Routing Fee:</span>
                 <span className="font-mono text-muted-foreground">0 sats (Local routing)</span>
               </div>
+              {executionResult?.payment_hash && executionResult?.preimage && (
+                <div className="pt-2 border-t border-border/40">
+                  <ProofVerification
+                    paymentHash={executionResult.payment_hash}
+                    preimage={executionResult.preimage}
+                    isMock={health?.provider_name?.toLowerCase().includes("mock") ?? true}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -902,35 +845,18 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="pt-4 flex flex-col items-center justify-center gap-4">
+          <CardContent className="pt-4 flex flex-col items-center justify-center">
             <Bolt11QRCode
-              value={executionResult?.payment_hash || "lnbc2500n1pjmockbolt11invoicestringformachinemoney"}
+              value={
+                executionResult?.payment_hash
+                  ? `lnbcrt2500u1p${executionResult.payment_hash}mocksimulatedinvoice0000000000000000000000000000000000`
+                  : "lnbcrt2500u1pmocksimulatedinvoice0000000000000000000000000000000000"
+              }
+              isMock={health?.provider_name?.toLowerCase().includes("mock") ?? true}
+              amountSats={250}
+              size={170}
+              className="w-full"
             />
-
-            <div className="w-full space-y-1.5">
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>Invoice Payload</span>
-                <button
-                  onClick={() =>
-                    handleCopy(
-                      executionResult?.payment_hash
-                        ? `lnbc2500n1...${executionResult.payment_hash}`
-                        : "lnbc2500n1pjmockbolt11invoicestringformachinemoney",
-                      "bolt11"
-                    )
-                  }
-                  className="hover:text-foreground flex items-center gap-1 text-[11px]"
-                >
-                  <CopyIcon className="size-3" />
-                  {copiedKey === "bolt11" ? "Copied!" : "Copy"}
-                </button>
-              </div>
-              <p className="font-mono text-[11px] p-2 rounded bg-muted/60 text-muted-foreground break-all select-all">
-                {executionResult?.payment_hash
-                  ? `lnbc2500n1pjmock${executionResult.payment_hash.slice(0, 36)}...`
-                  : "lnbc2500n1pjmockbolt11invoicestringformachinemoney"}
-              </p>
-            </div>
           </CardContent>
 
           <CardFooter className="pt-2 border-t text-xs text-muted-foreground flex justify-between">
