@@ -61,6 +61,8 @@ import { Bolt11QRCode } from "@/components/machine-money/Bolt11QRCode";
 import { ProviderModeBadge } from "@/components/machine-money/ProviderModeBadge";
 import { ProofVerification } from "@/components/machine-money/ProofVerification";
 import { JudgeMode } from "@/components/machine-money/JudgeMode";
+import { EvidenceSummaryCard } from "@/components/machine-money/EvidenceSummaryCard";
+import { PaymentProofDrawer } from "@/components/machine-money/PaymentProofDrawer";
 
 export default function MachineMoneyPage() {
   // Global & Subsystem state
@@ -92,6 +94,15 @@ export default function MachineMoneyPage() {
 
   // Operator Approval state
   const [approvingPaymentId, setApprovingPaymentId] = useState<string | null>(null);
+
+  // Proof Drawer state
+  const [proofDrawerOpen, setProofDrawerOpen] = useState(false);
+  const [selectedProofPaymentId, setSelectedProofPaymentId] = useState<string | undefined>(undefined);
+
+  const openProofDrawer = (pid?: string) => {
+    setSelectedProofPaymentId(pid || executionResult?.payment_id || (payments.length > 0 ? payments[0].payment_id : undefined));
+    setProofDrawerOpen(true);
+  };
 
   // Initial Load
   const fetchAll = async () => {
@@ -622,12 +633,21 @@ export default function MachineMoneyPage() {
                 <span className="font-mono text-muted-foreground">0 sats (Local routing)</span>
               </div>
               {executionResult?.payment_hash && executionResult?.preimage && (
-                <div className="pt-2 border-t border-border/40">
+                <div className="pt-2 border-t border-border/40 space-y-2">
                   <ProofVerification
                     paymentHash={executionResult.payment_hash}
                     preimage={executionResult.preimage}
                     isMock={health?.provider_name?.toLowerCase().includes("mock") ?? true}
                   />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full h-7 text-xs font-medium text-amber-500 border-amber-500/40 hover:bg-amber-500/10 gap-1.5"
+                    onClick={() => openProofDrawer(executionResult?.payment_id || activeTrailPaymentId || undefined)}
+                  >
+                    <ShieldCheckIcon className="size-3.5" />
+                    Open Proof &amp; Audit Drawer
+                  </Button>
                 </div>
               )}
             </CardContent>
@@ -684,7 +704,7 @@ export default function MachineMoneyPage() {
       {/* --------------------------------------------------------------------- */}
       {/* SECTION G: VISUAL GRAPH TRAIL (Section 19 G)                         */}
       {/* --------------------------------------------------------------------- */}
-      <Card className="border-border/80 shadow-xs">
+      <Card id="graph-trail-section" className="border-border/80 shadow-xs">
         <CardHeader className="pb-3 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
@@ -888,77 +908,31 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
           </CardFooter>
         </Card>
 
-        {/* Right 2 Columns: Evidence Package & Cross-Layer Justification */}
-        <Card className="lg:col-span-2 border-border/80 shadow-xs flex flex-col justify-between">
-          <CardHeader className="pb-3 border-b">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm flex items-center gap-2">
-                <DatabaseIcon className="size-4 text-purple-500" />
-                Cross-Layer GraphRAG Evidence Package
-              </CardTitle>
-              <Badge variant="outline" className="text-[10px] font-mono">
-                Section 18 Contract
-              </Badge>
-            </div>
-            <CardDescription className="text-xs">
-              Structured justification proving why the autonomous agent spent plant funds
-            </CardDescription>
-          </CardHeader>
-
-          <CardContent className="pt-4 space-y-3 text-xs">
-            <div className="p-3 rounded-lg bg-muted/40 border space-y-1.5">
-              <span className="font-semibold text-foreground flex items-center gap-1.5">
-                <CheckCircle2Icon className="size-3.5 text-emerald-500" />
-                Primary Causal Rationale
-              </span>
-              <p className="text-muted-foreground leading-relaxed">
-                {executionResult?.evidence_package?.reason ||
-                  "Vibration excursion (5.8 mm/s) on Slurry Pump P-101A exceeded critical threshold (2.5 mm/s). High-confidence match (94%) with historical bearing cage failure signature FE-001."}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <div className="p-2.5 rounded bg-muted/30 border">
-                <span className="text-muted-foreground block text-[10px] uppercase font-bold">Failure Event</span>
-                <span className="font-mono font-bold text-xs text-purple-400">
-                  {executionResult?.evidence_package?.matched_failure_event || "FE-001"}
-                </span>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Bearing Degradation</p>
-              </div>
-
-              <div className="p-2.5 rounded bg-muted/30 border">
-                <span className="text-muted-foreground block text-[10px] uppercase font-bold">Governing Procedure</span>
-                <span className="font-mono font-bold text-xs text-blue-400">
-                  {executionResult?.evidence_package?.governing_procedure || "PROC-001"}
-                </span>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Laser Alignment Standard</p>
-              </div>
-
-              <div className="p-2.5 rounded bg-muted/30 border">
-                <span className="text-muted-foreground block text-[10px] uppercase font-bold">Related Work Order</span>
-                <span className="font-mono font-bold text-xs text-emerald-400">
-                  {executionResult?.evidence_package?.related_work_order || "WO-1002"}
-                </span>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Historical Precedent</p>
-              </div>
-            </div>
-
-            <div className="p-3 rounded-lg bg-muted/40 border space-y-1">
-              <span className="font-semibold text-foreground text-[11px] block">
-                Cross-Layer Graph Justification
-              </span>
-              <p className="text-muted-foreground font-mono text-[11px] leading-relaxed">
-                {executionResult?.evidence_package?.cross_layer_justification ||
-                  "Predictive excursion on (P-101A) strongly correlates with historical failure signature (FE-001), triggering intervention Work Order (WO-1002) adhering to procedure (PROC-001). Spending 250 sats averts an estimated 4.5 hours of unbudgeted plant downtime."}
-              </p>
-            </div>
-          </CardContent>
-
-          <CardFooter className="pt-2 border-t text-xs text-muted-foreground flex justify-between items-center">
-            <span>Idempotency Key: <code className="text-foreground text-[10px]">{executionResult?.idempotency_key || "sha256:4b22c7a..."}</code></span>
-            <Badge variant="outline" className="text-[10px]">Zero Duplicate Payments Enforced</Badge>
-          </CardFooter>
-        </Card>
+        {/* Right 2 Columns: Evidence Summary Card (Section 18 Contract) */}
+        <EvidenceSummaryCard
+          equipmentId={equipmentTag}
+          anomalyTitle="Radial Bearing Vibration Excursion"
+          vibrationValue="5.8 mm/s (Threshold: 4.5 mm/s)"
+          confidence={confidence / 100}
+          failureSignatureId={executionResult?.evidence_package?.matched_failure_event || "FE-001"}
+          governingProcedure={executionResult?.evidence_package?.governing_procedure || "PROC-001"}
+          relatedWorkOrder={executionResult?.evidence_package?.related_work_order || "WO-1002"}
+          workOrderId={workOrderId}
+          serviceName="Precision Bearing Inspection & Laser Alignment"
+          costSats={executionResult?.amount_sats || 250}
+          policyCap={500}
+          policyStatus={executionResult?.status === "PAID" || executionResult?.status === "SETTLED" ? "AUTHORIZED" : "PENDING_APPROVAL"}
+          crossLayerJustification={
+            executionResult?.evidence_package?.cross_layer_justification ||
+            "Predictive excursion on (P-101A) strongly correlates with historical failure signature (FE-001), triggering intervention Work Order (WO-1002) adhering to procedure (PROC-001). Spending 250 sats averts an estimated 4.5 hours of unbudgeted plant downtime."
+          }
+          className="lg:col-span-2"
+          onOpenGraphTrail={() => {
+            const el = document.getElementById("graph-trail-section");
+            if (el) el.scrollIntoView({ behavior: "smooth" });
+          }}
+          onOpenProofDrawer={() => openProofDrawer(executionResult?.payment_id || activeTrailPaymentId || undefined)}
+        />
       </div>
 
       {/* --------------------------------------------------------------------- */}
@@ -1142,6 +1116,16 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
                               <GitBranchIcon className="size-3 mr-1 text-purple-400" />
                               Trail
                             </Button>
+
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-6 text-[11px] px-2 text-amber-500 border-amber-500/40 hover:bg-amber-500/10"
+                              onClick={() => openProofDrawer(p.payment_id)}
+                            >
+                              <ShieldCheckIcon className="size-3 mr-1" />
+                              Proof
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -1153,6 +1137,15 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
           </div>
         </CardContent>
       </Card>
+
+      {/* --------------------------------------------------------------------- */}
+      {/* Cryptographic Payment Proof & Multi-Tab Audit Drawer (Phase 3)        */}
+      {/* --------------------------------------------------------------------- */}
+      <PaymentProofDrawer
+        isOpen={proofDrawerOpen}
+        onClose={() => setProofDrawerOpen(false)}
+        paymentId={selectedProofPaymentId}
+      />
     </div>
   );
 }

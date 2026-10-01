@@ -254,6 +254,19 @@ def get_payment_evidence_package(payment_id: str, db: Session = Depends(get_db))
     }
 
 
+@router.get("/payments/{payment_id}/proof-package")
+async def get_payment_proof_package(
+    payment_id: str,
+    db: Session = Depends(get_db),
+    neo4j_session = Depends(get_session),
+):
+    """BE-04: Retrieve complete structured proof package (non-secret audit records, preimage proof, policy, and graph links)."""
+    try:
+        return await service.get_proof_package(db=db, payment_id=payment_id, neo4j_session=neo4j_session)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
 @router.post("/judge/execute", response_model=JudgeExecutionResponse)
 async def execute_judge_mode(
     req: Optional[JudgeExecutionRequest] = None,

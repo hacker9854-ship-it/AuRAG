@@ -802,5 +802,70 @@ export async function resetJudgeMode(): Promise<{ status: string; message: strin
   return res.json();
 }
 
+export interface ProofPackageResponse {
+  identity: {
+    payment_id: string;
+    idempotency_key: string;
+    created_at: string;
+    settled_at?: string | null;
+  };
+  payment: {
+    amount_sats: number;
+    amount_msat: number;
+    fee_sats: number;
+    status: string;
+    provider: string;
+    network: string;
+    bolt11: string;
+    memo: string;
+  };
+  policy: {
+    policy_id: string;
+    policy_name: string;
+    decision: string;
+    cap_sats: number;
+    confidence_score: number;
+    evaluated_by: string;
+  };
+  operational_context: {
+    equipment_id: string;
+    event_id: string;
+    work_order_id: string;
+    failure_event_id: string;
+    vendor_name: string;
+    reason: string;
+    governing_procedure: string;
+  };
+  cryptographic_proof: {
+    payment_hash: string;
+    preimage: string;
+    formula: string;
+    is_verified: boolean;
+    verification_mode: string;
+    status_label: string;
+  };
+  graph_links: {
+    equipment_tag: string;
+    predictive_event: string;
+    work_order: string;
+    payment_node: string;
+    lineage: string[];
+    trail?: any;
+  };
+  audit: {
+    audit_ledger_status: string;
+    table: string;
+    integrity: string;
+    recorded_at: string;
+  };
+  provider_mode: string;
+}
+
+export async function getPaymentProofPackage(paymentId: string): Promise<ProofPackageResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/payments/${paymentId}/proof-package`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch payment proof package.");
+  return res.json();
+}
+
 
 

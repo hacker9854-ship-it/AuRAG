@@ -116,3 +116,23 @@ def test_judge_mode_api_endpoint(client):
     reset_data = reset_resp.json()
     assert reset_data["status"] == "RESET"
     assert reset_data["ready"] is True
+
+    # 3. Retrieve Proof Package (BE-04)
+    payment_id = data["payment_record"]["payment_id"]
+    proof_resp = client.get(f"/api/machine-money/payments/{payment_id}/proof-package")
+    assert proof_resp.status_code == 200
+    proof_pkg = proof_resp.json()
+
+    assert "identity" in proof_pkg
+    assert "payment" in proof_pkg
+    assert "policy" in proof_pkg
+    assert "operational_context" in proof_pkg
+    assert "cryptographic_proof" in proof_pkg
+    assert "graph_links" in proof_pkg
+    assert "audit" in proof_pkg
+
+    # Verify cryptographic proof structure
+    crypto_proof = proof_pkg["cryptographic_proof"]
+    assert crypto_proof["is_verified"] is True
+    assert crypto_proof["payment_hash"] is not None
+    assert crypto_proof["preimage"] is not None

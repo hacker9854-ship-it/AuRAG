@@ -91,3 +91,18 @@ cd frontend && npm test
 | **Judge Mode Console UI** | `▶ RUN INDUSTRIAL EMERGENCY` CTA, escalation trigger, and reset action | PASS | `frontend/components/machine-money/JudgeMode.tsx` |
 | **Frontend Suite (Vitest)** | 5 tests for timeline empty/populated states, button actions, and scenario reset | PASS | `frontend/components/machine-money/JudgeMode.test.tsx` (5 passed in 255ms) |
 | **Total Test Suite** | 37 Backend Pytest tests & 27 Frontend Vitest tests passing | PASS | Zero regressions across whole codebase |
+
+---
+
+## 6. Phase 3 Verification Results (Evidence-First Payment Flow & Proof Drawer)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Proof Package API (BE-04)** | `GET /api/machine-money/payments/{payment_id}/proof-package` delivering 4-part verifiable payload | PASS | `backend/app/services/machine_money/service.py` & `backend/app/api/machine_money.py` |
+| **Backend Verification** | End-to-end retrieval and schema verification of cryptographic, invoice, graph lineage, and audit records | PASS | `tests/test_machine_money_judge_mode.py::test_judge_mode_api_endpoint` |
+| **Evidence Summary Card** | Answers "Why did we pay?" with 4 core pillars (Telemetry Anomaly, Matched Evidence, Service Action, Policy Gate), 94% confidence meter, and citations (`FE-001`, `PROC-001`, `WO-1002`) | PASS | `frontend/components/machine-money/EvidenceSummaryCard.tsx` |
+| **Payment Proof Drawer** | Multi-tab modal/drawer with 4 dedicated audit views: (1) Cryptographic Proof with Web Crypto verification, (2) BOLT11 Invoice & real QR, (3) Neo4j Operational Graph Lineage `(Equipment) -> (PredictiveEvent) -> (FailureSignature) -> (WorkOrder) -> (Payment) -> (ServiceProvider)`, (4) Audit Ledger & Policy Governance | PASS | `frontend/components/machine-money/PaymentProofDrawer.tsx` |
+| **Workspace Integration** | Integrated into `frontend/app/machine-money/page.tsx` with triggers on payment rows, Stage E card, and Evidence Summary Card | PASS | `frontend/app/machine-money/page.tsx` |
+| **Frontend Unit Suite** | 6 tests verifying 4 pillars, confidence meter, drawer tabs, close action, and dynamic API fetch | PASS | `frontend/components/machine-money/EvidenceAndProofDrawer.test.tsx` (6 passed) |
+| **Total Test Suite** | 37 Backend Pytest tests & 33 Frontend Vitest tests passing across 12 test files | PASS | 100% green tests across entire project |
+
