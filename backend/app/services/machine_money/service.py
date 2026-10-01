@@ -6,7 +6,7 @@ import logging
 import os
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import List, Optional
+from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session
 
 from backend.app.db.models import ApprovalRecord, AuditEvent, AutomationPolicy, PaymentRecord, utcnow
@@ -614,11 +614,23 @@ class MachineMoneyService:
             )
         )
 
-        # Stage 3: QUOTE_RESOLVED
+        # Stage 3: QUOTE_RESOLVED (Multi-Vendor RFQ - FR-04)
         service_id = "bearing-inspection"
-        svc = get_service(service_id)
-        cost_sats = override_cost_sats if override_cost_sats is not None else (svc.price_sats if svc else 250)
-        vendor_name = svc.provider_name if svc else "Industrial Dynamics Specialist Node"
+        from backend.app.services.machine_money.rfq import process_vendor_rfq
+        from backend.app.services.machine_money.schemas import VendorRFQRequest, SelectionStrategy
+
+        max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
+        rfq_res = process_vendor_rfq(
+            VendorRFQRequest(
+                equipment_id=equipment_id,
+                service_id=service_id,
+                strategy=SelectionStrategy.FASTEST_SLA,
+                max_budget_sats=max_autopay,
+            )
+        )
+        selected_cand = rfq_res.selected_vendor
+        cost_sats = override_cost_sats if override_cost_sats is not None else selected_cand.amount_sats
+        vendor_name = selected_cand.vendor_name if override_cost_sats is None else ("Heavy Turbomachinery Overhaul Node" if cost_sats > 500 else selected_cand.vendor_name)
         quote_id = f"QTE-JM-{uuid.uuid4().hex[:8].upper()}"
 
         events.append(
@@ -626,9 +638,19 @@ class MachineMoneyService:
                 stage=ExecutionStage.QUOTE_RESOLVED,
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
-                message=f"Vendor quote generated: {cost_sats} sats from '{vendor_name}' for '{svc.name if svc else service_id}' (2.0h SLA guarantee).",
-                evidence_refs=[quote_id, service_id],
-                data={"quote_id": quote_id, "cost_sats": cost_sats, "vendor": vendor_name, "service_id": service_id},
+                message=f"Multi-vendor RFQ resolved ({len(rfq_res.candidates)} bids): Selected '{vendor_name}' ({cost_sats} sats, {selected_cand.sla_hours}h SLA, {int(selected_cand.reliability_score * 100)}% reliability).",
+                evidence_refs=[quote_id, rfq_res.rfq_id, service_id],
+                data={
+                    "quote_id": quote_id,
+                    "rfq_id": rfq_res.rfq_id,
+                    "cost_sats": cost_sats,
+                    "vendor": vendor_name,
+                    "service_id": service_id,
+                    "sla_hours": selected_cand.sla_hours,
+                    "reliability_score": selected_cand.reliability_score,
+                    "total_bids": len(rfq_res.candidates),
+                    "selection_rationale": rfq_res.selection_rationale,
+                },
             )
         )
 
@@ -891,3 +913,12 @@ class MachineMoneyService:
             },
             "provider_mode": provider_mode,
         }
+
+    def get_vendor_rfq(self, request: Any) -> Any:
+        """Execute rule-based multi-vendor RFQ bidding and explainable selection (FR-04, BE-03)."""
+        from backend.app.services.machine_money.rfq import process_vendor_rfq
+        from backend.app.services.machine_money.schemas import VendorRFQRequest
+        if not isinstance(request, VendorRFQRequest):
+            request = VendorRFQRequest(**request) if isinstance(request, dict) else VendorRFQRequest()
+        return process_vendor_rfq(request)
+

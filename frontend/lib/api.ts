@@ -867,5 +867,74 @@ export async function getPaymentProofPackage(paymentId: string): Promise<ProofPa
   return res.json();
 }
 
+export type SelectionStrategy = "FASTEST_SLA" | "LOWEST_COST" | "HIGHEST_RELIABILITY" | "BALANCED";
+
+export interface VendorQuoteCandidate {
+  candidate_id: string;
+  vendor_id: string;
+  vendor_name: string;
+  node_pubkey: string;
+  service_id: string;
+  service_name: string;
+  amount_sats: number;
+  sla_hours: number;
+  reliability_score: number;
+  reputation_tier: string;
+  parts_included: string[];
+  is_synthetic: boolean;
+  within_policy_cap: boolean;
+  score: number;
+  valid_until: string;
+}
+
+export interface VendorRFQRequest {
+  equipment_id?: string;
+  service_id?: string;
+  strategy?: SelectionStrategy;
+  max_budget_sats?: number;
+}
+
+export interface VendorRFQResponse {
+  rfq_id: string;
+  requested_at: string;
+  service_id: string;
+  equipment_id: string;
+  strategy: SelectionStrategy;
+  policy_cap_sats: number;
+  candidates: VendorQuoteCandidate[];
+  selected_vendor: VendorQuoteCandidate;
+  selection_rationale: string;
+  scoring_model: Record<string, unknown>;
+  is_synthetic: boolean;
+  synthetic_disclosure: string;
+}
+
+export async function requestVendorRFQ(req?: VendorRFQRequest): Promise<VendorRFQResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/rfq`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req || {}),
+  });
+  if (!res.ok) throw new Error("Failed to request vendor RFQ.");
+  return res.json();
+}
+
+export async function getServiceRFQ(
+  serviceId: string,
+  strategy: SelectionStrategy = "FASTEST_SLA",
+  maxBudgetSats: number = 500,
+  equipmentId: string = "P-101A"
+): Promise<VendorRFQResponse> {
+  const params = new URLSearchParams({
+    strategy,
+    max_budget_sats: maxBudgetSats.toString(),
+    equipment_id: equipmentId,
+  });
+  const res = await fetch(`${API_URL}/api/machine-money/rfq/${serviceId}?${params.toString()}`);
+  if (!res.ok) throw new Error(`Failed to load RFQ for service ${serviceId}.`);
+  return res.json();
+}
+
+
 
 

@@ -63,6 +63,8 @@ import { ProofVerification } from "@/components/machine-money/ProofVerification"
 import { JudgeMode } from "@/components/machine-money/JudgeMode";
 import { EvidenceSummaryCard } from "@/components/machine-money/EvidenceSummaryCard";
 import { PaymentProofDrawer } from "@/components/machine-money/PaymentProofDrawer";
+import { VendorRFQ } from "@/components/machine-money/VendorRFQ";
+import type { VendorQuoteCandidate } from "@/lib/api";
 
 export default function MachineMoneyPage() {
   // Global & Subsystem state
@@ -82,6 +84,7 @@ export default function MachineMoneyPage() {
   const [serviceId, setServiceId] = useState("bearing-inspection");
   const [triggering, setTriggering] = useState(false);
   const [executionResult, setExecutionResult] = useState<M2MTriggerResult | null>(null);
+  const [selectedVendorCandidate, setSelectedVendorCandidate] = useState<VendorQuoteCandidate | null>(null);
 
   // Simulation state
   const [simulating, setSimulating] = useState(false);
@@ -521,19 +524,25 @@ export default function MachineMoneyPage() {
             <CardContent className="space-y-2.5 text-xs">
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">Service:</span>
-                <span className="font-mono font-bold">Bearing Inspection &amp; Alignment</span>
+                <span className="font-mono font-bold">{selectedVendorCandidate?.service_name || "Bearing Inspection & Alignment"}</span>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">Provider:</span>
-                <span className="font-mono font-semibold text-amber-500">maintenance-node-a</span>
+                <span className="font-mono font-semibold text-amber-500 truncate max-w-[150px]" title={selectedVendorCandidate?.vendor_name || "maintenance-node-a"}>
+                  {selectedVendorCandidate?.vendor_name || "maintenance-node-a"}
+                </span>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">Quoted Cost:</span>
-                <span className="font-mono text-base font-bold text-amber-500">250 sats</span>
+                <span className="font-mono text-base font-bold text-amber-500">
+                  {selectedVendorCandidate?.amount_sats ?? 250} sats
+                </span>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">SLA &amp; Duration:</span>
-                <span className="font-mono text-muted-foreground">2.0 hrs (Parts Included)</span>
+                <span className="font-mono text-muted-foreground">
+                  {selectedVendorCandidate?.sla_hours ?? 2.0} hrs (Parts Included)
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -934,6 +943,16 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
           onOpenProofDrawer={() => openProofDrawer(executionResult?.payment_id || activeTrailPaymentId || undefined)}
         />
       </div>
+
+      {/* --------------------------------------------------------------------- */}
+      {/* SECTION 19 C / FR-04: MULTI-VENDOR RFQ & COMPETITIVE BIDDING           */}
+      {/* --------------------------------------------------------------------- */}
+      <VendorRFQ
+        serviceId={serviceId}
+        equipmentId={equipmentTag}
+        policyCapSats={500}
+        onSelectCandidate={(cand) => setSelectedVendorCandidate(cand)}
+      />
 
       {/* --------------------------------------------------------------------- */}
       {/* SECTION 20: NOSTR STRETCH ARCHITECTURE CARD                           */}

@@ -156,3 +156,54 @@ class JudgeExecutionResponse(BaseModel):
     provider_mode: str = Field(default="MOCK / SIMULATION")
     summary: str
 
+
+class SelectionStrategy(str, Enum):
+    FASTEST_SLA = "FASTEST_SLA"
+    LOWEST_COST = "LOWEST_COST"
+    HIGHEST_RELIABILITY = "HIGHEST_RELIABILITY"
+    BALANCED = "BALANCED"
+
+
+class VendorQuoteCandidate(BaseModel):
+    candidate_id: str
+    vendor_id: str
+    vendor_name: str
+    node_pubkey: str
+    service_id: str
+    service_name: str
+    amount_sats: int
+    sla_hours: float
+    reliability_score: float = Field(..., ge=0.0, le=1.0, description="Reliability score between 0.0 and 1.0")
+    reputation_tier: str = Field(default="A", description="AAA, A+, A, B, etc.")
+    parts_included: List[str] = Field(default_factory=list)
+    is_synthetic: bool = True
+    within_policy_cap: bool = True
+    score: float = 0.0
+    valid_until: datetime
+
+
+class VendorRFQRequest(BaseModel):
+    equipment_id: str = Field(default="P-101A", description="Target equipment asset tag")
+    service_id: str = Field(default="bearing-inspection", description="Catalog service ID to request bids for")
+    strategy: SelectionStrategy = Field(
+        default=SelectionStrategy.FASTEST_SLA,
+        description="Selection rule: FASTEST_SLA, LOWEST_COST, HIGHEST_RELIABILITY, or BALANCED",
+    )
+    max_budget_sats: int = Field(default=500, description="Autonomous spending policy cap in satoshis")
+
+
+class VendorRFQResponse(BaseModel):
+    rfq_id: str
+    requested_at: datetime
+    service_id: str
+    equipment_id: str
+    strategy: SelectionStrategy
+    policy_cap_sats: int
+    candidates: List[VendorQuoteCandidate]
+    selected_vendor: VendorQuoteCandidate
+    selection_rationale: str
+    scoring_model: Dict[str, Any]
+    is_synthetic: bool = True
+    synthetic_disclosure: str = "Synthetic vendor quote model for Bitshala BOSS Battle Machine Money autonomous bidding demonstration"
+
+

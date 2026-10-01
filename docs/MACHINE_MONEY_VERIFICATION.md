@@ -106,3 +106,19 @@ cd frontend && npm test
 | **Frontend Unit Suite** | 6 tests verifying 4 pillars, confidence meter, drawer tabs, close action, and dynamic API fetch | PASS | `frontend/components/machine-money/EvidenceAndProofDrawer.test.tsx` (6 passed) |
 | **Total Test Suite** | 37 Backend Pytest tests & 33 Frontend Vitest tests passing across 12 test files | PASS | 100% green tests across entire project |
 
+---
+
+## 7. Phase 4 Verification Results (Multi-Vendor RFQ & Service Selection)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Vendor RFQ Data Model** | `SelectionStrategy`, `VendorQuoteCandidate`, `VendorRFQRequest`, `VendorRFQResponse` schemas | PASS | `backend/app/services/machine_money/schemas.py` |
+| **Synthetic RFQ Engine** | Deterministic bids with valid 66-character secp256k1 node pubkeys, SLA, reliability score, and clear disclosure | PASS | `backend/app/services/machine_money/rfq.py` |
+| **RFQ API Endpoints** | `POST /api/machine-money/rfq` and `GET /api/machine-money/rfq/{service_id}` | PASS | `backend/app/api/machine_money.py` & `backend/app/services/machine_money/service.py` |
+| **Explainable Selection Rules** | Deterministic evaluation for `FASTEST_SLA`, `LOWEST_COST`, `HIGHEST_RELIABILITY`, and `BALANCED` multi-objective scoring with explicit rationale citations | PASS | `backend/app/services/machine_money/rfq.py` |
+| **Backend Unit & Integration Tests** | 7 tests verifying quote generation, selection rules, budget cap enforcement, and API endpoints | PASS | `tests/test_machine_money_rfq.py` (7 passed in 3.19s) |
+| **Vendor Comparison UI** | Interactive strategy toggles (`BALANCED`, `FASTEST_SLA`, `LOWEST_COST`, `HIGHEST_RELIABILITY`), candidate cards with meters, spare parts badges, manual candidate override, and synthetic disclosure | PASS | `frontend/components/machine-money/VendorRFQ.tsx` |
+| **Workspace Integration** | Dynamic mounting in `frontend/app/machine-money/page.tsx` linked directly to Stage C service quote card | PASS | `frontend/app/machine-money/page.tsx` |
+| **Frontend Unit Suite** | 5 tests verifying container rendering, strategy switching, candidate selection, and synthetic disclosures | PASS | `frontend/components/machine-money/VendorRFQ.test.tsx` (5 passed) |
+| **Total Test Suite** | 44 Backend Pytest tests & 38 Frontend Vitest tests passing across 13 test files | PASS | 100% green tests across entire repository (zero regressions, zero linter errors) |
+

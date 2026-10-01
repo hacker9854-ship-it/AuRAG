@@ -13,9 +13,12 @@ from backend.app.services.machine_money.schemas import (
     JudgeExecutionResponse,
     PaymentStatus,
     ProviderHealth,
+    SelectionStrategy,
     ServiceQuote,
     SimulationRequest,
     SimulationResult,
+    VendorRFQRequest,
+    VendorRFQResponse,
 )
 from backend.app.services.machine_money.service import MachineMoneyService
 
@@ -299,6 +302,37 @@ async def reset_judge_mode():
         "network": health.network,
         "ready": True,
     }
+
+
+@router.post("/rfq", response_model=VendorRFQResponse)
+async def request_vendor_rfq(req: Optional[VendorRFQRequest] = None):
+    """FR-04 / BE-03: Process multi-vendor RFQ bidding with explainable rule-driven selection."""
+    payload = req or VendorRFQRequest()
+    try:
+        return service.get_vendor_rfq(payload)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/rfq/{service_id}", response_model=VendorRFQResponse)
+async def get_service_rfq(
+    service_id: str,
+    strategy: SelectionStrategy = Query(SelectionStrategy.FASTEST_SLA, description="Selection strategy"),
+    max_budget_sats: int = Query(500, description="Autonomous cap budget in satoshis"),
+    equipment_id: str = Query("P-101A", description="Target equipment tag"),
+):
+    """FR-04 / BE-03: Retrieve multi-vendor RFQ bids and winning candidate for a specific catalog service."""
+    try:
+        req = VendorRFQRequest(
+            equipment_id=equipment_id,
+            service_id=service_id,
+            strategy=strategy,
+            max_budget_sats=max_budget_sats,
+        )
+        return service.get_vendor_rfq(req)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
 
 
 
