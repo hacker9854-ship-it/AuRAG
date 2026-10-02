@@ -75,7 +75,7 @@ export function ExecutionTimeline({
         </div>
         <div className="flex items-center gap-2">
           {isRunning && (
-            <span className="flex items-center gap-1.5 text-xs text-amber-500 font-mono">
+            <span className="flex items-center gap-1.5 text-xs text-amber-500 font-mono animate-pulse">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
               Running...
             </span>
@@ -86,6 +86,25 @@ export function ExecutionTimeline({
         </div>
       </div>
 
+      {/* Restrained Stage Progress Bar (Task 8.2) */}
+      <div
+        data-testid="execution-progress-bar"
+        className="h-1.5 w-full bg-muted/60 rounded-full overflow-hidden"
+      >
+        <div
+          className={`h-full transition-all duration-300 ease-out rounded-full ${
+            events.some((e) => e.status === "FAILED")
+              ? "bg-rose-500"
+              : events.some((e) => e.status === "PENDING_APPROVAL")
+              ? "bg-amber-500"
+              : events.length >= 9
+              ? "bg-emerald-500"
+              : "bg-primary"
+          }`}
+          style={{ width: `${Math.min(100, Math.round((events.length / 9) * 100))}%` }}
+        />
+      </div>
+
       <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-border/60">
         {events.map((evt, idx) => {
           const config = STAGE_CONFIG[evt.stage] || { label: evt.stage, icon: Activity };
@@ -93,6 +112,7 @@ export function ExecutionTimeline({
           const isSuccess = evt.status === "SUCCESS";
           const isEscalated = evt.status === "PENDING_APPROVAL";
           const isFailed = evt.status === "FAILED";
+          const isLatest = idx === events.length - 1;
 
           // Format measured elapsed time: 0142ms -> 00.14s
           const seconds = (evt.elapsed_ms / 1000).toFixed(2);
@@ -102,11 +122,11 @@ export function ExecutionTimeline({
             <div
               key={`${evt.stage}-${idx}`}
               data-testid={`timeline-stage-${evt.stage.toLowerCase()}`}
-              className="relative group transition-all"
+              className="relative group transition-all animate-in fade-in-50 slide-in-from-left-1 duration-200"
             >
               {/* Node Icon on Timeline */}
               <div
-                className={`absolute -left-[27px] top-0.5 w-6 h-6 rounded-full flex items-center justify-center border-2 bg-background transition-colors ${
+                className={`absolute -left-[27px] top-0.5 w-6 h-6 rounded-full flex items-center justify-center border-2 bg-background transition-all duration-200 ${
                   isSuccess
                     ? "border-emerald-500 text-emerald-500"
                     : isEscalated
@@ -114,7 +134,7 @@ export function ExecutionTimeline({
                     : isFailed
                     ? "border-rose-500 text-rose-500"
                     : "border-primary text-primary"
-                }`}
+                } ${isLatest && isRunning ? "ring-4 ring-amber-500/30 animate-pulse" : isLatest ? "ring-2 ring-primary/20" : ""}`}
               >
                 {isSuccess && <CheckCircle2 className="w-3.5 h-3.5" />}
                 {isEscalated && <ShieldAlert className="w-3.5 h-3.5" />}
@@ -122,7 +142,7 @@ export function ExecutionTimeline({
               </div>
 
               {/* Stage Content */}
-              <div className="p-3 bg-muted/30 hover:bg-muted/50 rounded-xl border border-border/40 transition-colors">
+              <div className="p-3 bg-muted/30 hover:bg-muted/50 rounded-xl border border-border/40 transition-all duration-200">
                 <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                   <div className="flex items-center gap-2">
                     <Icon className="w-3.5 h-3.5 text-muted-foreground" />

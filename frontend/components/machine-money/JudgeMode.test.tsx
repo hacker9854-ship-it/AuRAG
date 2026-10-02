@@ -54,6 +54,8 @@ describe("Machine Money Phase 2: Judge Mode & Timeline Components", () => {
       expect(screen.getByTestId("timeline-stage-evidence_matched")).toBeInTheDocument();
       expect(screen.getByTestId("timeline-stage-policy_evaluated")).toBeInTheDocument();
 
+      expect(screen.getByTestId("execution-progress-bar")).toBeInTheDocument();
+
       // Check citations
       expect(screen.getByText("FE-001")).toBeInTheDocument();
       expect(screen.getByText("PROC-001")).toBeInTheDocument();
