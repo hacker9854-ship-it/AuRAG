@@ -161,3 +161,18 @@ cd frontend && npm test
 | **QR Payload Optical Regression (Task 7.4)** | Real BOLT11 strings across networks (`mainnet`, `testnet`, `regtest`) encoded in standard SVG/PNG QR format; optical decode via `jsQR` matches exact invoice string without whitespace or schema corruption; backend verifies exact string preservation in proof package. | PASS | `frontend/components/machine-money/Bolt11QRCode.decode.test.ts` (3 tests) & `tests/test_e2e_machine_money.py::test_e2e_16_qr_payload_exact_bolt11_regression` |
 | **Complete Payment Proof-Chain (Task 7.5)** | 8-dimensional proof package verification: (1) `payment_hash`, (2) `preimage` with verified SHA-256 match, (3) `idempotency_key`, (4) `work_order`, (5) `predictive_event`, (6) `policy` authorization decision, (7) Neo4j 6-node lineage `(Equipment) -> (PredictiveEvent) -> (FailureSignature) -> (WorkOrder) -> (Payment) -> (ServiceProvider)`, and (8) PostgreSQL `AuditEvent` SQL persistence. | PASS | `tests/test_e2e_machine_money.py::test_e2e_17_complete_payment_proof_chain_regression` |
 | **Total Test Suite Regression** | 17 comprehensive E2E tests, 51 machine money unit/integration tests, and 44 frontend Vitest tests passing with 0 regressions across the entire repository. | PASS | 100% green tests in both Python (`pytest`) and TypeScript (`vitest`) |
+
+---
+
+## 11. Phase 8 Verification Results (UI Polish and Judge Experience)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Above-the-Fold Optimization (Task 8.1)** | 5-Question Judge Orientation Ribbon answers PRD2 Section 2.3 questions immediately above the fold (`1. Why We Pay`, `2. Justified By`, `3. Why Allowed`, `4. Settlement`, `5. Business Impact`); compact action header with instant scenario access and status badges. | PASS | `frontend/components/machine-money/JudgeMode.tsx` & `JudgeMode.test.tsx` (commit `84d4ee8`) |
+| **Motion & Stage Clarity (Task 8.2)** | Restrained execution progress bar (`data-testid="execution-progress-bar"`), active stage pulse ring, and smooth micro-transitions (`fade-in-50 slide-in-from-left-1 duration-200`) providing judge stage clarity without visual clutter or layout shift. | PASS | `frontend/components/machine-money/ExecutionTimeline.tsx` & `JudgeMode.test.tsx` (commit `945dc81`) |
+| **Responsive Audit (Task 8.3)** | Layout hardened across desktop (1440px+), tablet (768px-1024px), and mobile (<640px); `overflow-x-auto` tab strip with `shrink-0` safeguards in `PaymentProofDrawer.tsx`; mobile stacked full-width button triggers in `JudgeMode.tsx`. | PASS | `frontend/components/machine-money/PaymentProofDrawer.tsx` & `JudgeMode.tsx` (commit `b916540`) |
+| **Accessibility Pass (Task 8.4)** | WCAG 2.1 AA compliant dialog semantics (`role="dialog"`, `aria-modal="true"`, `aria-labelledby="proof-drawer-title"`), accessible tablist controls (`role="tab"`, `aria-selected`), descriptive `aria-label` attributes on all scenario controls, and keyboard focus rings. | PASS | `frontend/components/machine-money/EvidenceAndProofDrawer.test.tsx` & `JudgeMode.test.tsx` (commit `f38332e`) |
+| **Frontend Production Build** | Next.js 16.2.11 production build (`npm run build`) compiles cleanly with 0 TypeScript errors across all 12 application routes. | PASS | `next build` compiled in 7.0s, TypeScript verified in 10.5s |
+| **Frontend Test Suite (Vitest)** | 14 test suites, 47 unit/integration tests passing (including optical QR decode, crypto proof, vendor RFQ, economics explainability, and accessible drawer). | PASS | Vitest run: 47 passed in 23.36s |
+| **Backend Test Suite (Pytest)** | 68 Machine Money unit, integration, and end-to-end tests passing without regressions. | PASS | Pytest run: 68 passed in 8.28s |
+
