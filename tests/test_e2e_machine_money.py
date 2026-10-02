@@ -450,3 +450,101 @@ def test_e2e_13_complete_autonomous_lifecycle_e2e():
     assert econ_data["protection_multiple"] > 1000000
     assert econ_data["is_estimated"] is True
 
+
+# -----------------------------------------------------------------------------
+# Phase 7 — Task 7.2: Above-Cap E2E Policy Escalation
+# high amount (>500 sats) → policy gate → pending approval → evidence package → operator approve → settle
+# -----------------------------------------------------------------------------
+def test_e2e_14_policy_escalation_lifecycle_e2e():
+    """Verify above-cap payment lifecycle: blocked from autopay, enriched evidence inspectable, approved by human."""
+    unique_suffix = uuid.uuid4().hex[:8]
+    idemp_key = f"idemp-esc-e2e-{unique_suffix}"
+
+    # 1. Generate Invoice for 1,200 sats (exceeds 500-sat cap)
+    inv_res = client.post(
+        "/api/machine-money/invoice",
+        json={
+            "amount_sats": 1200,
+            "memo": "Emergency Rotor Dynamic Balancing & Alignment",
+            "equipment_id": "P-101A",
+            "idempotency_key": idemp_key,
+        },
+    )
+    assert inv_res.status_code == 200
+    invoice = inv_res.json()["invoice"]
+
+    # 2. Unilateral bypass rejected if attempted (Task 6.1 boundary check)
+    bypass_res = client.post(
+        "/api/machine-money/pay",
+        json={
+            "bolt11": invoice,
+            "amount_sats": 1200,
+            "bypass_policy": True,
+            "idempotency_key": idemp_key,
+        },
+    )
+    assert bypass_res.status_code == 403
+
+    # 3. Standard autonomous attempt routes to PENDING_APPROVAL
+    pay_res = client.post(
+        "/api/machine-money/pay",
+        json={
+            "bolt11": invoice,
+            "amount_sats": 1200,
+            "work_order_id": f"WO-ESC-{unique_suffix}",
+            "idempotency_key": idemp_key,
+        },
+    )
+    assert pay_res.status_code == 200
+    pay_data = pay_res.json()
+    assert pay_data["status"] == PaymentStatus.PENDING_APPROVAL.value
+    payment_id = pay_data["payment_id"]
+
+    # 4. Human Approval Evidence Package retrieved before sign-off (Task 6.2)
+    ev_res = client.get(f"/api/machine-money/payments/{payment_id}/approval-evidence")
+    assert ev_res.status_code == 200
+    ev_data = ev_res.json()
+    assert ev_data["payment_id"] == payment_id
+    assert ev_data["amount_sats"] == 1200
+    assert ev_data["autonomous_cap_sats"] == 500
+    assert ev_data["excess_sats_over_cap"] == 700
+    assert "ISO 10816 Zone C" in ev_data["telemetry_excursion"]["standard"]
+    assert ev_data["governing_procedure"] == "PROC-001"
+    assert ev_data["industrial_economics"]["gross_exposure_usd"] == 1170000.0
+    assert len(ev_data["recommended_action"]) > 0
+    assert len(ev_data["rollback_guidance"]) > 0
+
+    # 5. Plant reliability engineer executes formal approval sign-off
+    appr_res = client.post(
+        f"/api/machine-money/payments/{payment_id}/approve",
+        json={
+            "reviewer_id": "chief-reliability-engineer-mumbai",
+            "review_notes": "Emergency rotor alignment verified against ISO 10816 vibration spectrogram.",
+        },
+    )
+    assert appr_res.status_code == 200
+    appr_data = appr_res.json()
+    assert appr_data["status"] in (PaymentStatus.SETTLED.value, PaymentStatus.MOCK_PAID.value)
+    assert appr_data["preimage"] is not None
+    assert len(appr_data["preimage"]) == 64
+
+    # 6. Judge Mode Policy Escalation Scenario E2E
+    judge_res = client.post(
+        "/api/machine-money/judge/execute",
+        json={
+            "scenario": "POLICY_ESCALATION",
+            "equipment_id": "P-101A",
+            "override_cost_sats": 1200,
+        },
+    )
+    assert judge_res.status_code == 200
+    judge_data = judge_res.json()
+    assert judge_data["status"] == "PENDING_APPROVAL"
+    assert judge_data["payment_record"]["status"] == "PENDING_APPROVAL"
+    assert judge_data["payment_record"]["amount_sats"] == 1200
+    assert "idempotency_key" in judge_data["payment_record"]
+    stages = [e["stage"] for e in judge_data["events"]]
+    assert "POLICY_EVALUATED" in stages
+    assert "SETTLEMENT_CONFIRMED" not in stages
+
+
