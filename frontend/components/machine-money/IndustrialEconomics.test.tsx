@@ -93,11 +93,12 @@ describe("IndustrialEconomics Component (Phase 5 / Tasks 5.3 & 5.4)", () => {
     // Title and version badges
     expect(screen.getByText("Machine Money Intelligence & Industrial Economics")).toBeInTheDocument();
     expect(screen.getByText("v2026.1-industrial-m2m")).toBeInTheDocument();
-    expect(screen.getByText("ESTIMATED / SYNTHETIC MODEL")).toBeInTheDocument();
+    expect(screen.getByText("MODELLED / SYNTHETIC")).toBeInTheDocument();
 
     // Downtime exposure cards
     await waitFor(() => {
       expect(screen.getByText("$1.17M")).toBeInTheDocument();
+      expect(screen.getByText("Modelled Downtime Exposure")).toBeInTheDocument();
       expect(screen.getByText("250")).toBeInTheDocument();
       expect(screen.getByText("7.2M×")).toBeInTheDocument();
     });
@@ -123,9 +124,11 @@ describe("IndustrialEconomics Component (Phase 5 / Tasks 5.3 & 5.4)", () => {
     // Verify dialog content
     expect(screen.getByText("Industrial Economics Explainability & Assumption Basis")).toBeInTheDocument();
     expect(screen.getByText("Mathematical Calculation Formula")).toBeInTheDocument();
+    expect(screen.getByText(/Step-by-Step Economic Derivation:/)).toBeInTheDocument();
+    expect(screen.getByText(/Modelled Downtime Exposure = Avoided Outage Duration \(4\.5h\) × Outage Cost Rate/)).toBeInTheDocument();
     expect(screen.getByText(/Net Value Preserved = \(Avoided Outage Hours/)).toBeInTheDocument();
     expect(screen.getByText("Parameterized Synthetic Plant Assumptions (Task 5.2)")).toBeInTheDocument();
-    expect(screen.getByText(/\$260,000/)).toBeInTheDocument();
+    expect(screen.getAllByText(/\$260,000/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("85%")).toBeInTheDocument();
 
     expect(screen.getByText("Interactive Sensitivity Sandbox (Live Model Testing)")).toBeInTheDocument();

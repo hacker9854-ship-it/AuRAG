@@ -174,10 +174,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
             5. Business Impact
           </span>
           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-            $1.17M Loss Averted
+            $1.17M Modelled Exposure
           </span>
           <span className="text-[10px] text-muted-foreground font-mono">
-            4.5h Outage Avoided
+            4.5h Synthetic Outage
           </span>
         </div>
       </div>

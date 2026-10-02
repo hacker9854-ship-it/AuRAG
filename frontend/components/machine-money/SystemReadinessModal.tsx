@@ -34,9 +34,11 @@ export function SystemReadinessModal({
   const isConnected = health?.is_connected ?? true;
   const providerName = health?.provider_name || "mock";
   const network = health?.network || "regtest";
-  const latencyMs = health?.latency_ms ?? 1.2;
-  const balanceSats = health?.balance_sats ?? 1000000;
-  const isSim = providerName.toLowerCase().includes("mock") || health?.is_mock !== false;
+  const isMock = health?.is_mock !== false || providerName.toLowerCase().includes("mock");
+  const isLive = !isMock && isConnected;
+  const latencyDisplay = health?.latency_ms != null && !isMock ? `${health.latency_ms.toFixed(1)} ms` : "DEMO VALUE (MOCK)";
+  const balanceDisplay = health?.balance_sats != null && !isMock ? `${health.balance_sats.toLocaleString("en-US")} sats` : "DEMO VALUE (MOCK)";
+  const providerStatusState = isConnected ? (isLive ? "CONNECTED" : "DEMO VALUE (MOCK)") : "DISCONNECTED";
 
   return (
     <div
@@ -58,8 +60,15 @@ export function SystemReadinessModal({
                 <h3 id="system-readiness-title" className="font-bold text-base font-heading">
                   Safe System Readiness &amp; Operational Health
                 </h3>
-                <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 font-semibold">
-                  ALL SYSTEMS NOMINAL
+                <span
+                  data-testid="system-readiness-status-badge"
+                  className={`font-mono text-[10px] px-2 py-0.5 rounded border font-semibold ${
+                    isLive
+                      ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                      : "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20"
+                  }`}
+                >
+                  {isLive ? "ALL SYSTEMS NOMINAL" : "SIMULATION ENVIRONMENT READY"}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -86,15 +95,15 @@ export function SystemReadinessModal({
             <div className="space-y-0.5">
               <span className="text-[10px] uppercase font-bold text-muted-foreground">Configured Settlement Mode</span>
               <p className="text-xs font-semibold text-foreground">
-                {isSim ? "Zero-Risk Deterministic Simulation" : "Live Lightning Network Settlement"}
+                {isMock ? "Zero-Risk Deterministic Simulation" : "Live Lightning Network Settlement"}
               </p>
             </div>
             <ProviderModeBadge
               providerName={providerName}
               network={network}
-              isMock={isSim}
-              balanceSats={balanceSats}
-              latencyMs={latencyMs}
+              isMock={isMock}
+              balanceSats={health?.balance_sats}
+              latencyMs={health?.latency_ms}
               showDetails={true}
             />
           </div>
@@ -111,23 +120,27 @@ export function SystemReadinessModal({
                   <Zap className="w-4 h-4 text-amber-500" />
                   Lightning Provider Layer
                 </span>
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
+                <span
+                  className={`inline-flex items-center gap-1 text-[11px] font-semibold ${
+                    isConnected ? (isLive ? "text-emerald-500" : "text-purple-400") : "text-rose-500"
+                  }`}
+                >
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  {isConnected ? "Connected" : "Degraded"}
+                  {providerStatusState}
                 </span>
               </div>
               <div className="font-mono text-[11px] text-muted-foreground space-y-1 pt-1">
                 <div className="flex justify-between">
                   <span>Adapter:</span>
-                  <span className="text-foreground capitalize">{providerName}Provider</span>
+                  <span className="text-foreground capitalize">{providerName}Provider {isMock && "(Simulated)"}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Settlement Latency:</span>
-                  <span className="text-foreground">{latencyMs.toFixed(1)} ms</span>
+                  <span className="text-foreground">{latencyDisplay}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Available Liquidity:</span>
-                  <span className="text-foreground">{balanceSats.toLocaleString()} sats</span>
+                  <span className="text-foreground">{balanceDisplay}</span>
                 </div>
               </div>
             </div>
@@ -212,7 +225,7 @@ export function SystemReadinessModal({
               <div className="font-mono text-[11px] text-muted-foreground space-y-1 pt-1">
                 <div className="flex justify-between">
                   <span>Bidding Nodes:</span>
-                  <span className="text-foreground">4 Maintenance Providers</span>
+                  <span className="text-foreground">3 Synthetic Vendor Nodes</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Optimization:</span>
@@ -242,16 +255,16 @@ export function SystemReadinessModal({
               </div>
               <div className="font-mono text-[11px] text-muted-foreground space-y-1 pt-1">
                 <div className="flex justify-between">
-                  <span>Engine Version:</span>
-                  <span className="text-foreground">v2026.1-industrial-m2m</span>
+                  <span>Model Type:</span>
+                  <span className="text-foreground">Modelled Downtime Exposure</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Target Equipment:</span>
                   <span className="text-foreground">P-101A Crude Pump</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Protection Metric:</span>
-                  <span className="text-foreground">Gross Exposure vs Sats</span>
+                  <span>Facility Basis:</span>
+                  <span className="text-foreground">Synthetic Plant Parameters</span>
                 </div>
               </div>
             </div>

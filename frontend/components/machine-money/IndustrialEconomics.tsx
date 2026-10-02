@@ -169,9 +169,9 @@ export function IndustrialEconomics({
               </Badge>
               <Badge
                 variant="secondary"
-                className="text-[10px] uppercase font-bold tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                className="text-[10px] uppercase font-bold tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/30"
               >
-                ESTIMATED / SYNTHETIC MODEL
+                MODELLED / SYNTHETIC
               </Badge>
             </div>
             <CardDescription className="text-xs text-muted-foreground">
@@ -242,17 +242,20 @@ export function IndustrialEconomics({
               </div>
             </div>
 
-            {/* KPI 2: Estimated Exposure Value Mitigated */}
+            {/* KPI 2: Modelled Downtime Exposure */}
             <div className="p-3 rounded-lg bg-card/80 border border-border/60">
               <div className="text-[11px] text-muted-foreground flex items-center gap-1 font-medium">
                 <DollarSignIcon className="size-3.5 text-emerald-400" />
-                Exposure Avoided
+                Modelled Downtime Exposure
               </div>
               <div className="text-xl sm:text-2xl font-black font-mono text-emerald-400 mt-1">
                 ${(grossExposure / 1000000).toFixed(2)}M
               </div>
               <div className="text-[10px] text-muted-foreground mt-0.5">
                 Risk-weighted: <span className="text-foreground font-mono font-semibold">${(riskWeightedExposure / 1000).toFixed(0)}k</span>
+              </div>
+              <div className="text-[9px] text-muted-foreground/80 mt-1 italic">
+                Modelled estimate based on synthetic industrial facility parameters
               </div>
             </div>
 
@@ -459,24 +462,38 @@ export function IndustrialEconomics({
             {/* Drawer Body */}
             <div className="p-4 sm:p-5 space-y-5 text-xs">
               {/* Formula Panel */}
-              <div className="p-4 rounded-lg bg-slate-950 border border-emerald-500/30 space-y-2">
+              <div className="p-4 rounded-lg bg-slate-950 border border-emerald-500/30 space-y-3">
                 <div className="flex items-center justify-between text-[11px] text-emerald-400 font-semibold uppercase tracking-wider">
                   <span>Mathematical Calculation Formula</span>
                   <Button
                     variant="ghost"
                     size="sm"
                     className="h-6 px-1.5 text-[10px] text-emerald-400 hover:text-emerald-300 gap-1"
-                    onClick={() => handleCopyFormula(displayEconomics?.formula || "")}
+                    onClick={() => handleCopyFormula(
+                      "Modelled Downtime Exposure = Avoided Outage Duration (4.5h) * Outage Cost Rate ($260,000/h) = $1,170,000\n" +
+                      "Intervention Cost = 250 sats ≈ $0.15 (at $60k/BTC)\n" +
+                      "Protection Multiple = $1,170,000 / $0.15 ≈ 7,800,000 : 1\n" +
+                      "Net Value Preserved = (Avoided Outage Hours * Hourly Outage Rate) - Intervention Cost USD"
+                    )}
                   >
                     {copiedFormula ? <CheckCircle2Icon className="size-3 text-emerald-400" /> : <CopyIcon className="size-3" />}
                     {copiedFormula ? "Copied" : "Copy"}
                   </Button>
                 </div>
-                <div className="font-mono text-slate-100 text-xs sm:text-sm bg-slate-900/80 p-2.5 rounded border border-border/40">
-                  Net Value Preserved = (Avoided Outage Hours &times; Hourly Outage Rate) &minus; Intervention Cost USD
+                <div className="space-y-1.5 font-mono text-slate-100 text-xs sm:text-sm bg-slate-900/80 p-3 rounded-lg border border-border/40">
+                  <div className="text-emerald-400 font-semibold text-[11px] uppercase tracking-wider">Step-by-Step Economic Derivation:</div>
+                  <div>Modelled Downtime Exposure = Avoided Outage Duration (4.5h) &times; Outage Cost Rate ($260,000/h) = $1,170,000</div>
+                  <div>Intervention Cost = 250 sats &asymp; $0.15 (at $60,000/BTC)</div>
+                  <div>Protection Multiple = $1,170,000 / $0.15 &asymp; 7,800,000 : 1</div>
+                  <div className="pt-1 border-t border-border/40 text-[11px] text-slate-300">
+                    Net Value Preserved = (Avoided Outage Hours &times; Hourly Outage Rate) &minus; Intervention Cost USD
+                  </div>
                 </div>
                 <div className="font-mono text-slate-300 text-[11px] bg-slate-900/50 p-2 rounded">
-                  Risk-Weighted Exposure = Gross Exposure &times; Catastrophic Failure Probability (85%)
+                  Risk-Weighted Exposure = Gross Exposure &times; Catastrophic Failure Probability (85%) = $994,500
+                </div>
+                <div className="text-[10px] text-amber-300/80 italic">
+                  Modelled estimate based on synthetic industrial facility parameters. Not an empirical historical plant loss.
                 </div>
               </div>
 

@@ -125,7 +125,7 @@ In high-consequence industrial facilities (power plants, refineries, chemical ma
 AuRAG gives industrial machines **cognitive intelligence and financial sovereignty**:
 - **Sensor Alert ➔ Root Cause in Seconds**: When sensor `VIB-301` breaches 4.8 mm/s (ISO 10816 Zone C), AuRAG's GraphRAG engine traverses Neo4j ontology to identify bearing wear (`FE-001: Bearing inner race spalling`) and matches required replacement parts (`SKF-6205-2RS`).
 - **Autonomous M2M Lightning Settlement**: AuRAG solicits competitive quotes from 3 vendors (Apex Diagnostics, Precision Dynamics, Quantum Reliability), scores them using a transparent mathematical algorithm, pays a BOLT11 Lightning invoice via LNbits within strict zero-trust budget caps, and saves the **cryptographic preimage** as unforgeable audit evidence.
-- **Zero Human Latency**: The complete cycle from telemetry excursion to paid spare-parts dispatch executes in **< 15 seconds** with a 2.34M:1 ROI ratio ($1.17M downtime avoided per 50-sat payment).
+- **Zero Human Latency**: The complete cycle from telemetry excursion to paid spare-parts dispatch executes in **< 15 seconds** with a 7,800,000:1 protection multiple ($1.17M modelled downtime exposure per 250-sat payment).
 
 ---
 
@@ -237,7 +237,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🕸️ **Industrial GraphRAG Engine** — Hybrid retrieval combining Neo4j graph topology (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`), dense Qdrant embeddings, and BM25 lexical search.
 - 📐 **Multimodal P&ID & OCR Ingestion** — Automatic extraction of tags, valves, piping specs, and loop IDs from industrial engineering diagrams using Gemini and Google Cloud Vision.
 - 📊 **Real-Time SCADA Telemetry Watch** — Continuous monitoring of vibration, pressure, and temperature excursions with ISO 10816 zone classification and automated predictive maintenance triggers.
-- 🏭 **Industrial Economics Dashboard** — Interactive ROI calculator quantifying $1.17M downtime avoided per 50-sat payment with explicit synthetic data disclosures.
+- 🏭 **Industrial Economics Dashboard** — Interactive ROI calculator quantifying $1.17M modelled downtime exposure per 250-sat payment with explicit synthetic data disclosures.
 - 🛡️ **5-Layer Zero-Trust Financial Safeguards** — Per-transaction spending caps (>500 sats → human escalation), daily budgets, SHA-256 idempotency, human approval workflows, and atomic rollbacks.
 - 🔑 **Cryptographic Preimage Audit Trail** — Every settlement stores the Lightning payment preimage verified via `SHA256(preimage) === payment_hash` using Web Crypto (frontend) and Python `hashlib` (backend).
 - 🔄 **Deterministic Idempotency Protection** — SHA-256 idempotency cache rejecting duplicate physical anomaly triggers and network retries.
