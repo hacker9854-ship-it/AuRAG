@@ -28,7 +28,7 @@ When industrial sensors detect an anomalous vibration excursion, AuRAG does not 
 6. **Records** the complete causal reasoning-to-payment trail in the plant knowledge graph:  
    $$\text{Equipment} \rightarrow \text{PredictiveEvent} \rightarrow \text{WorkOrder} \leftarrow \text{Payment} \rightarrow \text{ServiceProvider}$$
 
-When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG traverses the graph and provides an indisputable, mathematically grounded explanation.
+When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG traverses the graph and provides a verifiable, mathematically grounded explanation backed by a cryptographic audit trail.
 
 ---
 

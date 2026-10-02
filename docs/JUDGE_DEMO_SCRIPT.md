@@ -15,7 +15,7 @@
 * **Narration:**
   > "Judges, modern industrial IoT is filled with sensors that detect critical anomalies in milliseconds. But what happens next? 
   > Action stops. Work orders sit in disconnected ERP queues, vendor dispatch takes days of manual invoicing, and plants suffer catastrophic unplanned downtime.
-  > Today, we present **AuRAG Machine Money** — the first autonomous machine-to-machine payment protocol that binds **physical industrial telemetry**, **deterministic GraphRAG evidence**, **automated spending governance**, and **instant Bitcoin Lightning micro-settlement** into a single closed loop."
+  > Today, we present **AuRAG Machine Money** — an industrial-grade autonomous machine-to-machine payment protocol that binds **physical industrial telemetry**, **deterministic GraphRAG evidence**, **automated spending governance**, and **Bitcoin Lightning micro-settlement** into a single closed loop."
 
 ---
 
@@ -40,7 +40,7 @@
   > 3. **Autonomous RFQ Resolved:** 3 pre-approved synthetic vendor nodes bid; the algorithm selects the optimal SLA provider for 250 sats.
   > 4. **Policy Evaluated:** 250 sats is within our plant automated cap of 500 sats. Approved.
   > 5. **Invoice Generated:** Real BOLT11 payment request synthesized.
-  > 6. **Payment Authorized & Settled:** Micro-payment settled via Lightning adapter in under 200ms.
+  > 6. **Payment Authorized & Settled:** Micro-payment settled via Lightning adapter in ~412ms (measured in local simulated runtime; real Lightning mainnet routing is typically 500ms–2000ms).
   > 7. **Graph Linked & Outcome Resolved:** Preimage committed to Neo4j knowledge graph and SQL audit ledger."
 
 ---
@@ -63,7 +63,7 @@
   > Auditing is bidirectional — you can start from a satoshi transaction and trace back to the physical motor bearing.
   > Now look at the bottom dashboard: **Industrial Economics**.
   > Why spend 250 sats? Because pump P-101A carries an hourly outage loss of $260,000. 
-  > A 250-sat intervention ($0.16) averts 4.5 hours of emergency downtime, preserving **$1.17M in gross exposure** — an economic protection multiple of **7.2 Million to 1**!
+  > A 250-sat intervention ($0.15 at $60k/BTC) averts 4.5 hours of emergency downtime, preserving **$1.17M in modelled downtime exposure** (based on synthetic plant parameters) — an economic protection multiple of **7.8 Million to 1**!
   > Every assumption is transparently parameterized in our Explainability Drawer."
 
 ---
@@ -80,14 +80,14 @@
 ---
 
 ### 🏆 Part 7: Architecture Summary & Defensibility (4:00 – 5:00)
-* **Screen:** Click the **`System Readiness`** badge in the header strip to display the 6 nominal subsystems.
+* **Screen:** Click the **`System Readiness`** badge in the header strip to display the subsystem operational readiness.
 * **Narration:**
   > "To summarize our technical defensibility:
   > 1. **Zero Credential Leaks:** Our pre-submission scanners scanned 350+ files — zero API keys or secrets in source.
   > 2. **Complete Test Coverage:** 77 Pytest backend tests and 52 Vitest frontend tests — 100% green across regression, failure-paths, and E2E loops.
   > 3. **Production Deployed:** Next.js 16 live on Vercel, FastAPI Docker container live on Railway.
   > 4. **Authentic Provenance:** All code written during the Bitshala build window with preserved git timestamps.
-  > AuRAG proves that when machines have money, industrial operations transform from slow, reactive maintenance into autonomous, self-healing cyber-physical infrastructure.
+  > AuRAG proves that when machines have money, industrial operations transform from slow, reactive maintenance into autonomous, self-healing cyber-physical infrastructure designed for zero unplanned downtime.
   > Thank you, and we welcome your questions!"
 
 ---

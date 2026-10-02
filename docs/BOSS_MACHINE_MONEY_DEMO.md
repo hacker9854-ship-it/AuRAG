@@ -72,7 +72,7 @@
 - **On Screen:** Stage E (Lightning Micro-Payment Card) & BOLT11 QR Code.
 - **Visual Focus:** Live BOLT11 invoice string `lnbc2500n1...`, QR Code, and status transition from `Pending` $\rightarrow$ `Paid (Settled)`.
 - **Speaker Narration:**
-  > *"The service provider generates a standard BOLT11 Lightning invoice. AuRAG pays the invoice instantaneously over the Lightning Network. Within 15 milliseconds, the invoice is settled! We receive a cryptographic SHA-256 preimage proof confirming settlement with zero routing fees."*
+  > *"The service provider generates a standard BOLT11 Lightning invoice. AuRAG pays the invoice over the Lightning Network. Within ~412 milliseconds on our simulated runtime, the invoice is settled (with typical mainnet Lightning routing requiring 500ms–2000ms)! We receive a cryptographic SHA-256 preimage proof confirming settlement with zero routing fees."*
 
 ---
 
@@ -80,7 +80,7 @@
 - **On Screen:** Stage F (Operational Outcome Card).
 - **Visual Focus:** Target Work Order `WO-2026-P101` changes status to `FUNDED / DISPATCHED`.
 - **Speaker Narration:**
-  > *"Look at Stage F: Work Order WO-2026-P101 is now officially funded and dispatched to the field contractor. The machine has resolved its own impending failure autonomously, averting an estimated 4.5 hours of unbudgeted plant downtime."*
+  > *"Look at Stage F: Work Order WO-2026-P101 is now officially funded and dispatched to the field contractor. The machine has resolved its own impending failure autonomously, averting an estimated 4.5 hours of unbudgeted plant downtime (modelled downtime exposure of $1.17M based on synthetic plant parameters)."*
 
 ---
 

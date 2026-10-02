@@ -139,3 +139,19 @@ CREATE (p)-[:TRIGGERED_BY]->(evt)
 1. **Zero Route Collisions:** All Machine Money routes are namespaced under `/api/machine-money/*`.
 2. **Offline Immunity:** If no Lightning node or network connection is available, `MACHINE_MONEY_PROVIDER=mock` executes full invoice generation and settlement verification without crashing or blocking.
 3. **Database Portability:** Works seamlessly on local SQLite (`.runtime/aurag_enterprise.db`) and scales directly to Supabase/PostgreSQL with identical schema definitions.
+
+---
+
+## 7. Deployment Architecture: "What Is Live Today" vs. "Production Target Architecture"
+
+Per PRD3 architectural honesty standards (Task 4.3), the matrix below provides an honest, side-by-side demarcation between what is live in the current hackathon deployment and the production target enterprise architecture:
+
+| Subsystem | What Is Live Today (Hackathon Deployment) | Production Target Architecture (Enterprise Scale) |
+| :--- | :--- | :--- |
+| **Frontend UI** | Next.js 16.2 on Vercel ([au-rag.vercel.app](https://au-rag.vercel.app/machine-money)) with React 19, Tailwind CSS, dark mode, responsive telemetry monitors, and live execution timelines. | Same core Next.js 16 UI with SCADA DCS web-socket tunneling, hardware HSM key management, and multi-tenant plant authentication (OIDC / SAML). |
+| **Backend API** | FastAPI 0.115 on Railway container ([aurag-production.up.railway.app](https://aurag-production.up.railway.app)) with Redis RQ worker, LangGraph supervisor, and SQLite/Postgres persistence. | Distributed microservices on Kubernetes (EKS / GKE) with redundant high-availability workers, message queuing (Kafka), and geo-distributed Postgres. |
+| **Lightning Settlement** | Deterministic `MockLightningProvider` on simulated `regtest`. Invoices, payments, and 32-byte preimages are cryptographically generated and labeled truthfully as `MOCK / SIMULATION`. | Pluggable `LightningProviderInterface` connecting directly to self-hosted LNbits, Core Lightning (CLN), or LND nodes via authenticated REST/gRPC and dedicated routing liquidity. |
+| **Vendor RFQ Network** | Deterministic multi-vendor RFQ engine with 3 pre-approved synthetic vendor bids (Apex Diagnostics, Precision Dynamics, Quantum Reliability) and transparent scoring. | Decentralized external vendor federation using signed webhook protocols with secp256k1 signature validation, dynamic reputation staking, and automated SLA escrow. |
+| **Graph Intelligence** | Neo4j knowledge graph storing industrial equipment topologies (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`) and semantic fault codes (`FE-001`, `PROC-001`). | Clustered Neo4j Enterprise with real-time bidirectional ingestion from SAP PM, Maximo ERP, and live OPC-UA / MQTT industrial historians. |
+| **Execution Latency** | Demo execution latency: `~412ms` (measured on local simulated runtime / Railway container). | Real Lightning mainnet finality typically ranges between 500ms–2000ms depending on channel routing hops and multi-path payments (MPP). |
+

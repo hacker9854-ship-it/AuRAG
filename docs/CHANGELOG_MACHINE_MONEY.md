@@ -87,7 +87,7 @@ The resulting system is an end-to-end cyber-physical autonomous micro-settlement
   - `7d51633` (2026-10-02) — `feat(machine-money): add industrial economics dashboard`
   - `dac97bb` (2026-10-02) — `feat(machine-money): explain industrial impact estimates`
 - **Key Deliverables:**
-  - Added key financial metrics: Net Savings, ROI Ratio (7.80M : 1), Settlement Latency (412ms), and Success Rate (99.8%).
+  - Added key financial metrics: Net Savings, ROI Ratio (7.80M : 1), Settlement Latency (~412ms measured on local simulated runtime; real Lightning mainnet routing typically 500ms–2000ms), and Success Rate (99.8%).
   - Built interactive ROI calculator with parameter sliders for downtime cost/hr and MTBF extension.
   - Explicit disclosures identifying figures as **Modelled Estimates based on synthetic plant parameters**.
 
