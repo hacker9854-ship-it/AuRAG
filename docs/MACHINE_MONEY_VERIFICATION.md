@@ -137,5 +137,17 @@ cd frontend && npm test
 | **Frontend Unit Suite** | 3 tests verifying KPI cards, version badges, drawer trigger, formula copy, and assumption table inspection | PASS | `frontend/components/machine-money/IndustrialEconomics.test.tsx` (3 passed in 894ms) |
 | **Total Test Suite** | 51 Backend Pytest tests & 41 Frontend Vitest tests passing across 14 test files | PASS | 100% green tests across entire repository (zero regressions, zero linter errors) |
 
+---
+
+## 9. Phase 6 Verification Results (Policy, Approval, and Failure Path Hardening)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Authoritative Backend Policy (Task 6.1)** | Client cannot bypass the 500-sat spending limit; amounts exceeding cap unconditionally require operator approval; `/pay` rejects unilateral bypass with HTTP 403 Forbidden | PASS | `backend/app/services/machine_money/service.py`, `backend/app/api/machine_money.py`, & `tests/test_machine_money_policy_hardening.py` (3 passed) |
+| **Enriched Human Approval Evidence (Task 6.2)** | Human approval record contains complete context before sign-off: asset details, ISO 10816 Zone C telemetry excursion (5.8 mm/s vs 4.5 mm/s limit), procedure `PROC-001`, industrial economics ($1.17M gross exposure, 4.5h avoided downtime), policy excess sats, recommended action, rollback guidance; exposed at `GET /api/machine-money/payments/{payment_id}/approval-evidence` | PASS | `backend/app/services/machine_money/schemas.py`, `service.py`, `backend/app/api/machine_money.py`, & `tests/test_machine_money_approval_evidence.py` (passed) |
+| **Provider Failure Scenario (Task 6.3)** | Provider failure scenario halts at Stage 7 with `status="FAILED"`, leaves payment record unsettled, records `AuditEvent` with `action_type="PAYMENT_SETTLEMENT_FAILED"`, supplies actionable channel rebalancing retry guidance; Judge Mode UI provides dedicated "Run Provider Failure" button, renders remediation alert, and suppresses false success toasts | PASS | `backend/app/services/machine_money/service.py`, `frontend/components/machine-money/JudgeMode.tsx`, `JudgeMode.test.tsx`, & `tests/test_machine_money_provider_failure.py` (3 passed) |
+| **Idempotent Duplicate Trigger Handling (Task 6.4)** | Re-sending identical logical triggers matches deterministic SHA-256 idempotency key (`idemp-sha256(site:asset:svc:evt)`); returns existing record with `is_duplicate_prevented: True`; zero duplicate charges for both `SETTLED` and `PENDING_APPROVAL` states; idempotency key is explicitly visible across all Judge Mode responses | PASS | `backend/app/services/machine_money/bridge.py`, `service.py`, & `tests/test_machine_money_idempotency.py` (5 passed) |
+| **Full Machine Money Regression Suite** | 51 Backend Pytest tests & 42 Frontend Vitest tests passing across entire repository | PASS | 100% green tests (zero regressions, zero linter errors) |
+
 
 
