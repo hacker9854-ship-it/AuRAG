@@ -6,6 +6,11 @@ import os
 import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Dict, Optional
+from backend.app.services.machine_money.bolt11 import (
+    MOCK_NODE_PUBKEY,
+    decode_bolt11,
+    encode_bolt11,
+)
 from backend.app.services.machine_money.exceptions import ProviderError, InvoiceExpiredError
 from backend.app.services.machine_money.providers.base import LightningProvider
 from backend.app.services.machine_money.schemas import (
@@ -21,6 +26,7 @@ from backend.app.services.machine_money.schemas import (
 class MockLightningProvider(LightningProvider):
     """Zero-risk, offline simulated Lightning Provider.
     Clearly designated as MOCK / SIMULATION in all metadata, receipts, and invoices.
+    Generates genuinely parseable, standard-compliant BOLT11 invoices.
     """
 
     def __init__(self, initial_balance_sats: int = 1_000_000):
@@ -41,7 +47,7 @@ class MockLightningProvider(LightningProvider):
             is_connected=True,
             network=self.network,
             balance_sats=self.balance_sats,
-            node_pubkey="02mocknode0000000000000000000000000000000000000000000000000000000001",
+            node_pubkey=MOCK_NODE_PUBKEY,
             latency_ms=1.2,
             details={
                 "simulation": True,
@@ -51,20 +57,24 @@ class MockLightningProvider(LightningProvider):
         )
 
     async def create_invoice(self, request: InvoiceRequest) -> BOLT11Invoice:
-        """Create a mock BOLT11 payment request with realistic hash and expiry."""
+        """Create a genuinely parseable BOLT11 payment request with realistic hash and expiry."""
         preimage = secrets.token_hex(32)
         payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
         invoice_id = f"mock-inv-{payment_hash[:12]}"
         
-        # Format a realistic-looking mock BOLT11 string
-        mock_bolt11 = (
-            f"lnbcrt{request.amount_sats}u1p"
-            f"{payment_hash[:32]}"
-            f"mocksimulatedinvoice0000000000000000000000000000000000"
-        )
-        
         now = utcnow()
         expires_at = now + timedelta(seconds=request.expiry_seconds)
+        timestamp = int(now.timestamp())
+
+        # Synthesize a genuinely parseable BOLT11 payment request with BIP173 Bech32 and secp256k1 signature
+        mock_bolt11 = encode_bolt11(
+            network=self.network,
+            amount_sats=request.amount_sats,
+            payment_hash_hex=payment_hash,
+            description=f"[MOCK / SIMULATION] {request.memo}",
+            timestamp=timestamp,
+            expiry_seconds=request.expiry_seconds,
+        )
 
         invoice = BOLT11Invoice(
             invoice_id=invoice_id,
@@ -104,9 +114,20 @@ class MockLightningProvider(LightningProvider):
             matching_invoice.status = PaymentStatus.MOCK_PAID
         else:
             # External or simulated ad-hoc invoice
+            decoded = None
+            try:
+                decoded = decode_bolt11(bolt11)
+            except Exception:
+                pass
+
+            if decoded and decoded.get("tags", {}).get("payment_hash"):
+                payment_hash = decoded["tags"]["payment_hash"]
+                amount_sats = decoded.get("amount_sats") or 150
+            else:
+                preimage = secrets.token_hex(32)
+                payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
+                amount_sats = 150
             preimage = secrets.token_hex(32)
-            payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
-            amount_sats = 150  # Default test inspection satoshis
 
         if self.balance_sats < amount_sats:
             raise ProviderError(f"Insufficient mock wallet balance: {self.balance_sats} < {amount_sats}")

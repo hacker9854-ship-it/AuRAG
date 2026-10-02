@@ -42,7 +42,8 @@ function createQrImageData(modules: boolean[][], scale = 8, border = 4): {
 describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 1.1)", () => {
   it("verifies that a real BOLT11 invoice encoded in standard QR decodes to the exact string", async () => {
     const QRCode = await import("qrcode");
-    const testInvoice = "lnbcrt2500u1pmocksimulatedinvoice0000000000000000000000000000000000";
+    const testInvoice =
+      "lnbcrt2500n1pj48ugqpp5qxaywxwgpdh7jydsjxnuq5fyke8wan5kfcyuqk8037vqtkk2234ssp50nuwt7l793l234xk7vsps0y3l2qr3e6l0qgfrthq38yyerww6fhsdz6tdx57s6tyqhjq56ff425cs25f985uhfqf45kxun094cxz7tdv4h8ggrxdaezq5pdxycrzsfqd36kyunfvdshg6t0dcxqrrsscqpjjga32ynxew6snx8mdhv9qdtt5405zt2kdh5h5fcsm7pydlnrfckzzntwqu77gcfdtyjkglaphs6rjjlj548gc8lhljpaw7vtcawejecqwtnmnz";
 
     const qrData = QRCode.create(testInvoice, { errorCorrectionLevel: "M" });
     const size = qrData.modules.size;

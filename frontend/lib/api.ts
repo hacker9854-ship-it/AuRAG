@@ -623,6 +623,8 @@ export interface M2MTriggerResult {
   approval_id?: string | null;
   payment_hash?: string;
   preimage?: string;
+  bolt11?: string;
+  payment_record?: any;
   paid_at?: string;
   is_duplicate_prevented: boolean;
 }

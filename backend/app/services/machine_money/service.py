@@ -22,6 +22,7 @@ from backend.app.services.machine_money.graph import (
     get_payment_graph_trail,
     record_payment_in_graph,
 )
+from backend.app.services.machine_money.bolt11 import encode_bolt11
 from backend.app.services.machine_money.providers import get_payment_provider
 from backend.app.services.machine_money.registry import (
     generate_idempotency_key,
@@ -1028,7 +1029,15 @@ class MachineMoneyService:
                 "status": record.status if record else "SETTLED",
                 "provider": record.provider if record else health.provider_name,
                 "network": record.network if record else health.network,
-                "bolt11": record.invoice if record else meta.get("bolt11", f"lnbcrt2500u1p{payment_hash[:32]}mocksimulatedinvoice0000000000000000000000000000000000"),
+                "bolt11": record.invoice if record else meta.get(
+                    "bolt11",
+                    encode_bolt11(
+                        network=record.network if record else health.network,
+                        amount_sats=record.amount_sats if record else meta.get("amount_sats", 250),
+                        payment_hash_hex=payment_hash,
+                        description=meta.get("memo", f"[MOCK / SIMULATION] Service settlement for {meta.get('equipment_id', 'P-101A')}"),
+                    ),
+                ),
                 "memo": meta.get("memo", f"Service settlement for {meta.get('equipment_id', 'P-101A')}"),
             },
             "policy": {

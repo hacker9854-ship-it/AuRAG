@@ -7,7 +7,8 @@ import { sha256Hex } from "@/lib/crypto";
 
 describe("Machine Money Phase 1 Components", () => {
   describe("Bolt11QRCode", () => {
-    const mockInvoice = "lnbcrt2500u1pmocksimulatedinvoice0000000000000000000000000000000000";
+    const mockInvoice =
+      "lnbcrt2500n1pj48ugqpp5qxaywxwgpdh7jydsjxnuq5fyke8wan5kfcyuqk8037vqtkk2234ssp50nuwt7l793l234xk7vsps0y3l2qr3e6l0qgfrthq38yyerww6fhsdz6tdx57s6tyqhjq56ff425cs25f985uhfqf45kxun094cxz7tdv4h8ggrxdaezq5pdxycrzsfqd36kyunfvdshg6t0dcxqrrsscqpjjga32ynxew6snx8mdhv9qdtt5405zt2kdh5h5fcsm7pydlnrfckzzntwqu77gcfdtyjkglaphs6rjjlj548gc8lhljpaw7vtcawejecqwtnmnz";
 
     it("renders standards-compliant SVG with exact invoice and mock badge", () => {
       render(<Bolt11QRCode value={mockInvoice} isMock={true} amountSats={250} />);
