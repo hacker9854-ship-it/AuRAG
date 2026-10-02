@@ -649,5 +649,89 @@ def test_e2e_16_qr_payload_exact_bolt11_regression():
     assert proof_pkg["payment"]["amount_sats"] == 250
 
 
+# -----------------------------------------------------------------------------
+# Phase 7 — Task 7.5: Proof-Chain Regression
+# payment_hash, preimage, idempotency_key, work_order, predictive_event, policy, graph, sql audit
+# -----------------------------------------------------------------------------
+def test_e2e_17_complete_payment_proof_chain_regression():
+    """Verify complete 8-link payment proof chain across cryptographic, policy, operational, and audit layers."""
+    import hashlib
+
+    # Trigger a real autonomous payment
+    unique_evt = f"EVT-PROOF-{uuid.uuid4().hex[:8]}"
+    res = client.post(
+        "/api/machine-money/trigger-from-telemetry",
+        json={
+            "equipment_tag": "P-101A",
+            "event_id": unique_evt,
+            "failure_event_id": "FE-001",
+            "confidence": 0.94,
+            "work_order_id": "WO-2026-P101",
+        },
+    )
+    assert res.status_code == 200
+    pay_data = res.json()
+    pid = pay_data["payment_id"]
+
+    # Fetch the comprehensive proof package
+    proof_res = client.get(f"/api/machine-money/payments/{pid}/proof-package")
+    assert proof_res.status_code == 200
+    pkg = proof_res.json()
+
+    # 1. payment_hash
+    payment_hash = pkg["cryptographic_proof"]["payment_hash"]
+    assert payment_hash is not None and len(payment_hash) == 64
+
+    # 2. preimage & SHA-256 verification
+    preimage = pkg["cryptographic_proof"]["preimage"]
+    assert preimage is not None and len(preimage) == 64
+    computed_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
+    assert computed_hash.lower() == payment_hash.lower()
+    assert pkg["cryptographic_proof"]["is_verified"] is True
+
+    # 3. idempotency_key
+    idemp_key = pkg["identity"]["idempotency_key"]
+    assert idemp_key.startswith("idemp-")
+
+    # 4. work_order
+    work_order = pkg["operational_context"]["work_order_id"]
+    assert work_order == "WO-2026-P101"
+
+    # 5. predictive_event
+    predictive_event = pkg["operational_context"]["event_id"]
+    assert predictive_event == unique_evt
+
+    # 6. policy
+    assert pkg["policy"]["policy_id"] == "POL-LIGHTNING-MACHINE-MONEY"
+    assert pkg["policy"]["decision"] == "AUTHORIZED"
+    assert pkg["policy"]["cap_sats"] == 500
+
+    # 7. graph lineage
+    lineage = pkg["graph_links"]["lineage"]
+    assert any("Equipment" in node for node in lineage)
+    assert any("PredictiveEvent" in node for node in lineage)
+    assert any("FailureSignature" in node for node in lineage)
+    assert any("WorkOrder" in node for node in lineage)
+    assert any("Payment" in node for node in lineage)
+    assert any("ServiceProvider" in node for node in lineage)
+
+    # 8. sql audit
+    assert pkg["audit"]["audit_ledger_status"] == "SQL_PERSISTED"
+    db = next(get_db())
+    from backend.app.db.models import AuditEvent
+    audit = (
+        db.query(AuditEvent)
+        .filter(
+            AuditEvent.action_type == "LIGHTNING_PAYMENT_SETTLED",
+            AuditEvent.status == "SUCCESS",
+        )
+        .order_by(AuditEvent.id.desc())
+        .first()
+    )
+    assert audit is not None
+    assert pid in audit.details_json
+
+
+
 
 

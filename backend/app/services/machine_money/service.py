@@ -1017,7 +1017,7 @@ class MachineMoneyService:
             "policy": {
                 "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
                 "policy_name": "Autonomous M2M Maintenance Spending Policy",
-                "decision": "AUTHORIZED" if (record and record.status in ["PAID", "SETTLED"]) else "PENDING_APPROVAL",
+                "decision": "AUTHORIZED" if (record and record.status in ["PAID", "SETTLED", "MOCK_PAID"]) else "PENDING_APPROVAL",
                 "cap_sats": int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500")),
                 "confidence_score": meta.get("confidence", 0.94),
                 "evaluated_by": "spending-limit-guard",
