@@ -181,14 +181,14 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
       </div>
 
       {/* Control Buttons Grid */}
-      <div className="py-4 flex flex-wrap items-center gap-3">
+      <div className="py-4 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
         {/* Primary CTA */}
         <button
           type="button"
           data-testid="run-emergency-button"
           onClick={() => handleRunScenario("INDUSTRIAL_EMERGENCY", 250)}
           disabled={isRunning}
-          className="relative group overflow-hidden px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-amber-500/25 transition-all flex items-center gap-2.5 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-amber-500/40 hover:ring-amber-500"
+          className="relative group overflow-hidden px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-amber-500/25 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-amber-500/40 hover:ring-amber-500 w-full sm:w-auto"
         >
           <Play className={`w-4 h-4 fill-current ${isRunning ? "animate-spin" : "group-hover:translate-x-0.5 transition-transform"}`} />
           <span>RUN INDUSTRIAL EMERGENCY</span>
@@ -203,7 +203,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           data-testid="run-escalation-button"
           onClick={() => handleRunScenario("POLICY_ESCALATION", 1200)}
           disabled={isRunning}
-          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center gap-2 disabled:opacity-50"
+          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2 disabled:opacity-50 w-full sm:w-auto"
         >
           <ShieldAlert className="w-4 h-4 text-amber-500" />
           <span>Run Policy Escalation (&gt;500 sats)</span>
@@ -216,7 +216,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           data-testid="run-provider-failure-button"
           onClick={() => handleRunScenario("PROVIDER_FAILURE", 250)}
           disabled={isRunning}
-          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center gap-2 disabled:opacity-50 hover:border-rose-500/40"
+          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2 disabled:opacity-50 hover:border-rose-500/40 w-full sm:w-auto"
         >
           <AlertOctagon className="w-4 h-4 text-rose-500" />
           <span>Run Provider Failure</span>
@@ -229,7 +229,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           data-testid="reset-scenario-button"
           onClick={handleReset}
           disabled={isRunning}
-          className="px-3.5 py-3 hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-medium rounded-xl border border-transparent hover:border-border transition-all flex items-center gap-1.5 disabled:opacity-50"
+          className="px-3.5 py-3 hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-medium rounded-xl border border-transparent hover:border-border transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 w-full sm:w-auto"
           title="Reset demonstration state"
         >
           <RotateCcw className="w-3.5 h-3.5" />

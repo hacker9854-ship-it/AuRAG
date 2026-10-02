@@ -97,7 +97,7 @@ export function PaymentProofDrawer({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center px-5 border-b border-border/60 bg-muted/10 text-xs font-semibold gap-1">
+        <div className="flex items-center px-3 sm:px-5 border-b border-border/60 bg-muted/10 text-xs font-semibold gap-1 overflow-x-auto">
           <button
             type="button"
             data-testid="proof-tab-crypto"
