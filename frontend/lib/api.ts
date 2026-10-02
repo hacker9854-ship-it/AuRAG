@@ -935,6 +935,127 @@ export async function getServiceRFQ(
   return res.json();
 }
 
+// ---------------------------------------------------------------------------
+// Phase 5: Machine Money Intelligence & Industrial Economics Contracts
+// ---------------------------------------------------------------------------
+
+export interface VendorSpendItem {
+  vendor_name: string;
+  spend_sats: number;
+  payment_count: number;
+  percentage: number;
+}
+
+export interface MachineMoneyMetrics {
+  total_spend_sats: number;
+  total_spend_msat: number;
+  total_fee_sats: number;
+  fiat_spend_usd_estimate: number;
+  settled_count: number;
+  pending_count: number;
+  failed_count: number;
+  total_transactions: number;
+  autonomous_count: number;
+  human_approval_count: number;
+  autonomous_rate_percentage: number;
+  average_settlement_latency_ms: number;
+  average_settlement_latency_seconds: number;
+  vendor_spend: VendorSpendItem[];
+  total_quotes_generated: number;
+  quotes_converted: number;
+  quote_to_payment_conversion_rate: number;
+  computed_at: string;
+}
+
+export interface IndustrialPlantAssumptions {
+  plant_id: string;
+  equipment_tag: string;
+  equipment_name: string;
+  criticality_tier: string;
+  hourly_downtime_cost_usd: number;
+  unmitigated_downtime_hours: number;
+  catastrophic_failure_probability: number;
+  manual_procurement_hours: number;
+  autonomous_m2m_dispatch_seconds: number;
+  default_intervention_sats: number;
+  btc_fiat_usd_rate: number;
+  data_basis: string;
+  assumptions_version: string;
+}
+
+export interface IndustrialEconomicsModel {
+  is_estimated: boolean;
+  estimated_marker: string;
+  calculation_version: string;
+  equipment_tag: string;
+  equipment_name: string;
+  downtime_hours_avoided: number;
+  hourly_downtime_cost_usd: number;
+  estimated_downtime_exposure_usd: number;
+  risk_weighted_exposure_usd: number;
+  intervention_cost_sats: number;
+  intervention_cost_usd: number;
+  net_value_preserved_usd: number;
+  protection_multiple: number;
+  lead_time_saved_hours: number;
+  assumptions: IndustrialPlantAssumptions;
+  formula: string;
+  risk_weighted_formula: string;
+  data_basis: string;
+  transparency_notes: string;
+  computed_at: string;
+}
+
+export interface IndustrialEconomicsRequest {
+  equipment_tag?: string;
+  intervention_cost_sats?: number;
+  hourly_downtime_cost_usd?: number;
+  unmitigated_downtime_hours?: number;
+}
+
+export async function getMachineMoneyMetrics(): Promise<MachineMoneyMetrics> {
+  const res = await fetch(`${API_URL}/api/machine-money/analytics/metrics`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to load Machine Money analytics metrics.");
+  return res.json();
+}
+
+export async function getIndustrialEconomics(
+  equipmentTag: string = "P-101A",
+  interventionCostSats?: number,
+  hourlyCostUsd?: number,
+  downtimeHours?: number
+): Promise<IndustrialEconomicsModel> {
+  const params = new URLSearchParams({ equipment_tag: equipmentTag });
+  if (interventionCostSats !== undefined) params.append("intervention_cost_sats", interventionCostSats.toString());
+  if (hourlyCostUsd !== undefined) params.append("hourly_downtime_cost_usd", hourlyCostUsd.toString());
+  if (downtimeHours !== undefined) params.append("unmitigated_downtime_hours", downtimeHours.toString());
+
+  const res = await fetch(`${API_URL}/api/machine-money/analytics/economics?${params.toString()}`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to load industrial economics data.");
+  return res.json();
+}
+
+export async function calculateCustomIndustrialEconomics(
+  req: IndustrialEconomicsRequest
+): Promise<IndustrialEconomicsModel> {
+  const res = await fetch(`${API_URL}/api/machine-money/analytics/economics`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new Error("Failed to calculate custom economics.");
+  return res.json();
+}
+
+export async function getPlantAssumptions(equipmentTag: string): Promise<IndustrialPlantAssumptions> {
+  const res = await fetch(`${API_URL}/api/machine-money/analytics/assumptions/${encodeURIComponent(equipmentTag)}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Failed to load plant assumptions for ${equipmentTag}.`);
+  return res.json();
+}
+
+
 
 
 

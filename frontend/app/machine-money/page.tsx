@@ -64,6 +64,7 @@ import { JudgeMode } from "@/components/machine-money/JudgeMode";
 import { EvidenceSummaryCard } from "@/components/machine-money/EvidenceSummaryCard";
 import { PaymentProofDrawer } from "@/components/machine-money/PaymentProofDrawer";
 import { VendorRFQ } from "@/components/machine-money/VendorRFQ";
+import { IndustrialEconomics } from "@/components/machine-money/IndustrialEconomics";
 import type { VendorQuoteCandidate } from "@/lib/api";
 
 export default function MachineMoneyPage() {
@@ -953,6 +954,15 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
         policyCapSats={500}
         onSelectCandidate={(cand) => setSelectedVendorCandidate(cand)}
       />
+
+      {/* --------------------------------------------------------------------- */}
+      {/* SECTION 19 D / FR-14 / PHASE 5: INDUSTRIAL ECONOMICS & INTELLIGENCE   */}
+      {/* --------------------------------------------------------------------- */}
+      <IndustrialEconomics
+        equipmentTag={equipmentTag}
+        activeInterventionSats={executionResult?.amount_sats || 250}
+      />
+
 
       {/* --------------------------------------------------------------------- */}
       {/* SECTION 20: NOSTR STRETCH ARCHITECTURE CARD                           */}
