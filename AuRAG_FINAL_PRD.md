@@ -1,1611 +1,319 @@
 # PRD — AuRAG Final Hackathon Hardening & Submission Plan
+**Master Phased Execution Document**
 
-**Project:** AuRAG — Autonomous Industrial Intelligence + Machine Money  
-**Track:** Machine Money  
-**Objective:** Maximize judge-visible technical depth, factual credibility, demo reliability, and product clarity before final submission.
-
-> This PRD is an execution document. Every phase has a deliverable, exact acceptance criteria, tests, and a required commit. Do not start the next phase until the current phase passes its gate.
-
----
-
-# 0. Non-Negotiable Rules
-
-## 0.1 Truthfulness
-
-The repository, README, UI, screenshots, demo script, and submission form must describe the implementation exactly.
-
-Never:
-- backdate or rewrite Git history to fabricate development duration
-- claim a live Lightning settlement when the demo is simulated
-- claim BOLT11 compliance when the payload is not a valid BOLT11 invoice
-- claim GraphRAG retrieval when the executed demo path only uses a fixture
-- claim real vendor APIs when vendors are synthetic/pre-approved
-- claim measured production performance from mock/local execution
-- present synthetic economics as real losses avoided
-- claim unsupported “first”, “industry-grade”, “unforgeable”, “production-grade” status
-
-Use explicit labels:
-- `MOCK / SIMULATION`
-- `CONTROLLED DEMO FIXTURE`
-- `SYNTHETIC DATA`
-- `MODELLED ECONOMICS`
-- `LIVE LIGHTNING` only when the provider is actually live
-
-## 0.2 Scope discipline
-
-Do not add another major framework, database, blockchain, or agent system after Phase 2 unless it directly fixes a blocker.
-
-The final product should feel like one coherent system:
-
-> **Detect → Ground → Decide → Quote → Govern → Pay → Prove → Act**
-
-## 0.3 Canonical scenario
-
-Use one canonical judge scenario everywhere:
-
-- Equipment: `P-101A`
-- Sensor: `VIB-301-BEARING`
-- Vibration: `5.4 mm/s`
-- Threshold: `4.5 mm/s`
-- Service: `bearing-inspection`
-- Autonomous payment: `250 sats`
-- Autonomous cap: `500 sats`
-- Escalation scenario: `1,200 sats`
-- Vendors: exactly `3`
-- Failure evidence: `FE-001`
-- Historical work order: `WO-1002`
-- Procedure: `PROC-001`
-- Economics: `4.5h` modelled outage, `$1.17M` modelled exposure
-- Economics ratio for 250 sats: `7,800,000:1` modelled protection multiple
-
-No other amount/vendor count should appear in the primary README/demo unless clearly marked as a separate test case.
+- **Project:** AuRAG — Autonomous Industrial Intelligence + Machine Money
+- **Track:** Machine Money (Bitshala BOSS Battle 2026)
+- **Target:** 100% Truthful, Judge-Defensible, Production-Structured Submission
+- **Execution Style:** Phase-gated, test-driven, MCP browser-verified, commit-after-green
 
 ---
 
-# 1. Current Audit Findings
+## 0. Master Execution Protocol for AI Agent
 
-The latest repository is already strong in architecture and product presentation. The remaining blockers are mostly credibility/consistency issues.
+### 0.1 One-Command Phase Execution
+The user will command one phase at a time using simple prompts:
+- `phase 2 start kro`
+- `phase 3 start kro`
+- `phase X start kro`
 
-## P0 blockers
+When a phase command is received, the agent must autonomously:
+1. **Locate Phase Specification**: Read the exact tasks, target files, acceptance criteria, and commit message from Section 3.
+2. **Inspect Current Code**: Check the actual workspace files before modifying.
+3. **Implement**: Apply the required backend, frontend, schema, or documentation changes.
+4. **End-to-End Test Suite**:
+   - Backend: Run full `pytest` suite (`.\.venv\Scripts\pytest.exe -v ...`).
+   - Frontend: Run full `vitest` suite (`npm --prefix frontend test -- --run`).
+   - Build: Run Next.js production build (`npm --prefix frontend run build`).
+   - Browser / UI: Use Chrome DevTools MCP or browser subagent to visually verify changes and ensure zero console errors.
+5. **Fix Any Bugs**: Iterate until 100% of tests pass and build succeeds. Zero test skipping or silencing allowed.
+6. **Commit & Push to GitHub**: Commit using the exact conventional commit message specified for the phase, and run `git push origin main`.
+7. **Report & Wait**: Present a concise status report with modified files, test outputs, and commit hash, then wait for the user's next command.
 
-### P0-1. Mock provider emits a “realistic-looking” string, not a standards-valid BOLT11 invoice
+### 0.2 Definition of Done (DoD)
+A phase is considered **DONE** only when:
+- [x] All task acceptance criteria for that phase are satisfied.
+- [x] Backend tests pass (85+ Pytest).
+- [x] Frontend tests pass (56+ Vitest).
+- [x] Next.js production build passes with 0 TypeScript/ESLint errors.
+- [x] Visual verification via browser tools/screenshots confirms expected UI behavior.
+- [x] Zero secrets or private keys exposed in code or git.
+- [x] Mock vs. Live behavior is truthfully labeled across UI, API, and docs.
+- [x] Changes committed and pushed to `origin/main`.
 
-Current file:
-`backend/app/services/machine_money/providers/mock.py`
-
-The mock provider manually constructs a string beginning with `lnbcrt...`, but the payload is not actually produced by BOLT11 encoding/signing.
-
-### P0-2. Judge Mode labels Stage 2 as GraphRAG, but the current `build_operational_evidence_package()` path is deterministic
-
-Current files:
-- `backend/app/services/machine_money/service.py`
-- `backend/app/services/machine_money/bridge.py`
-
-`build_operational_evidence_package()` currently returns deterministic references such as:
-`FE-001`, `WO-1002`, `PROC-001`.
-
-The repository contains a real hybrid retrieval implementation in:
-`retrieval/hybrid.py`
-
-The final Judge Mode must either:
-1. call that real retrieval path, or
-2. explicitly label the evidence as a controlled demo fixture.
-
-Preferred solution: wire real retrieval with a deterministic fallback that remains honestly labeled.
-
-### P0-3. README still contains a few claims that are broader than the implementation
-
-Examples to remove/rewrite:
-- “first industrial-grade implementation”
-- “vendor APIs” when the current demo uses synthetic vendors
-- “sub-second finality” as a general production claim
-- “unforgeable audit evidence”
-- generic statements implying mainnet settlement when the deployment is mock
-
-### P0-4. README has consistency risk
-
-Canonical values must be normalized:
-- payment amount: 250 sats
-- vendor count: 3
-- economics ratio: 7,800,000:1
-- test count: determined by the final verified CI run, not hardcoded from stale documentation
-
-### P0-5. Mock/live and proof semantics must be separated
-
-In mock mode:
-`SHA256(preimage) == payment_hash`
-
-means the simulation is internally cryptographically consistent.
-
-It does NOT mean that a real Lightning network payment was settled.
-
-UI and docs must distinguish:
-- `Simulation integrity proof`
-- `Live Lightning settlement proof`
+### 0.3 Non-Negotiable Truthfulness & Provenance Rules
+- **No History Manipulation**: Never use `git filter-branch`, `filter-repo`, or fake commit timestamps to fabricate development timelines. Commit timestamps must reflect real-world execution.
+- **Explicit Simulation Disclosure**: All synthetic data, simulated preimages, regtest invoices, and mock providers must be clearly labeled `MOCK / SIMULATION`. Never masquerade simulated payments as real mainnet Bitcoin transactions.
+- **Modelled Economic Estimates**: Downtime calculations ($1.17M exposure on P-101A) must be explicitly disclosed as **Modelled Estimates based on synthetic plant parameters**, not empirical historical losses.
+- **Standards Validity**: If claiming BOLT11, the invoice must parse under standard BIP-173 Bech32 and BOLT #11 decoders. (Completed in Phase 1).
 
 ---
 
-# 2. Final Product Contract
+## 1. Canonical Scenario & System Parameters
 
-## 2.1 The product story
+Use one canonical judge scenario across all documentation, UI, fixtures, and tests:
 
-AuRAG is not “an AI app that pays with Bitcoin.”
-
-The product story is:
-
-> An industrial intelligence system turns a grounded machine event into a governed financial action, settles the action over a pluggable Lightning interface, and preserves the causal evidence linking the machine event to the payment.
-
-The complete chain:
-
-```text
-SCADA telemetry
-      ↓
-Anomaly detection
-      ↓
-Grounded evidence retrieval
-      ↓
-Failure diagnosis
-      ↓
-Service selection
-      ↓
-3-vendor RFQ
-      ↓
-Policy / budget gate
-      ↓
-BOLT11 invoice
-      ↓
-Lightning settlement
-      ↓
-Payment proof
-      ↓
-Audit + graph lineage
-      ↓
-Operational outcome
-```
-
-## 2.2 Judge mental model
-
-A judge should be able to answer these five questions within seconds:
-
-1. Why did the machine need to spend money?
-2. What evidence justified the action?
-3. Why was the amount allowed?
-4. How was the payment executed?
-5. What proof links the payment back to the industrial event?
+| Parameter | Canonical Value | Meaning / Disclosure |
+| :--- | :--- | :--- |
+| **Equipment ID** | `P-101A` | Centrifugal Slurry Pump |
+| **Sensor ID** | `VIB-301-BEARING` | High-frequency vibration accelerometer |
+| **Vibration Reading** | `5.4 mm/s` | Current anomalous reading |
+| **ISO Threshold** | `4.5 mm/s` | ISO 10816-3 Warning Threshold |
+| **Service ID** | `bearing-inspection` | Emergency autonomous inspection dispatch |
+| **Autonomous Spend** | `250 sats` | Micro-payment for service dispatch |
+| **Autonomous Cap** | `500 sats` | Hard limit for autonomous execution |
+| **Escalation Spend** | `1,200 sats` | Motor rewind overhaul (> 500 sats cap) |
+| **Vendors** | `3` | Apex Diagnostics, Precision Dynamics, Quantum Reliability |
+| **Vendor Type** | `Synthetic` | Pre-approved vendor nodes in demonstration |
+| **Evidence ID** | `FE-001` | Bearing outer-race spalling defect |
+| **Work Order ID** | `WO-1002` | Historical overhaul report |
+| **Procedure ID** | `PROC-001` | Lubrication & bearing inspection SOP |
+| **Modelled Downtime** | `4.5 hours` | Modelled avoided outage duration |
+| **Hourly Rate** | `$260,000 / hr` | Modelled plant downtime exposure rate |
+| **Modelled Exposure** | `$1.17M` | Total potential financial loss mitigated |
+| **Protection Multiple** | `7,800,000:1` | Modelled ratio of exposure mitigated to intervention cost |
 
 ---
 
-# 3. Phase 0 — Baseline Freeze & Audit
+## 2. Master Phase Roadmap & Live Execution Tracker
 
-## Goal
-
-Create one authoritative baseline before modifying functionality.
-
-## Tasks
-
-### 0.1 Record repository baseline
-
-Record:
-- current branch
-- current HEAD
-- current README SHA
-- current test snapshot
-- deployment URLs
-- current environment mode
-- current screenshots list
-
-Do not modify historical commits.
-
-### 0.2 Run the actual test suite
-
-Backend:
-
-```powershell
-.\.venv\Scripts\pytest.exe -q
-```
-
-Frontend:
-
-```powershell
-cd frontend
-npm ci
-npm test -- --run
-npm run lint
-npm run build
-```
-
-Browser:
-
-```powershell
-npm run test:e2e
-```
-
-### 0.3 Save one canonical snapshot
-
-Create/update:
-`docs/CURRENT_TEST_SNAPSHOT.md`
-
-It must contain:
-- exact commands
-- exact timestamps of the verification run
-- exact test counts
-- exact pass/fail result
-- build result
-- lint result
-- E2E result
-
-Do not manually type a test count that was not produced by the run.
-
-### 0.4 Documentation link audit
-
-Check every relative README link with a script.
-
-Acceptance:
-- no broken internal links
-- no references to deleted files
-- no stale filenames such as `PRD2.md` where the actual file differs
-
-### 0.5 Claims audit
-
-Create:
-`docs/CLAIM_EVIDENCE_MATRIX.md`
-
-Columns:
-
-| Claim | Evidence file | Evidence test | Current environment | Allowed wording |
-|---|---|---|---|---|
-
-Every material technical claim in README must have an evidence row.
-
-### Phase 0 Gate
-
-PASS only if:
-- baseline test results are captured from a real run
-- all README links resolve
-- every major claim has evidence
-- no Git history manipulation is performed
-
-### Commit
-
-```text
-chore(submission): freeze baseline verification and claim evidence
-```
+| Phase | Title | Scope & Deliverable | Status | Commit / Target |
+| :---: | :---|:---|:---:|:---|
+| **Phase 0** | Baseline Freeze & Evidence Matrix | Test snapshot, 103 verified links, 13-row claim evidence matrix | **[COMPLETED]** | [`0609a97`](https://github.com/hacker9854-ship-it/AuRAG/commit/0609a97), [`c8a4ad3`](https://github.com/hacker9854-ship-it/AuRAG/commit/c8a4ad3) |
+| **Phase 1** | Protocol-Sound BOLT11 Invoices | Pure Python BIP-173 Bech32 + secp256k1 compact ECDSA encoder/decoder; mock provider emits parseable BOLT11 | **[COMPLETED]** | [`25b6adf`](https://github.com/hacker9854-ship-it/AuRAG/commit/25b6adf) |
+| **Phase 2** | Ground Judge Mode in Actual Retrieval | Wire `retrieval.hybrid.retrieve` in `grounding.py` for evidence matching, with explicit `CONTROLLED DEMO FIXTURE` fallback | **[READY TO EXECUTE]** | `feat(machine-money): ground judge mode in hybrid graph retrieval` |
+| **Phase 3** | Causal Payment Evidence Chain & Proof Drawer | 6-tab proof drawer (Why We Paid, RFQ Decision, Policy Decision, Lightning Proof, Graph Lineage, Audit Ledger) | **[READY TO EXECUTE]** | `feat(machine-money): strengthen causal payment evidence chain` |
+| **Phase 4** | Finalize Deterministic Judge Scenarios & Reset | Standardize 3 scenarios (A: Autonomous 250 sats, B: Escalation 1200 sats, C: Provider Failure) with total state `RESET DEMO` | **[READY TO EXECUTE]** | `feat(machine-money): finalize deterministic judge scenarios` |
+| **Phase 5** | RFQ & Vendor Decision Quality | 3 synthetic vendors, deterministic scoring formula (0.50 cost + 0.30 latency + 0.20 reliability), quote-to-payment binding | **[COMPLETED]** | [`e441da0`](https://github.com/hacker9854-ship-it/AuRAG/commit/e441da0) |
+| **Phase 6** | Industrial Economics & Explainability | Canonical 4.5h, $260k/hr, $1.17M exposure, 7,800,000:1 multiple, sensitivity sandbox, Explainability Drawer | **[COMPLETED]** | [`6e314b5`](https://github.com/hacker9854-ship-it/AuRAG/commit/6e314b5) |
+| **Phase 7** | Evidence-Backed System Readiness Status | Eliminate hardcoded fake default fallbacks in UI; server-side sanitized DTO (`No credentials exposed`) | **[READY TO EXECUTE]** | `fix(machine-money): make readiness status evidence-backed` |
+| **Phase 8** | README Final Polish & Truthful FAQ | 30-second explanation, What Is Live Today table, test snapshot link, superlative scrub, truthful FAQ | **[READY TO EXECUTE]** | `docs(readme): finalize submission readme and truthful disclosures` |
+| **Phase 9** | Visual Evidence & Screenshot Refresh | Refresh and audit all 7 judge screenshots with current UI states | **[COMPLETED]** | [`c8a4ad3`](https://github.com/hacker9854-ship-it/AuRAG/commit/c8a4ad3) |
+| **Phase 10** | Full E2E & Browser Playwright Verification | Complete automated Playwright browser test for all 3 scenarios, 85+ Pytest + 56+ Vitest verification | **[READY TO EXECUTE]** | `test(e2e): automate browser judge scenarios with playwright` |
+| **Phase 11** | CI / Reproducibility & Security Guardrails | GitHub Actions CI workflow verification, secret scan pass, one-click local reproduction script | **[READY TO EXECUTE]** | `chore(ci): enforce final machine money verification gates` |
+| **Phase 12** | Final Release Gate & Submission Checklist | 100% check against all Bitshala BOSS Battle criteria, compressed 90s judge demo rehearsal, submission freeze | **[READY TO EXECUTE]** | `chore(release): finalize hackathon submission package` |
 
 ---
 
-# 4. Phase 1 — Make Mock Payment Protocol-Sound
-
-## Goal
-
-Remove the biggest Machine Money credibility hole.
-
-## 1.1 Add a standards-compliant BOLT11 library
-
-Preferred backend dependency:
-
-`bolt11==2.2.0`
-
-The package implements Lightning BOLT11 encoding/decoding and supports Python 3.10–3.12.
-
-Reference:
-- BOLT #11 specification: https://github.com/lightning/bolts/blob/master/11-payment-encoding.md
-- Python package: https://pypi.org/project/bolt11/2.2.0/
-
-Do NOT hand-roll Bech32/BOLT11.
-
-## 1.2 Replace mock invoice construction
-
-File:
-`backend/app/services/machine_money/providers/mock.py`
-
-Replace manual string construction with actual library encoding.
-
-Requirements:
-- correct network prefix
-- exact amount
-- timestamp
-- payment hash
-- payment secret
-- description
-- expiry
-- valid signature
-- valid checksum
-
-Use an ephemeral/test-only signing key generated at runtime for the mock provider.
-
-Do not commit a reusable private key.
-
-## 1.3 Validate the invoice immediately after encoding
-
-The provider must internally:
+## 3. Detailed Phase Specifications
 
 ```text
-encode → decode → verify fields
+================================================================================
+PHASE 0: BASELINE FREEZE & EVIDENCE MATRIX [STATUS: COMPLETED]
+================================================================================
 ```
-
-Acceptance:
-- decoded amount matches request
-- decoded payment hash matches stored payment hash
-- payment hash equals SHA256(preimage)
-- network matches configured mock network
-- invoice expires according to requested expiry
-- invalid invoice causes a test failure
-
-## 1.4 Reject arbitrary malformed invoices in mock mode
-
-Current behavior for unknown/ad-hoc invoice strings must not silently create a default 150-sat payment.
-
-Remove that behavior.
-
-Required behavior:
+- **Goal:** Freeze authoritative baseline, audit all relative links, publish Claim-to-Evidence Matrix.
+- **Deliverables:**
+  - `docs/CURRENT_TEST_SNAPSHOT.md` (exact test counts, build results, timestamps).
+  - `docs/CLAIM_EVIDENCE_MATRIX.md` (13 claims audited against code & tests).
+  - 103 relative links audited with 0 broken links.
+- **Commit:** [`c8a4ad3`](https://github.com/hacker9854-ship-it/AuRAG/commit/c8a4ad3)
 
 ```text
-unknown invoice
-    ↓
-BOLT11 decode fails
-    ↓
-ProviderError
-    ↓
-0 sats deducted
+================================================================================
+PHASE 1: PROTOCOL-SOUND BOLT11 INVOICES [STATUS: COMPLETED]
+================================================================================
 ```
-
-## 1.5 Frontend invoice verification
-
-The UI should not only check the prefix.
-
-Preferred behavior:
-- QR decoder verifies QR content
-- BOLT11 parser validates the invoice
-- UI extracts amount/network/payment hash
-- UI compares displayed amount to expected amount
-
-If browser-side full BOLT11 parsing introduces unnecessary dependency complexity, backend must expose a verified parsed invoice object and frontend must clearly show `Backend-Verified BOLT11`.
-
-## 1.6 QR test matrix
-
-Add tests for:
+- **Goal:** Replace synthetic mock invoice strings with genuine, standards-valid BOLT11 invoices.
+- **Deliverables:**
+  - `backend/app/services/machine_money/bolt11.py`: Pure Python BIP-173 Bech32 and secp256k1 compact ECDSA encoder/decoder.
+  - `MockLightningProvider`: Emits decodable BOLT11 regtest invoices with valid checksums and recoverable node pubkeys.
+  - `tests/test_bolt11.py`: 5 dedicated unit tests verifying roundtrip decode, multipliers, and tamper rejection.
+- **Commit:** [`25b6adf`](https://github.com/hacker9854-ship-it/AuRAG/commit/25b6adf)
 
 ```text
-mainnet
-testnet
-signet
-regtest
+================================================================================
+PHASE 2: GROUND JUDGE MODE IN ACTUAL RETRIEVAL [STATUS: READY TO EXECUTE]
+================================================================================
 ```
-
-Test:
+- **Command:** `phase 2 start kro`
+- **Goal:** Replace deterministic mock-only evidence generation in Stage 2 (`EVIDENCE_MATCHED`) with real hybrid GraphRAG retrieval, with an explicitly disclosed fallback when offline.
+- **Target Files:**
+  - `backend/app/services/machine_money/grounding.py` (New): Grounded evidence service accepting telemetry event, formulating search query, calling `retrieval.hybrid.retrieve` and `retrieval.graph_traversal.traverse`.
+  - `backend/app/services/machine_money/service.py`: Wire `grounding.py` into `trigger_telemetry_flow()` Stage 2.
+  - `frontend/components/machine-money/JudgeMode.tsx`: Display `HYBRID_RETRIEVAL` when live or `CONTROLLED DEMO FIXTURE` when fallback is used.
+  - `tests/test_machine_money_grounding.py` (New): Unit and fallback tests for grounding service.
+- **Acceptance Criteria:**
+  - When Neo4j/Qdrant are active, Stage 2 executes actual hybrid retrieval for P-101A vibration query.
+  - When offline, Stage 2 falls back gracefully and labels evidence as `CONTROLLED DEMO FIXTURE`.
+  - Confidence gate: confidence < 0.75 triggers `PENDING_APPROVAL`, >= 0.75 proceeds to spending cap check.
+  - Backend tests pass with 0 errors.
+- **Commit Message:** `feat(machine-money): ground judge mode in hybrid graph retrieval`
 
 ```text
-invoice → QR → image decode → exact invoice string
-invoice → BOLT11 decode → exact amount/payment hash/network
+================================================================================
+PHASE 3: STRENGTHEN CAUSAL PAYMENT EVIDENCE CHAIN [STATUS: READY TO EXECUTE]
+================================================================================
 ```
-
-### Phase 1 Gate
-
-A judge should be able to scan/copy the simulated invoice and the application must either:
-- parse it as a valid BOLT11 invoice, or
-- clearly state that the current artifact is not a payment-ready Lightning invoice.
-
-Preferred final state: valid BOLT11.
-
-### Commit
+- **Command:** `phase 3 start kro`
+- **Goal:** Make the causal link from SCADA anomaly to settled satoshis visually undeniable in the UI and database.
+- **Target Files:**
+  - `frontend/components/machine-money/EvidenceAndProofDrawer.tsx`: Reorganize into 6 distinct tabs:
+    1. `Why We Paid`: Telemetry reading, threshold breach, failure diagnosis, grounded evidence.
+    2. `RFQ Decision`: 3 synthetic vendor bids, scoring weights, selection justification.
+    3. `Policy Decision`: Spending cap check, confidence score, auto-pay authorization.
+    4. `Lightning Proof`: BOLT11 invoice decode, payment hash, preimage verification, network mode badge.
+    5. `Graph Lineage`: Neo4j entity relationships `(Payment)-[:FUNDS]->(WorkOrder)`.
+    6. `Audit Ledger`: Relational database timestamps, idempotency key, immutable hash.
+  - `backend/app/services/machine_money/service.py`: Ensure `get_payment_trail()` returns all 6 tabs' structured data.
+  - `frontend/components/machine-money/EvidenceAndProofDrawer.test.tsx`: Verify all 6 tabs render correctly.
+- **Acceptance Criteria:**
+  - All 6 tabs navigate smoothly and display real/fixture evidence.
+  - Top badge displays unambiguous mode: `MOCK / SIMULATION` or `LIVE LIGHTNING`.
+  - Preimage check explicitly labeled: `Simulation integrity check` (mock) or `Lightning network settlement receipt` (live).
+  - Frontend Vitest tests pass with 0 errors.
+- **Commit Message:** `feat(machine-money): strengthen causal payment evidence chain`
 
 ```text
-fix(machine-money): generate standards-valid bolt11 mock invoices
+================================================================================
+PHASE 4: FINALIZE DETERMINISTIC JUDGE SCENARIOS & RESET [STATUS: READY TO EXECUTE]
+================================================================================
 ```
+- **Command:** `phase 4 start kro`
+- **Goal:** Perfect the 3 judge scenarios so they execute flawlessly in 60-90 seconds with complete state cleanup.
+- **Target Files:**
+  - `frontend/components/machine-money/JudgeMode.tsx`: Ensure 3 clean scenario triggers:
+    - Primary CTA: `RUN INDUSTRIAL EMERGENCY` (Scenario A: 250 sats autonomous intervention).
+    - Secondary: `POLICY ESCALATE` (Scenario B: 1,200 sats > 500 sat cap -> Operator Approval).
+    - Secondary: `PROVIDER FAILURE` (Scenario C: 250 sats -> Channel liquidity failure -> 0 sats lost).
+  - `frontend/app/machine-money/page.tsx`: Implement comprehensive `RESET DEMO` button that clears:
+    - Execution timeline and active stage events.
+    - Active payment selection and drawer state.
+    - Simulation results and toast notifications.
+  - `tests/test_machine_money_judge_mode.py`: Test scenario executions and reset state.
+- **Acceptance Criteria:**
+  - Fresh browser session can run all 3 scenarios sequentially without reloading or manual DB intervention.
+  - Reset button resets UI to pristine state.
+  - Timing labels say `Measured demo execution time` (not claiming real Lightning propagation when simulated).
+- **Commit Message:** `feat(machine-money): finalize deterministic judge scenarios`
+
+```text
+================================================================================
+PHASE 7: MAKE READINESS STATUS EVIDENCE-BACKED [STATUS: READY TO EXECUTE]
+================================================================================
+```
+- **Command:** `phase 7 start kro`
+- **Goal:** Eliminate misleading default placeholders in System Readiness and expose server-sanitized security diagnostics.
+- **Target Files:**
+  - `frontend/components/machine-money/SystemReadinessModal.tsx`:
+    - Replace hardcoded defaults (`1.2 ms`, `1,000,000 sats`) with `"UNKNOWN / Not reported"` if backend doesn't provide them.
+    - Security panel wording: Replace `0 Secrets in Memory` with `No credentials exposed by readiness endpoint`.
+  - `backend/app/services/machine_money/service.py`: Add server-sanitized DTO endpoint for readiness diagnostics with 0 sensitive keys.
+  - `frontend/components/machine-money/SystemReadinessModal.test.tsx`: Test truthful fallback display.
+- **Acceptance Criteria:**
+  - System readiness displays actual backend health or explicit "Not reported" fallback.
+  - Security audit card reflects server-sanitized state.
+  - Tests pass with 0 errors.
+- **Commit Message:** `fix(machine-money): make readiness status evidence-backed`
+
+```text
+================================================================================
+PHASE 8: README FINAL REWRITE & TRUTHFUL FAQ [STATUS: READY TO EXECUTE]
+================================================================================
+```
+- **Command:** `phase 8 start kro`
+- **Goal:** Polish `README.md` to deliver an immediate 30-second grasp of AuRAG, link to test snapshots, and provide truthful FAQs.
+- **Target Files:**
+  - `README.md`:
+    - Top: 30-second value thesis + Machine Money feedback loop diagram.
+    - "What Is Live Today" table contrasting Demo vs. Production Architecture.
+    - Canonical parameter normalization (P-101A, 250 sats, 500 cap, 1200 escalation, 3 vendors, $1.17M).
+    - Mandatory FAQ: "Is this live Bitcoin mainnet?", "Is the mock invoice a valid BOLT11 invoice?", "Is the industrial data real?".
+    - Dynamic link to `docs/CURRENT_TEST_SNAPSHOT.md` instead of hardcoded test counts.
+- **Acceptance Criteria:**
+  - README passes automated claim and superlative audit.
+  - All relative links verified with 0 broken links.
+- **Commit Message:** `docs(readme): finalize submission readme and truthful disclosures`
+
+```text
+================================================================================
+PHASE 10: FULL E2E & BROWSER PLAYWRIGHT VERIFICATION [STATUS: READY TO EXECUTE]
+================================================================================
+```
+- **Command:** `phase 10 start kro`
+- **Goal:** Automate browser-level judge validation using Playwright across all 3 scenarios.
+- **Target Files:**
+  - `frontend/tests/e2e/judge-mode.spec.ts` (New): Automated Playwright test:
+    - Step 1: Navigate to `/machine-money`.
+    - Step 2: Run Scenario A (Happy path) -> Verify settlement and 250 sats.
+    - Step 3: Open Proof Drawer -> Verify 6 tabs and `MOCK / SIMULATION` badge.
+    - Step 4: Run Scenario B (Policy Escalation) -> Verify `PENDING_APPROVAL` -> Click Approve -> Verify settlement.
+    - Step 5: Reset Demo -> Run Scenario C (Failure) -> Verify 0 sat loss.
+  - `frontend/playwright.config.ts`: Configured for headless CI and local execution.
+- **Acceptance Criteria:**
+  - Playwright test runs and passes with 0 timeouts or console errors.
+  - Full suite passes: 85+ Pytest + 56+ Vitest + Playwright E2E.
+- **Commit Message:** `test(e2e): automate browser judge scenarios with playwright`
+
+```text
+================================================================================
+PHASE 11: CI / REPRODUCIBILITY & SECURITY GUARDRAILS [STATUS: READY TO EXECUTE]
+================================================================================
+```
+- **Command:** `phase 11 start kro`
+- **Goal:** Ensure any judge or CI runner can clone and reproduce results with a single command.
+- **Target Files:**
+  - `.github/workflows/ci.yml`: Workflow running backend pytest, frontend vitest, lint, build, and secret scan.
+  - `scripts/verify_submission.ps1`: One-click PowerShell verification script running all tests and printing status summary.
+  - `tests/test_secret_scan.py`: Ensures `.env` is uncommitted and zero credentials are exposed.
+- **Acceptance Criteria:**
+  - `verify_submission.ps1` runs cleanly from a fresh checkout.
+  - GitHub Actions passes with green check.
+- **Commit Message:** `chore(ci): enforce final machine money verification gates`
+
+```text
+================================================================================
+PHASE 12: FINAL RELEASE GATE & SUBMISSION PACKAGE [STATUS: READY TO EXECUTE]
+================================================================================
+```
+- **Command:** `phase 12 start kro`
+- **Goal:** Perform final release audit, verify submission URLs, and freeze submission package.
+- **Target Files:**
+  - `docs/JUDGE_DEMO_SCRIPT.md`: Finalized 90-second rehearsal script with exact timestamps and voiceover cues.
+  - `docs/FINAL_SUBMISSION_EVIDENCE.md`: Master submission evidence document referencing all commits, tests, screenshots, and architecture diagrams.
+- **Acceptance Criteria:**
+  - All 14 items on Final Release Gate marked `[PASS]`.
+  - Repository pushed clean to `origin/main`.
+- **Commit Message:** `chore(release): finalize hackathon submission package`
 
 ---
 
-# 5. Phase 2 — Ground the Judge Mode in Actual Retrieval
+## 4. 60–90 Second Judge Demo Script
 
-## Goal
-
-Remove the “fake GraphRAG stage” risk.
-
-## 2.1 Create a grounded evidence service
-
-Create:
-
-`backend/app/services/machine_money/grounding.py`
-
-Responsibilities:
-- accept telemetry event
-- formulate deterministic query
-- call `retrieval.hybrid.retrieve(...)`
-- collect top evidence
-- optionally call `retrieval.graph_traversal.traverse(...)`
-- map results into the Machine Money evidence contract
-- return:
-  - evidence IDs
-  - text snippets
-  - retrieval scores
-  - source types
-  - equipment anchor
-  - failure event
-  - work order
-  - procedure
-  - retrieval method
-
-## 2.2 Deterministic query construction
-
-For canonical Judge Mode:
-
-```text
-Why did P-101A trigger an intervention after vibration reached
-5.4 mm/s against a 4.5 mm/s threshold?
-```
-
-The query must be grounded in actual event inputs.
-
-Do not inject `FE-001`, `WO-1002`, `PROC-001` as hidden hardcoded “answers” into the retrieval function.
-
-## 2.3 Retrieval evidence contract
-
-Minimum output:
-
-```json
-{
-  "source": "HYBRID_RETRIEVAL",
-  "equipment": "P-101A",
-  "evidence": [
-    {
-      "id": "FE-001",
-      "type": "FailureEvent",
-      "score": 0.94,
-      "reason": "..."
-    },
-    {
-      "id": "WO-1002",
-      "type": "WorkOrder",
-      "score": 0.88,
-      "reason": "..."
-    },
-    {
-      "id": "PROC-001",
-      "type": "Procedure",
-      "score": 0.84,
-      "reason": "..."
-    }
-  ]
-}
-```
-
-## 2.4 Controlled fallback
-
-If Neo4j/Qdrant/reranker is unavailable:
-
-```text
-REAL RETRIEVAL UNAVAILABLE
-        ↓
-CONTROLLED DEMO FIXTURE
-```
-
-The UI must display:
-
-`CONTROLLED DEMO FIXTURE`
-
-not:
-
-`GraphRAG Retrieved`
-
-This preserves demo reliability without misrepresenting the source.
-
-## 2.5 Confidence gate
-
-Define:
-
-```text
-confidence < 0.75
-    → PENDING_APPROVAL
-
-confidence >= 0.75
-    → continue policy evaluation
-```
-
-Use the same rule in docs, code, tests, and UI.
-
-### Phase 2 Gate
-
-Judge Mode must use:
-- real retrieval when infrastructure is available
-- explicit fixture label when fallback is used
-- no hidden hardcoded evidence claim
-
-### Commit
-
-```text
-feat(machine-money): ground judge mode in hybrid graph retrieval
-```
+| Time | Stage | Action on Screen | Voiceover Cue |
+| :---: | :--- | :--- | :--- |
+| **0:00 - 0:15** | **The Problem** | Show P-101A telemetry card with vibration spiking to `5.4 mm/s` (threshold `4.5 mm/s`). | *"In heavy industry, a machine can detect its own failure hours in advance, but remains trapped waiting for human purchase orders. AuRAG gives machines governed financial agency."* |
+| **0:15 - 0:35** | **Grounding & Evidence** | Click `RUN INDUSTRIAL EMERGENCY`. Timeline advances through Anomaly Detected -> Evidence Matched -> Failure Diagnosed. | *"AuRAG does not spend money from a raw sensor spike. It queries GraphRAG to ground the event in historical failure signatures (FE-001) and operating procedures (PROC-001)."* |
+| **0:35 - 0:50** | **RFQ & Vendor Selection** | Timeline shows 3-vendor RFQ. Apex Diagnostics selected (250 sats, 15 min SLA). | *"A 3-node RFQ compares pre-approved industrial vendors using a balanced score of cost, latency, and reliability."* |
+| **0:50 - 1:10** | **Policy Gate & Settlement** | Timeline shows Policy PASS (< 500 sats cap). Valid BOLT11 invoice generated with QR code, then transitions to SETTLED. | *"The spending policy enforces a strict 500-sat autonomous cap. Because 250 sats is within policy, the Lightning micro-payment settles autonomously."* |
+| **1:10 - 1:30** | **Proof & Causal Lineage** | Click `Inspect Cryptographic Proof`. Open Proof Drawer. Navigate across Why We Paid, RFQ Decision, and Graph Lineage. | *"This is not just a payment—it is a verifiable causal chain. The payment hash is cryptographically bound to the work order, failure event, and Neo4j graph."* |
+| **1:30 - 1:45** | **Human Escalation** | Click `POLICY ESCALATE`. Show 1,200 sats overhaul triggering `PENDING_APPROVAL`. Click `Approve`. | *"Above policy limits, autonomy stops immediately. The payment is held until a human operator signs off."* |
+| **1:45 - 2:00** | **Business Impact** | Show Industrial Economics card: $1.17M modelled downtime exposure mitigated at a 7,800,000:1 multiple. | *"A 250-sat intervention protects against $1.17M in modelled downtime exposure. That is governed machine money in action."* |
 
 ---
 
-# 6. Phase 3 — Strengthen the Causal Evidence Chain
+## 5. Anti-Patterns / What NOT To Do
 
-## Goal
-
-Make the strongest part of AuRAG visually undeniable.
-
-## 3.1 Canonical evidence graph
-
-The final causal chain:
-
-```text
-Equipment
-   ↓
-PredictiveEvent
-   ↓
-FailureSignature
-   ↓
-WorkOrder
-   ↓
-ServiceQuote
-   ↓
-PolicyDecision
-   ↓
-Payment
-   ↓
-ServiceProvider
-```
-
-## 3.2 Every payment must store causal references
-
-Payment metadata should contain:
-
-- equipment ID
-- sensor ID
-- predictive event ID
-- failure event ID
-- work order ID
-- quote ID
-- vendor ID
-- policy decision ID
-- idempotency key
-- invoice ID
-- payment hash
-- preimage
-- provider mode
-- settlement source
-- evidence source
-
-## 3.3 Proof drawer redesign
-
-Tabs:
-
-1. `Why We Paid`
-2. `RFQ Decision`
-3. `Policy Decision`
-4. `Lightning Proof`
-5. `Graph Lineage`
-6. `Audit Ledger`
-
-Top banner:
-
-```text
-PAYMENT STATUS
-MOCK / SIMULATION
-```
-
-or
-
-```text
-PAYMENT STATUS
-LIVE LIGHTNING
-```
-
-Never show both.
-
-## 3.4 Proof semantics
-
-In simulation:
-
-```text
-SHA256(preimage) == payment_hash
-```
-
-label:
-
-`Simulation integrity check`
-
-In live mode:
-
-```text
-Provider reports settlement
-+
-invoice/payment hash
-+
-preimage
-```
-
-label:
-
-`Provider-reported Lightning settlement evidence`
-
-### Phase 3 Gate
-
-A judge can answer:
-
-> Why did this payment happen?
-
-by reading one drawer without opening source code.
-
-### Commit
-
-```text
-feat(machine-money): strengthen causal payment evidence chain
-```
+1. **Do NOT claim live Lightning mainnet** when running on mock or regtest.
+2. **Do NOT commit private keys** or use hardcoded test keys outside test files.
+3. **Do NOT skip tests** or lower assertions to force passes.
+4. **Do NOT use fake superlative claims** ("first in the world", "unforgeable", "indisputable").
+5. **Do NOT fabricate vendor APIs**—always label pre-approved vendors as synthetic demo nodes.
+6. **Do NOT alter git history** or fake commit timestamps.
 
 ---
 
-# 7. Phase 4 — Finalize Judge Mode
-
-## Goal
-
-Turn the entire platform into a reliable 60–90 second demonstration.
-
-## 4.1 Exactly three scenarios
-
-### Scenario A — Autonomous Intervention
-
-Input:
-- P-101A
-- 5.4 mm/s
-- 250 sats
-
-Flow:
-
-```text
-Detect
-→ Retrieve
-→ Diagnose
-→ RFQ
-→ Policy PASS
-→ Invoice
-→ Settlement
-→ Proof
-```
-
-### Scenario B — Human Escalation
-
-Input:
-- same evidence
-- 1,200 sats
-
-Flow:
-
-```text
-Detect
-→ Retrieve
-→ Diagnose
-→ RFQ
-→ Policy FAIL
-→ PENDING_APPROVAL
-```
-
-Then operator approval:
-
-```text
-Approve
-→ Invoice
-→ Settlement
-→ Proof
-```
-
-### Scenario C — Provider Failure
-
-Input:
-- 250 sats
-
-Flow:
-
-```text
-Detect
-→ Retrieve
-→ Diagnose
-→ RFQ
-→ Policy PASS
-→ Invoice
-→ Provider FAILURE
-→ 0 sats lost
-→ Retry guidance
-```
-
-## 4.2 Execution timeline
-
-Use exactly these stages:
-
-```text
-01 ANOMALY_DETECTED
-02 EVIDENCE_MATCHED
-03 FAILURE_DIAGNOSED
-04 QUOTE_RESOLVED
-05 POLICY_AUTHORIZED
-06 INVOICE_CREATED
-07 PAYMENT_SETTLED
-08 GRAPH_COMMITTED
-09 OPERATIONAL_OUTCOME
-```
-
-Failure path must stop at the correct stage.
-
-## 4.3 Timing labels
-
-Show:
-
-`Measured demo execution time`
-
-Do not show:
-`Lightning network finality`
-
-unless the live provider actually measured it.
-
-## 4.4 One primary CTA
-
-Primary:
-
-`RUN INDUSTRIAL EMERGENCY`
-
-Secondary:
-- `POLICY ESCALATE`
-- `PROVIDER FAILURE`
-
-No unnecessary controls above the fold.
-
-## 4.5 Recovery
-
-Every scenario must have:
-
-`RESET DEMO`
-
-and the reset must clear:
-- timeline
-- active payment
-- stale evidence
-- toasts
-- previous modal state
-- selected proof ID
-
-### Phase 4 Gate
-
-A fresh browser session must run each scenario without manual database cleanup.
-
-### Commit
-
-```text
-feat(machine-money): finalize deterministic judge scenarios
-```
-
----
-
-# 8. Phase 5 — RFQ & Vendor Decision Quality
-
-## Goal
-
-Make multi-vendor selection useful instead of decorative.
-
-## 5.1 Exactly three synthetic vendors
-
-Canonical vendors:
-
-- Apex Diagnostics
-- Precision Dynamics
-- Quantum Reliability
-
-Always label:
-
-`Synthetic / Pre-approved vendor nodes`
-
-## 5.2 Score must be deterministic and explainable
-
-Canonical formula:
-
-```text
-BalancedScore =
-  0.50 × normalized_cost
-+ 0.30 × normalized_latency
-+ 0.20 × normalized_reliability
-```
-
-Document the normalization.
-
-## 5.3 RFQ output must bind to payment
-
-The selected quote must produce:
-
-```text
-quote_id
-→ vendor_id
-→ amount_sats
-→ service_id
-→ work_order_id
-→ invoice_id
-→ payment_id
-```
-
-No payment may exist without a quote reference.
-
-## 5.4 UI
-
-Show:
-- vendor
-- cost
-- SLA
-- reliability
-- selected strategy
-- final score
-- reason for selection
-
-### Gate
-
-One vendor must be selected deterministically for the canonical scenario.
-
-### Commit
-
-```text
-fix(machine-money): bind rfq decision to settlement proof
-```
-
----
-
-# 9. Phase 6 — Industrial Economics Cleanup
-
-## Goal
-
-Make the business value compelling without exaggeration.
-
-## 6.1 Canonical model
-
-```text
-Avoided exposure =
-    avoided downtime hours × hourly exposure rate
-```
-
-Canonical model:
-- 4.5h
-- $260,000/hour assumption if used
-- $1.17M modelled exposure
-
-## 6.2 Cost
-
-250 sats must be converted using a clearly disclosed conversion input.
-
-If USD conversion is shown:
-- display the exchange-rate assumption
-- show timestamp/source when the value is dynamic
-- never imply the sat/USD rate is static
-
-## 6.3 Language
-
-Use:
-
-`$1.17M modelled downtime exposure`
-
-Not:
-
-`$1.17M loss prevented`
-
-Use:
-
-`7,800,000:1 modelled protection multiple`
-
-Not:
-
-`7.8M ROI guaranteed`
-
-## 6.4 Sensitivity sandbox
-
-Allow judges to modify:
-- outage hours
-- hourly exposure
-- intervention cost
-
-Clearly mark outputs:
-
-`MODELLED`
-
-### Commit
-
-```text
-fix(machine-money): normalize economics assumptions and disclosures
-```
-
----
-
-# 10. Phase 7 — System Readiness Correctness
-
-## Goal
-
-Never show placeholder values as live operational health.
-
-## 10.1 No fake defaults
-
-Current examples such as:
-- `1.2 ms`
-- `1,000,000 sats`
-- `ALL SYSTEMS NOMINAL`
-
-must not appear when the backend did not report them.
-
-Fallback state must be:
-
-```text
-UNKNOWN
-Not reported
-```
-
-## 10.2 Mode-aware status
-
-When mock:
-
-```text
-Lightning Provider
-MOCK / SIMULATION
-```
-
-When live:
-
-```text
-Lightning Provider
-LIVE
-```
-
-## 10.3 Security panel
-
-Do not claim:
-
-`0 Secrets in Memory`
-
-based only on the browser rendering.
-
-Instead say:
-
-`No credentials exposed by readiness endpoint`
-
-and back it with a server-side sanitized DTO.
-
-### Commit
-
-```text
-fix(machine-money): make readiness status evidence-backed
-```
-
----
-
-# 11. Phase 8 — README Final Rewrite
-
-## Goal
-
-The README must sell the system in the first 30 seconds and support technical verification afterward.
-
-## 11.1 New README structure
-
-Use this exact top-level order:
-
-```text
-1. AuRAG title + one-line thesis
-2. Live Demo / Repo / Demo Video
-3. 30-second explanation
-4. The Machine Money loop
-5. What is live today
-6. Golden-path screenshots
-7. 60-second judge walkthrough
-8. Why Lightning for this use case
-9. Governance & policy
-10. Proof / audit trail
-11. Architecture
-12. RFQ
-13. Industrial economics
-14. Testing
-15. Setup
-16. Deep technical documentation links
-17. FAQ
-18. License / credits
-```
-
-## 11.2 New opening copy
-
-Recommended:
-
-> **AuRAG is an industrial intelligence system that turns a grounded machine event into a governed financial action. It retrieves operational evidence, selects a service provider, enforces spending policy, settles a micro-payment through a pluggable Lightning provider, and preserves the causal evidence linking the machine event to the payment.**
-
-## 11.3 Remove weak/unsupported language
-
-Delete:
-- “first industrial-grade”
-- “industry-grade”
-- “unforgeable”
-- “loss averted”
-- “vendor APIs” unless actually connected
-- generic “sub-second finality” claims
-
-## 11.4 Replace with precise language
-
-Use:
-- `standards-valid BOLT11 invoice` only after Phase 1 passes
-- `synthetic vendor RFQ`
-- `modelled exposure`
-- `measured demo execution time`
-- `provider-reported live settlement`
-- `simulation integrity proof`
-- `hybrid retrieval evidence`
-
-## 11.5 What is live today table
-
-Mandatory:
-
-| Subsystem | Current demo | Production target |
-|---|---|---|
-| Frontend | Live Vercel deployment | Same |
-| Backend | Live deployment | Same |
-| Machine Money | Live workflow | Same |
-| Lightning | Mock / Simulation unless live provider configured | LNbits/CLN/LND |
-| RFQ | 3 synthetic providers | External provider federation |
-| Economics | Synthetic/modelled plant scenario | Real plant telemetry + calibrated model |
-| GraphRAG | Real retrieval when dependencies available | Production graph/retrieval stack |
-
-## 11.6 Test claims
-
-Do not hardcode:
-
-`136 / 136`
-
-unless the latest authoritative run actually reports 136.
-
-README should link to:
-`docs/CURRENT_TEST_SNAPSHOT.md`
-
-and say:
-
-> **Automated test suites verified in CI; see the current verification snapshot for the exact run.**
-
-## 11.7 FAQ corrections
-
-Mandatory FAQ:
-
-### Is this live Bitcoin mainnet?
-
-Answer:
-No, unless a live provider is configured. The public demo is explicitly labeled `MOCK / SIMULATION`.
-
-### Is the mock invoice a valid BOLT11 invoice?
-
-Answer:
-Yes only after Phase 1 passes the BOLT11 decode/signature tests. Otherwise do not claim this.
-
-### Is the industrial data real?
-
-Answer:
-Operational plant data is synthetic/modelled for demonstration.
-
-### Does Judge Mode use real GraphRAG?
-
-Answer:
-Yes when configured dependencies are available. Otherwise the system explicitly labels a controlled demo fixture fallback.
-
----
-
-# 12. Phase 9 — Screenshot & Visual Evidence Pack
-
-## Required screenshots
-
-Use seven strong screenshots, not many repetitive ones.
-
-### Screenshot 1
-`machine-money-above-fold.png`
-
-Must show:
-- Judge Mode
-- `250 sats`
-- simulation/live badge
-- 500-sat policy
-- business impact
-
-### Screenshot 2
-`machine-money-execution-timeline.png`
-
-Must show populated execution stages.
-
-### Screenshot 3
-`machine-money-rfq.png`
-
-Must show all three vendors and final selection.
-
-### Screenshot 4
-`machine-money-policy-escalation.png`
-
-Must show:
-`1,200 sats`
-→ `PENDING_APPROVAL`
-
-### Screenshot 5
-`machine-money-proof-drawer.png`
-
-Must show:
-- payment hash
-- preimage verification
-- invoice parsing
-- graph lineage
-- mode disclosure
-
-### Screenshot 6
-`machine-money-provider-failure.png`
-
-Must show:
-- provider error
-- zero funds lost
-- remediation
-
-### Screenshot 7
-`machine-money-economics.png`
-
-Must show:
-- modelled exposure
-- assumptions
-- formula
-- sensitivity
-
-## Screenshot integrity
-
-Each image must correspond to the current UI.
-
-Do not keep stale screenshots after UI changes.
-
-### Commit
-
-```text
-docs(machine-money): refresh judge evidence screenshots
-```
-
----
-
-# 13. Phase 10 — Full E2E Verification
-
-## 13.1 Backend tests
-
-Must cover:
-
-### Protocol
-- BOLT11 encoding
-- BOLT11 decoding
-- amount preservation
-- network preservation
-- payment hash preservation
-- expiry
-- malformed invoice rejection
-
-### Governance
-- 500 sats passes
-- 501 sats escalates
-- 1,200 sats escalates
-- daily budget ceiling
-- client bypass rejected
-- approval settles successfully
-
-### Idempotency
-- duplicate happy-path trigger
-- duplicate pending-approval trigger
-- retry after provider failure
-- zero duplicate charges
-
-### Failure
-- provider offline
-- malformed quote
-- invoice expired
-- graph unavailable
-- retrieval unavailable
-- low-confidence evidence
-
-### Evidence
-- causal chain completeness
-- quote/payment binding
-- proof package completeness
-- mode disclosure
-
-## 13.2 Frontend tests
-
-Must cover:
-- Judge Mode
-- all three scenarios
-- timeline
-- RFQ
-- policy escalation
-- proof drawer
-- BOLT11 UI validation
-- QR round-trip
-- mode badge
-- readiness modal
-- economics disclosure
-
-## 13.3 Browser E2E
-
-Run:
-
-```powershell
-cd frontend
-npm run test:e2e
-```
-
-At minimum automate:
-
-```text
-open Machine Money
-run happy path
-verify final state
-open proof drawer
-verify mode label
-run policy scenario
-verify pending approval
-approve
-verify settlement
-reset
-run failure scenario
-verify failed state
-verify 0-sat loss
-```
-
----
-
-# 14. Phase 11 — CI / Reproducibility
-
-## Goal
-
-A judge should be able to reproduce core quality signals.
-
-CI must run:
-
-```text
-Backend pytest
-Frontend Vitest
-Frontend lint
-Frontend build
-Playwright
-Docker config validation
-Secret scan
-```
-
-## 14.1 Secret handling
-
-- `.env` ignored
-- no tokens in tracked files
-- no wallet private keys committed
-- runtime-generated mock signing keys
-- no browser-exposed wallet admin credentials
-- server-only secrets for live provider
-
-## 14.2 CI truthfulness
-
-Badge values should be generated from CI where practical.
-
-Do not use a manually updated green badge to imply tests passed if they did not.
-
-### Commit
-
-```text
-chore(ci): enforce final machine money verification gates
-```
-
----
-
-# 15. Phase 12 — Final README Claim Audit
-
-Run a simple text audit for:
-
-```text
-first
-industrial-grade
-production-grade
-unforgeable
-mainnet
-sub-second
-vendor API
-real vendors
-loss prevented
-guaranteed
-```
-
-Every occurrence must be reviewed.
-
-Allowed only when technically justified.
-
-Also search for inconsistent canonical values:
-
-```text
-50 sats
-250 sats
-500 sats
-1200 sats
-3 vendors
-4 vendors
-7.2M
-7.8M
-```
-
-Primary README must contain only the canonical numbers except where a scenario table explicitly explains the alternative.
-
----
-
-# 16. Phase 13 — Demo Story
-
-## 0:00–0:15 — Problem
-
-> “A machine can know it is failing and still wait for humans to approve the operational action.”
-
-Show P-101A anomaly.
-
-## 0:15–0:30 — Evidence
-
-Run:
-
-`RUN INDUSTRIAL EMERGENCY`
-
-Show:
-- telemetry
-- hybrid retrieval
-- failure evidence
-
-Say:
-
-> “AuRAG does not authorize spending from the sensor alone. The event must be grounded in operational evidence.”
-
-## 0:30–0:50 — RFQ
-
-Show three vendors.
-
-Say:
-
-> “The system compares pre-approved service nodes using cost, SLA and reliability.”
-
-## 0:50–1:05 — Governance
-
-Show 250 sats against 500-sat cap.
-
-Say:
-
-> “The financial boundary is enforced server-side. The agent cannot override it.”
-
-## 1:05–1:20 — Payment
-
-Show:
-- BOLT11 invoice
-- QR
-- settlement state
-- proof
-
-Say:
-
-> “The payment is bound to the quote, work order and event.”
-
-## 1:20–1:35 — Proof
-
-Open proof drawer.
-
-Show causal chain.
-
-Say:
-
-> “The question is not only ‘did we pay?’ It is ‘why did we pay?’”
-
-## 1:35–1:50 — Escalation
-
-Run 1,200-sat scenario.
-
-Show:
-`PENDING_APPROVAL`
-
-Say:
-
-> “Above policy, autonomy stops.”
-
-## 1:50–2:00 — Close
-
-> “AuRAG turns machine intelligence into a governed operational action with an auditable payment trail.”
-
----
-
-# 17. What NOT to Do
-
-Do not:
-- add unrelated features
-- add another LLM just for a badge
-- add fake blockchain records
-- fabricate vendor responses
-- fabricate Lightning network settlement
-- backdate commits
-- rewrite old history
-- add hundreds of meaningless commits
-- hide the simulation label
-- inflate economics
-- add unsupported benchmark claims
-- call synthetic telemetry “real SCADA”
-- call deterministic fixture retrieval “live GraphRAG”
-- use a QR image that cannot be decoded
-
----
-
-# 18. Git / Provenance Policy
-
-Historical commits must remain untouched.
-
-Do not use:
-- `git filter-branch`
-- `git filter-repo` to alter timestamps
-- mass amend operations
-- artificial commit backdating
-- fake author identities
-
-Continue development with genuine commits.
-
-A clean, truthful history is safer than a fabricated 15-day timeline.
-
-The goal is to make the current codebase verifiably strong, not to manufacture a story about when it was built.
-
----
-
-# 19. Final Submission Checklist
-
-## Product
-
-- [ ] happy path works from fresh browser
-- [ ] policy escalation works
-- [ ] provider failure works
-- [ ] reset works
-- [ ] no stale state
-- [ ] no console errors
-- [ ] no broken route
-- [ ] mobile layout works
-
-## Machine Money
-
-- [ ] valid BOLT11 mock invoice
-- [ ] BOLT11 decode test
-- [ ] QR round-trip test
-- [ ] payment hash check
-- [ ] preimage consistency check
-- [ ] live/mock disclosure
-- [ ] no arbitrary malformed invoice payment
-- [ ] idempotency
-- [ ] spending cap
-- [ ] daily budget
-- [ ] approval flow
-- [ ] failure path
-
-## GraphRAG
-
-- [ ] real retrieval path connected
-- [ ] controlled fixture fallback labeled
-- [ ] evidence IDs grounded
-- [ ] source scores available
-- [ ] causal chain stored
-
-## RFQ
-
-- [ ] 3 vendors exactly
-- [ ] synthetic disclosure
-- [ ] deterministic scoring
-- [ ] selected quote bound to payment
-
-## Economics
-
-- [ ] modelled label
-- [ ] assumptions visible
-- [ ] formula visible
-- [ ] no “loss prevented” claim
-- [ ] canonical 250-sat scenario
-
-## README
-
-- [ ] first 30 seconds understandable
-- [ ] current/live status clear
-- [ ] all screenshots fresh
-- [ ] no unsupported claims
-- [ ] test count links to current snapshot
-- [ ] no stale values
-- [ ] links checked
-
-## Submission
-
-- [ ] repository public
-- [ ] live demo works
-- [ ] demo video works
-- [ ] submission text matches README
-- [ ] no secret credentials
-- [ ] provenance truthful
-- [ ] final commit pushed
-- [ ] final tag created if desired
-
----
-
-# 20. Final Release Gate
-
-The project is **submission-ready only when all of the following are true**:
-
-```text
-[PASS] BOLT11 protocol correctness
-[PASS] QR round-trip
-[PASS] Grounded GraphRAG evidence
-[PASS] Controlled fixture disclosure
-[PASS] RFQ-to-payment binding
-[PASS] Policy enforcement
-[PASS] Idempotency
-[PASS] Failure handling
-[PASS] Proof chain
-[PASS] Economics disclosure
-[PASS] README claim audit
-[PASS] Screenshot freshness
-[PASS] Full automated test run
-[PASS] Browser E2E run
-[PASS] Secret scan
-[PASS] Deployment smoke test
-[PASS] Final demo rehearsal
-```
-
-If any P0 gate fails, do not freeze the submission.
-
----
-
-# 21. Required Commit Sequence
-
-Execute in this order:
-
-```text
-1. chore(submission): freeze baseline verification and claim evidence
-2. fix(machine-money): generate standards-valid bolt11 mock invoices
-3. feat(machine-money): ground judge mode in hybrid graph retrieval
-4. feat(machine-money): strengthen causal payment evidence chain
-5. feat(machine-money): finalize deterministic judge scenarios
-6. fix(machine-money): bind rfq decision to settlement proof
-7. fix(machine-money): normalize economics assumptions and disclosures
-8. fix(machine-money): make readiness status evidence-backed
-9. docs(machine-money): refresh judge evidence screenshots
-10. chore(ci): enforce final machine money verification gates
-11. docs(submission): finalize README and claim evidence matrix
-12. chore(release): finalize hackathon submission package
-```
-
-After every commit:
-
-```powershell
-git status
-git diff --check
-```
-
-Then run the smallest relevant test suite.
-
-Before release:
-
-```powershell
-.\.venv\Scripts\pytest.exe -q
-cd frontend
-npm test -- --run
-npm run lint
-npm run build
-npm run test:e2e
-```
-
----
-
-# 22. Definition of Done
-
-AuRAG is done when the judge can see, in one coherent flow:
-
-```text
-A MACHINE HAD A PROBLEM
-        ↓
-WE GROUNDED WHY
-        ↓
-WE CHOSE WHAT TO DO
-        ↓
-WE CHECKED WHETHER MONEY WAS ALLOWED
-        ↓
-WE EXECUTED OR ESCALATED
-        ↓
-WE PROVED WHAT HAPPENED
-        ↓
-WE CAN EXPLAIN THE BUSINESS IMPACT
-```
-
-The final product should be judged from the implementation, not from inflated claims.
-
-**Priority order:**
-
-> **Correctness → Evidence → Reliability → Clarity → Visual polish → Documentation**
-
-Do not reverse this order.
+## 6. Definition of Done Checklist
+
+- [x] **Phase 0:** Baseline Freeze & Evidence Matrix ([`0609a97`](https://github.com/hacker9854-ship-it/AuRAG/commit/0609a97), [`c8a4ad3`](https://github.com/hacker9854-ship-it/AuRAG/commit/c8a4ad3))
+- [x] **Phase 1:** Protocol-Sound BOLT11 Invoices ([`25b6adf`](https://github.com/hacker9854-ship-it/AuRAG/commit/25b6adf))
+- [ ] **Phase 2:** Ground Judge Mode in Actual Retrieval
+- [ ] **Phase 3:** Strengthen Causal Payment Evidence Chain
+- [ ] **Phase 4:** Finalize Deterministic Judge Scenarios & Reset
+- [x] **Phase 5:** Bind RFQ Decision to Settlement Proof ([`e441da0`](https://github.com/hacker9854-ship-it/AuRAG/commit/e441da0))
+- [x] **Phase 6:** Industrial Economics & Explainability ([`6e314b5`](https://github.com/hacker9854-ship-it/AuRAG/commit/6e314b5))
+- [ ] **Phase 7:** Evidence-Backed System Readiness Status
+- [ ] **Phase 8:** README Final Polish & Truthful FAQ
+- [x] **Phase 9:** Visual Evidence & Screenshot Refresh ([`c8a4ad3`](https://github.com/hacker9854-ship-it/AuRAG/commit/c8a4ad3))
+- [ ] **Phase 10:** Full E2E & Browser Playwright Verification
+- [ ] **Phase 11:** CI / Reproducibility & Security Guardrails
+- [ ] **Phase 12:** Final Release Gate & Submission Package
