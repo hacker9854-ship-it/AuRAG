@@ -366,3 +366,87 @@ def test_e2e_12_failure_paths_and_resilience():
         },
     )
     assert invalid_action.status_code == 400
+
+
+# -----------------------------------------------------------------------------
+# Phase 7 — Task 7.1: Autonomous Happy-Path E2E Lifecycle
+# trigger → evidence → rfq → policy → invoice → settlement → audit → graph → economics
+# -----------------------------------------------------------------------------
+def test_e2e_13_complete_autonomous_lifecycle_e2e():
+    """Verify complete 9-stage autonomous lifecycle from vibration trigger to economics impact."""
+    import hashlib
+
+    # 1. TRIGGER: Real-time sensor anomaly on high-criticality charge pump P-101A
+    event_id = f"EVT-AUTO-E2E-{uuid.uuid4().hex[:8]}"
+    trigger_payload = {
+        "equipment_tag": "P-101A",
+        "event_id": event_id,
+        "failure_event_id": "FE-001",
+        "confidence": 0.94,
+        "work_order_id": "WO-2026-P101",
+    }
+    trigger_res = client.post("/api/machine-money/trigger-from-telemetry", json=trigger_payload)
+    assert trigger_res.status_code == 200
+    trigger_data = trigger_res.json()
+
+    # 2. EVIDENCE: Cross-layer failure signature and procedure grounding
+    evidence_pkg = trigger_data["evidence_package"]
+    assert "FE-001" in evidence_pkg["evidence"]
+    assert "PROC-001" in evidence_pkg["evidence"]
+    assert "WO-1002" in evidence_pkg["evidence"]
+    assert evidence_pkg["confidence"] == 0.94
+
+    # 3. RFQ: Candidate quotation resolved
+    service_info = trigger_data["service"]
+    assert service_info["id"] == "bearing-inspection"
+    assert "node" in service_info["provider"].lower() or "industrial" in service_info["provider"].lower()
+
+    # 4. POLICY: Spending limit verified (250 sats <= 500 sat cap)
+    amount_sats = trigger_data["amount_sats"]
+    assert amount_sats == 250
+    assert amount_sats <= 500  # Within autonomous cap
+
+    # 5. INVOICE: BOLT11 invoice and payment hash generated
+    payment_hash = trigger_data["payment_hash"]
+    assert payment_hash is not None and len(payment_hash) == 64
+    idempotency_key = trigger_data["idempotency_key"]
+    assert idempotency_key.startswith("idemp-")
+
+    # 6. SETTLEMENT: Cryptographic payment receipt with preimage
+    assert trigger_data["status"] in (PaymentStatus.SETTLED.value, PaymentStatus.MOCK_PAID.value)
+    preimage = trigger_data["preimage"]
+    assert preimage is not None and len(preimage) == 64
+    payment_id = trigger_data["payment_id"]
+
+    # 7. AUDIT: SQL Ledger persistence
+    db = next(get_db())
+    from backend.app.db.models import AuditEvent
+    audit_record = (
+        db.query(AuditEvent)
+        .filter(
+            AuditEvent.action_type == "LIGHTNING_PAYMENT_SETTLED",
+            AuditEvent.status == "SUCCESS",
+        )
+        .order_by(AuditEvent.id.desc())
+        .first()
+    )
+    assert audit_record is not None
+    assert payment_id in audit_record.details_json
+
+    # 8. GRAPH: Neo4j operational causal trail
+    trail_res = client.get(f"/api/machine-money/payments/{payment_id}/trail")
+    assert trail_res.status_code == 200
+    trail_data = trail_res.json()
+    assert trail_data["found"] is True
+    assert trail_data["equipment"]["tag_id"] == "P-101A"
+
+    # 9. ECONOMICS: Industrial impact model validation
+    econ_res = client.get("/api/machine-money/analytics/economics")
+    assert econ_res.status_code == 200
+    econ_data = econ_res.json()
+    assert econ_data["equipment_tag"] == "P-101A"
+    assert econ_data["downtime_hours_avoided"] == 4.5
+    assert econ_data["estimated_downtime_exposure_usd"] == 1170000.0
+    assert econ_data["protection_multiple"] > 1000000
+    assert econ_data["is_estimated"] is True
+
