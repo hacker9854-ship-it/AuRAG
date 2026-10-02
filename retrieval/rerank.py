@@ -73,7 +73,7 @@ def rerank(
     if not candidates:
         return []
     provider = os.environ.get("RERANK_PROVIDER", "auto").lower()
-    if provider == "cohere" or (provider in ("auto", "local") and os.environ.get("COHERE_API_KEY")):
+    if provider == "cohere" or (provider == "auto" and os.environ.get("COHERE_API_KEY")):
         try:
             return _rerank_cohere(query, candidates, top_n)
         except Exception as exc:

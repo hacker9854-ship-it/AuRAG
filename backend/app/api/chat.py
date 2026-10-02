@@ -179,10 +179,37 @@ def chat(
     except Exception:
         pass
 
-    result["score_id"] = None
-    result["ragas_status"] = "skipped_disabled"
-    result["ragas_scores"] = {}
-    result["low_faithfulness"] = False
+    if not context:
+        result["score_id"] = None
+        result["ragas_status"] = "skipped_no_context"
+        result["ragas_scores"] = {}
+        result["low_faithfulness"] = False
+    else:
+        try:
+            score_id = create_score_job(
+                session,
+                query=sanitized_query,
+                agent_response=result["agent_response"],
+                routed_agent=result.get("routed_agent", "unknown"),
+                citations=result.get("citations", []),
+                graph_paths=result.get("graph_paths", []),
+                retrieved_context=context,
+            )
+            Thread(
+                target=run_score_job,
+                args=(score_id, sanitized_query, result["agent_response"], context),
+                daemon=True,
+            ).start()
+            result["score_id"] = score_id
+            result["ragas_status"] = "scoring"
+            result["ragas_scores"] = {}
+            result["low_faithfulness"] = False
+        except Exception as exc:
+            logger.warning("Score job creation failed: %s", exc)
+            result["score_id"] = None
+            result["ragas_status"] = "skipped_error"
+            result["ragas_scores"] = {}
+            result["low_faithfulness"] = False
     return result
 
 

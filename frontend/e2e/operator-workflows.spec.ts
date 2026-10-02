@@ -32,6 +32,13 @@ test.beforeEach(async ({ page }) => {
       body: ": keep-alive\n\n",
     }),
   );
+  await page.route(`${api}/api/work-orders*`, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ items: [] }),
+    }),
+  );
 });
 
 test("workspace shell persists while route titles and nested navigation update", async ({

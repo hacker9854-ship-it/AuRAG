@@ -105,28 +105,25 @@ class MemoryService:
             return False
 
         expires_at = (self._now() + timedelta(days=self.ttl_days)).isoformat()
-        from threading import Thread
-
-        def _bg_remember():
-            try:
-                self.client.add(
-                    messages=[
-                        {"role": "user", "content": query},
-                        {"role": "assistant", "content": answer},
-                    ],
-                    user_id=user_id,
-                    run_id=session_id,
-                    metadata={
-                        "source": "aurag_chat",
-                        "session_id": session_id,
-                        "expires_at": expires_at,
-                    },
-                )
-            except Exception as exc:
-                self._last_error = str(exc)
-
-        Thread(target=_bg_remember, daemon=True).start()
-        return True
+        try:
+            self.client.add(
+                messages=[
+                    {"role": "user", "content": query},
+                    {"role": "assistant", "content": answer},
+                ],
+                user_id=user_id,
+                run_id=session_id,
+                metadata={
+                    "source": "aurag_chat",
+                    "session_id": session_id,
+                    "expires_at": expires_at,
+                },
+            )
+            self._last_error = None
+            return True
+        except Exception as exc:
+            self._last_error = str(exc)
+            return False
 
 
     def status(self) -> dict[str, str]:

@@ -69,26 +69,10 @@ def liveness() -> dict:
 
 @router.get("/health/ready")
 def readiness() -> dict:
-    try:
-        checks = {
-            "groq": lambda: _require_env("GROQ_API_KEY"),
-            "gemini": lambda: _require_env("GEMINI_API_KEY"),
-        }
-        res = build_readiness(checks)
-        res["dependencies"]["neo4j"] = {"status": "up"}
-        res["dependencies"]["qdrant"] = {"status": "up"}
-        return res
-    except Exception:
-        return {
-            "status": "ready",
-            "ready": True,
-            "dependencies": {
-                "neo4j": {"status": "up"},
-                "qdrant": {"status": "up"},
-                "groq": {"status": "up"},
-                "gemini": {"status": "up"},
-            },
-        }
+    result = build_readiness(dependency_checks())
+    if not result.get("ready"):
+        raise HTTPException(status_code=503, detail=result)
+    return result
 
 
 @router.get("/health/debug")

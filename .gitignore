@@ -39,3 +39,5 @@ data/**/*.tmp
 .runtime/
 .pytest_tmp/
 scratch/
+test-results/
+playwright-report/

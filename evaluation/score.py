@@ -20,11 +20,23 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
-from ragas.dataset_schema import SingleTurnSample
-from ragas.embeddings.base import BaseRagasEmbeddings
-from ragas.llms import LangchainLLMWrapper
-from ragas.metrics import Faithfulness, LLMContextPrecisionWithoutReference, ResponseRelevancy
-from ragas.run_config import RunConfig
+
+try:
+    from ragas.dataset_schema import SingleTurnSample
+    from ragas.embeddings.base import BaseRagasEmbeddings
+    from ragas.llms import LangchainLLMWrapper
+    from ragas.metrics import Faithfulness, LLMContextPrecisionWithoutReference, ResponseRelevancy
+    from ragas.run_config import RunConfig
+    HAS_RAGAS = True
+except ImportError:
+    SingleTurnSample = None
+    BaseRagasEmbeddings = object
+    LangchainLLMWrapper = None
+    Faithfulness = None
+    LLMContextPrecisionWithoutReference = None
+    ResponseRelevancy = None
+    RunConfig = None
+    HAS_RAGAS = False
 
 from retrieval.embeddings import embed_texts
 

@@ -20,11 +20,14 @@ _client = None
 def get_client() -> QdrantClient:
     global _client
     if _client is None:
-        _client = QdrantClient(
-            url=os.environ.get("QDRANT_URL", "http://localhost:6333"),
-            api_key=os.environ.get("QDRANT_API_KEY") or None,
-            timeout=2.0,
-        )
+        kwargs = {
+            "url": os.environ.get("QDRANT_URL", "http://localhost:6333"),
+            "api_key": os.environ.get("QDRANT_API_KEY") or None,
+        }
+        timeout = os.environ.get("QDRANT_TIMEOUT")
+        if timeout:
+            kwargs["timeout"] = float(timeout)
+        _client = QdrantClient(**kwargs)
     return _client
 
 

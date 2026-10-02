@@ -50,10 +50,7 @@ def cors_origins() -> list[str]:
     )
     if not configured or configured.strip() == "*":
         return ["*"]
-    origins = [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
-    if "*" not in origins:
-        origins.append("*")
-    return origins
+    return [origin.strip().rstrip("/") for origin in configured.split(",") if origin.strip()]
 
 # ponytail: wide-open localhost dev origins, no auth — matches the project's
 # standing "no auth/permissions" ground rule and this being a local demo app,
@@ -66,6 +63,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    return response
 
 
 
