@@ -176,3 +176,15 @@ cd frontend && npm test
 | **Frontend Test Suite (Vitest)** | 14 test suites, 47 unit/integration tests passing (including optical QR decode, crypto proof, vendor RFQ, economics explainability, and accessible drawer). | PASS | Vitest run: 47 passed in 23.36s |
 | **Backend Test Suite (Pytest)** | 68 Machine Money unit, integration, and end-to-end tests passing without regressions. | PASS | Pytest run: 68 passed in 8.28s |
 
+---
+
+## 12. Phase 9 Verification Results (Security + Production-Honesty Pass)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Pre-Submission Secret Scan (Task 9.1)** | Comprehensive scanner `scripts/secret_scan.py` scans 350+ git-tracked files for API keys, tokens, and private keys (`AIza*`, `ghp_*`, `gsk_*`, `sk-*`, `-----BEGIN PRIVATE KEY-----`); validates `.env` is uncommitted and gitignored; automated regression test passes. | PASS | `scripts/secret_scan.py` & `tests/test_secret_scan.py` (commit `7d41809`) |
+| **Mock/Live Behavior Alignment (Task 9.2)** | Full inspection of all UI labels, toasts, receipts, and docs ensuring a judge cannot mistake simulation for live Lightning; toasts explicitly qualify `Simulation` vs `Live Lightning`; `ProofVerification.tsx` notes deterministic simulation evaluation when `isMock=true`. | PASS | `frontend/app/machine-money/page.tsx` & `frontend/components/machine-money/ProofVerification.tsx` (commit `3a6cba9`) |
+| **Failure-Path Audit (Task 9.3)** | Automated testing covering all 6 critical error paths: (1) provider offline with retry guidance & 0 sats deducted, (2) Neo4j offline write handling (graceful warning, no crash), (3) Neo4j offline read fallback, (4) bad quote/unknown service graceful fallback, (5) idempotent duplicate prevention, (6) expired BOLT11 invoice rejection with `InvoiceExpiredError`, and (7) low-confidence/ungrounded anomaly gating into `PENDING_APPROVAL`. | PASS | `tests/test_machine_money_failure_paths.py` (7 passed in 1.52s, commit `90f2d7a`) |
+| **Total Test Suite Regression** | 77 Backend Pytest tests & 47 Frontend Vitest tests passing with 0 regressions across the entire repository. | PASS | 100% green tests in both Python (`pytest`) and TypeScript (`vitest`) |
+
+
