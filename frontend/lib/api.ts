@@ -562,6 +562,7 @@ export interface MachineMoneyHealth {
   provider_name: string;
   is_connected: boolean;
   network: string;
+  is_mock?: boolean;
   balance_sats?: number;
   node_pubkey?: string;
   latency_ms?: number;

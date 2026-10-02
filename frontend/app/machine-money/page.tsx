@@ -108,6 +108,19 @@ export default function MachineMoneyPage() {
     setProofDrawerOpen(true);
   };
 
+  const loadPaymentTrail = async (pid: string) => {
+    setTrailLoading(true);
+    setActiveTrailPaymentId(pid);
+    try {
+      const t = await getPaymentGraphTrail(pid);
+      setTrail(t);
+    } catch (err: any) {
+      console.error("Failed to load trail:", err);
+    } finally {
+      setTrailLoading(false);
+    }
+  };
+
   // Initial Load
   const fetchAll = async () => {
     setRefreshing(true);
@@ -139,19 +152,6 @@ export default function MachineMoneyPage() {
   useEffect(() => {
     fetchAll();
   }, []);
-
-  const loadPaymentTrail = async (pid: string) => {
-    setTrailLoading(true);
-    setActiveTrailPaymentId(pid);
-    try {
-      const t = await getPaymentGraphTrail(pid);
-      setTrail(t);
-    } catch (err: any) {
-      console.error("Failed to load trail:", err);
-    } finally {
-      setTrailLoading(false);
-    }
-  };
 
   const handleCopy = (text: string, label: string) => {
     navigator.clipboard.writeText(text);

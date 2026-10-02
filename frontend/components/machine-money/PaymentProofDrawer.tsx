@@ -8,11 +8,7 @@ import {
   GitBranch,
   FileText,
   Lock,
-  ExternalLink,
   Loader2,
-  CheckCircle2,
-  Zap,
-  Clock,
   ArrowRight,
 } from "lucide-react";
 import { getPaymentProofPackage, type ProofPackageResponse } from "@/lib/api";
