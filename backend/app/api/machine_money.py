@@ -24,6 +24,7 @@ from backend.app.services.machine_money.schemas import (
     IndustrialEconomicsModel,
     IndustrialEconomicsRequest,
     IndustrialPlantAssumptions,
+    HumanApprovalEvidencePackage,
 )
 from backend.app.services.machine_money.service import MachineMoneyService
 
@@ -282,6 +283,16 @@ async def get_payment_proof_package(
         return await service.get_proof_package(db=db, payment_id=payment_id, neo4j_session=neo4j_session)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/payments/{payment_id}/approval-evidence", response_model=HumanApprovalEvidencePackage)
+def get_payment_approval_evidence(payment_id: str, db: Session = Depends(get_db)):
+    """Task 6.2: Retrieve complete context (telemetry, economics, procedure, and policy) before human approval."""
+    try:
+        return service.get_approval_evidence(db=db, payment_id=payment_id)
+    except Exception as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+
 
 
 @router.post("/judge/execute", response_model=JudgeExecutionResponse)

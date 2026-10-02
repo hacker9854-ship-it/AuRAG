@@ -284,5 +284,29 @@ class IndustrialEconomicsRequest(BaseModel):
     unmitigated_downtime_hours: Optional[float] = Field(default=None, description="Optional override downtime hours")
 
 
+class HumanApprovalEvidencePackage(BaseModel):
+    payment_id: str
+    approval_id: str
+    status: str = "PENDING_APPROVAL"
+    amount_sats: int
+    autonomous_cap_sats: int
+    excess_sats_over_cap: int
+    vendor_name: str
+    confidence_percentage: float
+    policy_id: str
+    policy_reason: str
+    equipment_id: str
+    equipment_name: str
+    failure_event_id: str
+    failure_signature: str
+    governing_procedure: str
+    telemetry_excursion: Dict[str, Any]
+    industrial_economics: Dict[str, Any]
+    recommended_action: str
+    rollback_guidance: str
+    created_at: datetime = Field(default_factory=utcnow)
+
+
+
 
 

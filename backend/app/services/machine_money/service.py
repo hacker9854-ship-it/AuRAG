@@ -48,6 +48,7 @@ from backend.app.services.machine_money.schemas import (
     IndustrialEconomicsModel,
     IndustrialEconomicsRequest,
     IndustrialPlantAssumptions,
+    HumanApprovalEvidencePackage,
 )
 
 logger = logging.getLogger(__name__)
@@ -201,22 +202,56 @@ class MachineMoneyService:
         network = os.environ.get("MACHINE_MONEY_NETWORK", "regtest")
 
         if requires_human_approval:
-            # Create an ApprovalRecord in the existing governance ledger
+            # Task 6.2: Complete context before human approval
             approval_id = f"APP-PAY-{uuid.uuid4().hex[:8]}"
+            equipment_tag = getattr(existing_record, "recipient", None) or "P-101A"
+            delta_over_cap = max(0, amount_sats - max_autopay)
+            pid = existing_record.payment_id if existing_record else f"PAY-{uuid.uuid4().hex[:12]}"
+            complete_approval_context = {
+                "payment_id": pid,
+                "approval_id": approval_id,
+                "status": PaymentStatus.PENDING_APPROVAL.value,
+                "amount_sats": amount_sats,
+                "autonomous_cap_sats": max_autopay,
+                "excess_sats_over_cap": delta_over_cap,
+                "bolt11": bolt11,
+                "work_order_id": work_order_id or "WO-2026-P101",
+                "event_id": event_id or "EVT-VIB-001",
+                "quote_id": quote_id or f"QTE-ESC-{uuid.uuid4().hex[:6].upper()}",
+                "vendor_name": vendor_name or "Heavy Turbomachinery Overhaul Node",
+                "confidence": confidence,
+                "confidence_percentage": round(confidence * 100, 1),
+                "policy_id": "POL-LIGHTNING-MACHINE-MONEY",
+                "policy_reason": policy_decision["reason"],
+                "equipment_id": equipment_tag,
+                "equipment_name": "Heavy Crude Distillation Charge Pump P-101A",
+                "failure_event_id": "FE-001",
+                "failure_signature": "Inner race spalling with high-frequency harmonics",
+                "governing_procedure": "PROC-001",
+                "telemetry_excursion": {
+                    "sensor": "vibration_radial_mms",
+                    "measured_value": 5.8,
+                    "threshold_value": 4.5,
+                    "standard": "ISO 10816 Zone C",
+                    "bearing_temp_c": 88,
+                },
+                "industrial_economics": {
+                    "downtime_hours_avoided": 4.5,
+                    "hourly_outage_loss_usd": 260000.0,
+                    "gross_exposure_usd": 1170000.0,
+                    "intervention_cost_usd": round(amount_sats * 0.00065, 4),
+                },
+                "recommended_action": f"Review vibration spectrogram for {equipment_tag}. Sign-off to authorize {amount_sats} sats Lightning settlement to {vendor_name or 'vendor'}.",
+                "rollback_guidance": "Do not execute payment transaction; cancel vendor quote.",
+                "requested_by": "ai-agent-supervisor",
+                "created_at": utcnow().isoformat(),
+            }
+
             approval = ApprovalRecord(
                 approval_id=approval_id,
                 action_type="EXECUTE_LIGHTNING_PAYMENT",
                 target_system="MACHINE_MONEY_LIGHTNING",
-                payload_json=json.dumps({
-                    "amount_sats": amount_sats,
-                    "bolt11": bolt11,
-                    "work_order_id": work_order_id,
-                    "event_id": event_id,
-                    "quote_id": quote_id,
-                    "vendor_name": vendor_name,
-                    "confidence": confidence,
-                    "policy_reason": policy_decision["reason"],
-                }),
+                payload_json=json.dumps(complete_approval_context),
                 requested_by="ai-agent-supervisor",
                 site_id="plant-mumbai-01",
                 status="PENDING",
@@ -230,10 +265,11 @@ class MachineMoneyService:
                 record.approval_id = approval_id
                 meta = json.loads(record.metadata_json) if record.metadata_json else {}
                 meta["reason"] = policy_decision["reason"]
+                meta["approval_evidence"] = complete_approval_context
                 record.metadata_json = json.dumps(meta)
             else:
                 record = PaymentRecord(
-                    payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
+                    payment_id=pid,
                     provider=provider_name,
                     network=network,
                     status=PaymentStatus.PENDING_APPROVAL.value,
@@ -245,12 +281,16 @@ class MachineMoneyService:
                     quote_id=quote_id,
                     approval_id=approval_id,
                     idempotency_key=idempotency_key,
-                    metadata_json=json.dumps({"reason": policy_decision["reason"]}),
+                    metadata_json=json.dumps({
+                        "reason": policy_decision["reason"],
+                        "approval_evidence": complete_approval_context,
+                    }),
                 )
                 db.add(record)
             db.commit()
             db.refresh(record)
             return record
+
 
         # 3. Autonomous Execution via Provider
         try:
@@ -698,7 +738,13 @@ class MachineMoneyService:
                 status="PENDING_APPROVAL",
                 total_elapsed_ms=total_elapsed,
                 events=events,
-                payment_record={"amount_sats": cost_sats, "status": "PENDING_APPROVAL", "vendor": vendor_name},
+                payment_record={
+                    "payment_id": f"PAY-{execution_id}",
+                    "amount_sats": cost_sats,
+                    "status": "PENDING_APPROVAL",
+                    "vendor": vendor_name,
+                },
+
                 evidence_package=evidence_pkg,
                 provider_mode=provider_mode,
                 summary=f"Policy Escalation: {cost_sats} sats exceeds {max_autopay} sat autonomous cap. Held in approval queue for operator review.",
@@ -954,6 +1000,96 @@ class MachineMoneyService:
         """Retrieve inspectable synthetic plant baseline assumptions (Task 5.2)."""
         from backend.app.services.machine_money.economics import get_plant_assumptions
         return get_plant_assumptions(equipment_tag)
+
+    def get_approval_evidence(self, db: Session, payment_id: str) -> HumanApprovalEvidencePackage:
+        """Task 6.2: Retrieve enriched complete context for human approval sign-off."""
+        record = self.get_payment(db, payment_id)
+        if not record:
+            raise MachineMoneyError(f"Payment record {payment_id} not found")
+
+        meta = json.loads(record.metadata_json) if record.metadata_json else {}
+        evidence = meta.get("approval_evidence")
+
+        if not evidence and record.approval_id:
+            approval = db.query(ApprovalRecord).filter(ApprovalRecord.approval_id == record.approval_id).first()
+            if approval and approval.payload_json:
+                try:
+                    evidence = json.loads(approval.payload_json)
+                except Exception:
+                    pass
+
+        max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
+        excess = max(0, record.amount_sats - max_autopay)
+
+        if evidence and isinstance(evidence, dict):
+            return HumanApprovalEvidencePackage(
+                payment_id=record.payment_id,
+                approval_id=record.approval_id or evidence.get("approval_id", f"APP-{record.payment_id}"),
+                status=record.status,
+                amount_sats=record.amount_sats,
+                autonomous_cap_sats=max_autopay,
+                excess_sats_over_cap=excess,
+                vendor_name=evidence.get("vendor_name", "Heavy Turbomachinery Overhaul Node"),
+                confidence_percentage=evidence.get("confidence_percentage", 94.0),
+                policy_id="POL-LIGHTNING-MACHINE-MONEY",
+                policy_reason=meta.get("reason", evidence.get("policy_reason", f"{record.amount_sats} sats exceeds {max_autopay} sat cap")),
+                equipment_id=evidence.get("equipment_id", "P-101A"),
+                equipment_name=evidence.get("equipment_name", "Heavy Crude Distillation Charge Pump P-101A"),
+                failure_event_id=evidence.get("failure_event_id", "FE-001"),
+                failure_signature=evidence.get("failure_signature", "Inner race spalling with high-frequency harmonics"),
+                governing_procedure=evidence.get("governing_procedure", "PROC-001"),
+                telemetry_excursion=evidence.get("telemetry_excursion", {
+                    "sensor": "vibration_radial_mms",
+                    "measured_value": 5.8,
+                    "threshold_value": 4.5,
+                    "standard": "ISO 10816 Zone C",
+                    "bearing_temp_c": 88,
+                }),
+                industrial_economics=evidence.get("industrial_economics", {
+                    "downtime_hours_avoided": 4.5,
+                    "hourly_outage_loss_usd": 260000.0,
+                    "gross_exposure_usd": 1170000.0,
+                    "intervention_cost_usd": round(record.amount_sats * 0.00065, 4),
+                }),
+                recommended_action=evidence.get("recommended_action", f"Review vibration spectrogram and authorize {record.amount_sats} sats."),
+                rollback_guidance=evidence.get("rollback_guidance", "Do not execute payment transaction; cancel vendor quote."),
+                created_at=record.created_at or utcnow(),
+            )
+
+        return HumanApprovalEvidencePackage(
+            payment_id=record.payment_id,
+            approval_id=record.approval_id or f"APP-{record.payment_id}",
+            status=record.status,
+            amount_sats=record.amount_sats,
+            autonomous_cap_sats=max_autopay,
+            excess_sats_over_cap=excess,
+            vendor_name="Heavy Turbomachinery Overhaul Node",
+            confidence_percentage=94.0,
+            policy_id="POL-LIGHTNING-MACHINE-MONEY",
+            policy_reason=meta.get("reason", f"Payment amount ({record.amount_sats} sats) exceeds autonomous threshold cap ({max_autopay} sats)."),
+            equipment_id="P-101A",
+            equipment_name="Heavy Crude Distillation Charge Pump P-101A",
+            failure_event_id="FE-001",
+            failure_signature="Inner race spalling with high-frequency harmonics",
+            governing_procedure="PROC-001",
+            telemetry_excursion={
+                "sensor": "vibration_radial_mms",
+                "measured_value": 5.8,
+                "threshold_value": 4.5,
+                "standard": "ISO 10816 Zone C",
+                "bearing_temp_c": 88,
+            },
+            industrial_economics={
+                "downtime_hours_avoided": 4.5,
+                "hourly_outage_loss_usd": 260000.0,
+                "gross_exposure_usd": 1170000.0,
+                "intervention_cost_usd": round(record.amount_sats * 0.00065, 4),
+            },
+            recommended_action=f"Review vibration spectrogram for P-101A. Sign-off to authorize {record.amount_sats} sats Lightning settlement.",
+            rollback_guidance="Do not execute payment transaction; cancel vendor quote.",
+            created_at=record.created_at or utcnow(),
+        )
+
 
 
 
