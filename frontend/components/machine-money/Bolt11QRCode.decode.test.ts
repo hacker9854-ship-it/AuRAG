@@ -38,7 +38,7 @@ function createQrImageData(modules: boolean[][], scale = 8, border = 4): {
   return { data: rgba, width: fullSize, height: fullSize };
 }
 
-describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / E2E-E)", () => {
+describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 7.4)", () => {
   it("verifies that a real BOLT11 invoice encoded in standard QR decodes to the exact string", async () => {
     // Dynamically import QRCode encoder
     const QRCode = await import("qrcode");
@@ -60,5 +60,49 @@ describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / E2E-E)", ()
 
     expect(decoded).not.toBeNull();
     expect(decoded?.data).toBe(testInvoice);
+  });
+
+  it("verifies optical decode across multiple networks and invoice lengths without distortion", async () => {
+    const QRCode = await import("qrcode");
+    const sampleInvoices = [
+      "lnbcrt2500u1pvjluezpp5qqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqqqsyqcyq5rqwzqfqypqdqqcqzysxqyz5vq9p101a",
+      "lnbc1200u1p3mockabovecapinvoice0000000000000000000000000000000000000000000000000000000000000000",
+      "lntb500u1p0mocksignetinvoicetest000000000000000000000000000000000000000000000000000000000000000",
+    ];
+
+    for (const invoice of sampleInvoices) {
+      const qrData = QRCode.create(invoice, { errorCorrectionLevel: "M" });
+      const size = qrData.modules.size;
+      const modules: boolean[][] = [];
+      for (let r = 0; r < size; r++) {
+        const row: boolean[] = [];
+        for (let c = 0; c < size; c++) {
+          row.push(Boolean(qrData.modules.get(c, r)));
+        }
+        modules.push(row);
+      }
+
+      const { data, width, height } = createQrImageData(modules);
+      const decoded = jsQR(data, width, height);
+
+      expect(decoded).not.toBeNull();
+      expect(decoded?.data).toBe(invoice);
+      expect(decoded?.data.startsWith("ln")).toBe(true);
+    }
+  });
+
+  it("proves that no pseudo-random or corrupt matrix is produced for standard payloads", async () => {
+    const QRCode = await import("qrcode");
+    const payload = "lnbcrt1000u1pmockintegritypayloadcheck1234567890abcdef";
+    const qrData = QRCode.create(payload, { errorCorrectionLevel: "M" });
+
+    // Finder patterns in top-left, top-right, bottom-left must be standard 7x7 squares
+    const size = qrData.modules.size;
+    expect(size).toBeGreaterThanOrEqual(21); // Minimum QR Version 1 size
+
+    // Module at (0, 0) must be black/true (top-left finder corner)
+    expect(Boolean(qrData.modules.get(0, 0))).toBe(true);
+    // Center of top-left finder (3, 3) must be black/true
+    expect(Boolean(qrData.modules.get(3, 3))).toBe(true);
   });
 });

@@ -609,4 +609,45 @@ def test_e2e_15_provider_failure_lifecycle_e2e():
     assert "Zero satoshis deducted" in details["retry_guidance"]
 
 
+# -----------------------------------------------------------------------------
+# Phase 7 — Task 7.4: QR Payload Exact BOLT11 Regression
+# backend BOLT11 source of truth → zero mutation → exact invoice payload preserved
+# -----------------------------------------------------------------------------
+def test_e2e_16_qr_payload_exact_bolt11_regression():
+    """Verify backend produces exact BOLT11 invoice string preserved identically across all APIs."""
+    inv_res = client.post(
+        "/api/machine-money/invoice",
+        json={
+            "amount_sats": 250,
+            "memo": "Vibration Sensor Acoustic Analysis P-101A",
+            "equipment_id": "P-101A",
+        },
+    )
+    assert inv_res.status_code == 200
+    inv_data = inv_res.json()
+    bolt11 = inv_data["invoice"]
+    pid = inv_data["payment_id"]
+
+    # 1. Invoice format adherence: Starts with Lightning prefix, no whitespace, valid charset
+    assert bolt11.startswith("lnbc") or bolt11.startswith("lnbcrt")
+    assert " " not in bolt11
+    assert "\n" not in bolt11
+    assert "\t" not in bolt11
+    assert bolt11.islower() or bolt11.isupper()
+
+    # 2. Payment Record detail API preserves exact BOLT11 string
+    pay_res = client.get(f"/api/machine-money/payments/{pid}")
+    assert pay_res.status_code == 200
+    pay_detail = pay_res.json()
+    assert pay_detail["invoice"] == bolt11
+
+    # 3. Proof Package API delivers the identical BOLT11 string for QR renderer consumption
+    proof_res = client.get(f"/api/machine-money/payments/{pid}/proof-package")
+    assert proof_res.status_code == 200
+    proof_pkg = proof_res.json()
+    assert proof_pkg["payment"]["bolt11"] == bolt11
+    assert proof_pkg["payment"]["amount_sats"] == 250
+
+
+
 
