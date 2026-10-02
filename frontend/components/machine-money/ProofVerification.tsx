@@ -91,21 +91,29 @@ export function ProofVerification({
             Cryptographic Proof Verification
           </h4>
         </div>
-        <div>
+        <div className="flex items-center gap-2">
           {isVerified ? (
-            <span
-              data-testid="proof-status-badge"
-              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase border ${
-                isMock || settlementSource === "SIMULATED"
-                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
-                  : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
-              }`}
-            >
-              <CheckCircle2 className="w-3 h-3 text-current" />
-              {isMock || settlementSource === "SIMULATED"
-                ? "SIMULATION INTEGRITY VERIFIED"
-                : "NETWORK SETTLEMENT VERIFIED"}
-            </span>
+            <>
+              <span
+                data-testid="proof-status-badge"
+                className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase border ${
+                  isMock || settlementSource === "SIMULATED"
+                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                    : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
+                }`}
+              >
+                <CheckCircle2 className="w-3 h-3 text-current" />
+                {isMock || settlementSource === "SIMULATED"
+                  ? "SIMULATION INTEGRITY VERIFIED"
+                  : "NETWORK SETTLEMENT VERIFIED"}
+              </span>
+              <span
+                data-testid="crypto-math-badge"
+                className="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-mono text-[10px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30"
+              >
+                sha256(preimage) = payment_hash ✓
+              </span>
+            </>
           ) : (
             <span
               data-testid="proof-status-badge"
@@ -125,16 +133,29 @@ export function ProofVerification({
       </div>
 
       {/* Proof Formula Explainer */}
-      <div className="p-2.5 bg-muted/40 rounded-lg border border-border/40 font-mono text-[11px] text-muted-foreground flex items-center justify-between">
-        <span>Formula: SHA-256(Preimage) == PaymentHash</span>
+      <div className="p-2.5 bg-muted/40 rounded-lg border border-border/40 font-mono text-[11px] text-muted-foreground flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <span className="flex items-center gap-1.5 font-semibold text-foreground/90">
+          <Key className="w-3.5 h-3.5 text-amber-500" />
+          Formula: sha256(preimage) == payment_hash
+        </span>
         <button
           type="button"
           data-testid="reverify-button"
           onClick={runVerification}
           disabled={isVerifying || !preimage}
-          className="text-[10px] font-sans px-2 py-0.5 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded transition-colors"
+          className="text-[11px] font-mono font-semibold px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-95"
         >
-          {isVerifying ? "Verifying..." : "Verify Proof"}
+          {isVerifying ? (
+            <>
+              <RefreshCw className="w-3 h-3 animate-spin" />
+              Computing SHA-256...
+            </>
+          ) : (
+            <>
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Verify: sha256(preimage) = payment_hash ✓
+            </>
+          )}
         </button>
       </div>
 

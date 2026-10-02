@@ -3,10 +3,15 @@
 Supports Phase 4 (FR-04, BE-03) under Bitshala BOSS Battle 2026 guidelines.
 All candidate vendor data is clearly labeled as synthetic for demonstration purposes.
 """
+import hashlib
+import os
+import secrets
 import uuid
 from datetime import timedelta
 from typing import Any, Dict, List, Optional
 
+from backend.app.services.machine_money.bolt11 import encode_bolt11
+from backend.app.services.machine_money.providers.mock import register_preimage
 from backend.app.services.machine_money.schemas import (
     SelectionStrategy,
     VendorQuoteCandidate,
@@ -141,6 +146,12 @@ def get_candidate_quotes_for_service(
     candidates: List[VendorQuoteCandidate] = []
     for idx, c in enumerate(raw_candidates, start=1):
         candidate_id = f"BID-{service_id[:4].upper()}-{idx:02d}"
+        
+        # Synthesize and register genuine cryptographically valid BOLT11 payment request
+        bid_preimage = secrets.token_hex(32)
+        bid_payment_hash = hashlib.sha256(bytes.fromhex(bid_preimage)).hexdigest()
+        register_preimage(bid_payment_hash, bid_preimage)
+
         candidates.append(
             VendorQuoteCandidate(
                 candidate_id=candidate_id,
@@ -163,7 +174,7 @@ def get_candidate_quotes_for_service(
     return candidates
 
 
-def process_vendor_rfq(request: VendorRFQRequest) -> VendorRFQResponse:
+def process_vendor_rfq(request: VendorRFQRequest, use_live_dispatch: bool = False) -> VendorRFQResponse:
     """Execute rule/model-driven explainable multi-vendor RFQ selection (FR-04)."""
     rfq_id = f"RFQ-{uuid.uuid4().hex[:10].upper()}"
     requested_at = utcnow()

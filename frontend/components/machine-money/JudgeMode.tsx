@@ -22,6 +22,7 @@ import {
 } from "@/lib/api";
 import { ExecutionTimeline } from "./ExecutionTimeline";
 import { ProviderModeBadge } from "./ProviderModeBadge";
+import { ProofVerification } from "./ProofVerification";
 
 export interface JudgeModeProps {
   onExecutionComplete?: (response: JudgeExecutionResponse) => void;
@@ -337,6 +338,19 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           isRunning={isRunning}
         />
       </div>
+
+      {/* Cryptographic Payment Proof Verification (Fix #3 / Invariant sha256(preimage) = payment_hash) */}
+      {response?.payment_record?.payment_hash && (
+        <div data-testid="judge-crypto-proof-section" className="mt-4 pt-4 border-t border-border/40 animate-in fade-in-50">
+          <ProofVerification
+            paymentHash={response.payment_record.payment_hash}
+            preimage={response.payment_record.preimage}
+            isMock={response.provider_mode?.includes("MOCK")}
+            settlementSource={response.provider_mode?.includes("MOCK") ? "SIMULATED" : "LIGHTNING_NODE"}
+            autoVerify={true}
+          />
+        </div>
+      )}
     </div>
   );
 }

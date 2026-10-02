@@ -11,7 +11,7 @@ truststore.inject_into_ssl()
 
 from agents import compliance, copilot, lessons_learned, rca
 from agents.validation import require_complete
-from retrieval.index_chunks import get_database, get_driver
+from backend.app.core.neo4j import get_session
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -25,10 +25,9 @@ _AGENTS = {
 
 def main():
     ground_truth = json.loads((REPO_ROOT / "agents" / "ground_truth.json").read_text())
-    driver, db = get_driver(), get_database()
 
     matched, total = 0, 0
-    with driver.session(database=db) as session:
+    for session in get_session():
         for agent_name, cases in ground_truth.items():
             answer_fn = _AGENTS[agent_name]
             for qid, case in cases.items():
@@ -41,8 +40,7 @@ def main():
                     print(f"[OK] {agent_name}/{qid}: {sorted(got)}")
                 else:
                     print(f"[MISMATCH] {agent_name}/{qid}: expected any of {sorted(expected)}, got {sorted(got)}")
-
-    driver.close()
+        break
     print(f"\n{matched}/{total} queries matched expected citations")
     require_complete(matched, total, "Agent citation validation")
 

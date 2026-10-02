@@ -1,6 +1,10 @@
 """Provider factory to resolve the active Lightning payment provider based on configuration."""
 import os
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from backend.app.services.machine_money.providers.base import LightningProvider
 from backend.app.services.machine_money.providers.mock import MockLightningProvider
 from backend.app.services.machine_money.providers.lnbits import LNbitsProvider

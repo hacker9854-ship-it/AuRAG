@@ -4,10 +4,20 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import hashlib
 from backend.app.db.models import Base, PaymentRecord
 from backend.app.main import app
+from backend.app.services.machine_money.bolt11 import encode_bolt11
 from backend.app.services.machine_money.schemas import PaymentStatus
 from backend.app.services.machine_money.service import MachineMoneyService
+
+_TEST_HASH = hashlib.sha256(b"turbomachinery_overhaul_1200").hexdigest()
+VALID_1200_INVOICE = encode_bolt11(
+    network="bcrt",
+    amount_sats=1200,
+    payment_hash_hex=_TEST_HASH,
+    description="Emergency turbomachinery overhaul",
+)
 
 
 @pytest.fixture
@@ -35,7 +45,7 @@ def test_client_cannot_bypass_spending_cap_via_api(client):
     response = client.post(
         "/api/machine-money/pay",
         json={
-            "bolt11": "lnbcrt12000u1pmockfakeinvoice000000000000000000000000000000000000000000000000000",
+            "bolt11": VALID_1200_INVOICE,
             "amount_sats": 1200,  # Exceeds 500 sat cap
             "bypass_policy": True,
             "vendor_name": "Heavy Turbomachinery Overhaul Node",
@@ -52,7 +62,7 @@ def test_service_execute_payment_enforces_pending_approval_over_cap(test_db, mm_
     record = asyncio.run(
         mm_service.execute_payment(
             db=test_db,
-            bolt11="lnbcrt12000u1pmockfakeinvoice000000000000000000000000000000000000000000000000000",
+            bolt11=VALID_1200_INVOICE,
             amount_sats=1200,
             bypass_policy=True,  # Even if caller passes bypass_policy=True
             vendor_name="Heavy Turbomachinery Overhaul Node",
@@ -72,7 +82,7 @@ def test_disallowed_payment_only_settles_via_operator_approval(test_db, mm_servi
     record = asyncio.run(
         mm_service.execute_payment(
             db=test_db,
-            bolt11="lnbcrt12000u1pmockfakeinvoice000000000000000000000000000000000000000000000000000",
+            bolt11=VALID_1200_INVOICE,
             amount_sats=1200,
             vendor_name="Heavy Turbomachinery Overhaul Node",
         )

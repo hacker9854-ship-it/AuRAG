@@ -14,6 +14,8 @@ from sqlalchemy.orm import sessionmaker
 from backend.app.db.models import Base, PaymentRecord, ApprovalRecord
 from backend.app.main import app
 from backend.app.services.machine_money.registry import generate_idempotency_key
+import hashlib
+from backend.app.services.machine_money.bolt11 import encode_bolt11
 from backend.app.services.machine_money.schemas import (
     InvoiceRequest,
     PaymentStatus,
@@ -114,7 +116,8 @@ def test_service_execute_payment_idempotency(service, test_db, monkeypatch):
     monkeypatch.setattr(service.provider, "pay_invoice", pay_spy)
 
     idemp_key = f"idemp-direct-test-{uuid.uuid4().hex[:8]}"
-    bolt11 = "lnbcrt2500u1pmockidemptest000000000000000000000000000000000000000000000000000"
+    idemp_h = hashlib.sha256(b"idemp_test_invoice_250").hexdigest()
+    bolt11 = encode_bolt11(network="bcrt", amount_sats=250, payment_hash_hex=idemp_h, description="Idempotency test service")
 
     # Call 1
     rec1 = asyncio.run(

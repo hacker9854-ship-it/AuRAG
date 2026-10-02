@@ -187,15 +187,14 @@ def fetch_graph(request: GraphRequest, session=Depends(get_session)) -> dict:
         )
         _merge_path_rows(rows, nodes_by_eid, relationships_by_key)
 
+        # Deduplicate nodes by id to guarantee valid React keys and SVG rendering
+        unique_nodes: dict[str, dict] = {}
+        for node in nodes_by_eid.values():
+            formatted = {key: value for key, value in node.items() if key != "eid"}
+            unique_nodes[formatted["id"]] = formatted
+
         return {
-            "nodes": [
-                {
-                    key: value
-                    for key, value in node.items()
-                    if key != "eid"
-                }
-                for node in nodes_by_eid.values()
-            ],
+            "nodes": list(unique_nodes.values()),
             "relationships": list(relationships_by_key.values()),
         }
     except Exception as exc:

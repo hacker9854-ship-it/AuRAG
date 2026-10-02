@@ -19,6 +19,8 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import hashlib
+from backend.app.services.machine_money.bolt11 import encode_bolt11
 from backend.app.db.database import Base
 from backend.app.db.models import PaymentRecord, AuditEvent
 from backend.app.services.machine_money.exceptions import (
@@ -69,10 +71,11 @@ def test_failure_path_provider_offline(db_session, monkeypatch):
 
     monkeypatch.setattr(service.provider, "pay_invoice", mock_pay_fail)
 
+    inv_fail = encode_bolt11(network="bcrt", amount_sats=250, payment_hash_hex=hashlib.sha256(b"fail_test").hexdigest(), description="Fail test")
     record = asyncio.run(
         service.execute_payment(
             db=db_session,
-            bolt11="lnbcrt2500u1pfailtest",
+            bolt11=inv_fail,
             amount_sats=250,
             work_order_id="WO-FAIL-01",
             event_id="EVT-FAIL-01",
@@ -163,11 +166,12 @@ def test_failure_path_duplicate_trigger(db_session, monkeypatch):
     service = MachineMoneyService()
     idemp_key = f"idemp-test-{uuid.uuid4().hex[:8]}"
 
+    inv_idemp = encode_bolt11(network="bcrt", amount_sats=250, payment_hash_hex=hashlib.sha256(b"idemp_test").hexdigest(), description="Idemp test")
     # First execution
     rec1 = asyncio.run(
         service.execute_payment(
             db=db_session,
-            bolt11="lnbcrt2500u1pidemptest",
+            bolt11=inv_idemp,
             amount_sats=250,
             idempotency_key=idemp_key,
             confidence=0.95,
@@ -179,7 +183,7 @@ def test_failure_path_duplicate_trigger(db_session, monkeypatch):
     rec2 = asyncio.run(
         service.execute_payment(
             db=db_session,
-            bolt11="lnbcrt2500u1pidemptest",
+            bolt11=inv_idemp,
             amount_sats=250,
             idempotency_key=idemp_key,
             confidence=0.95,
@@ -252,10 +256,11 @@ def test_failure_path_missing_evidence_low_confidence(db_session, monkeypatch):
     service = MachineMoneyService()
 
     # Confidence 0.40 is far below the required 0.70 threshold
+    inv_lowconf = encode_bolt11(network="bcrt", amount_sats=250, payment_hash_hex=hashlib.sha256(b"low_conf_test").hexdigest(), description="Low conf test")
     record = asyncio.run(
         service.execute_payment(
             db=db_session,
-            bolt11="lnbcrt2500u1plowconf",
+            bolt11=inv_lowconf,
             amount_sats=250,
             confidence=0.40,  # Un-grounded anomaly
         )

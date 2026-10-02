@@ -5,8 +5,10 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+import hashlib
 from backend.app.db.models import Base
 from backend.app.main import app
+from backend.app.services.machine_money.bolt11 import encode_bolt11
 from backend.app.services.machine_money.schemas import (
     HumanApprovalEvidencePackage,
     PaymentStatus,
@@ -45,10 +47,12 @@ def test_human_approval_evidence_structure_and_api(client, mm_service):
     db = SessionLocal()
     try:
         # Create an escalation payment in db
+        escalation_h = hashlib.sha256(b"escalation_invoice_1200").hexdigest()
+        escalation_inv = encode_bolt11(network="bcrt", amount_sats=1200, payment_hash_hex=escalation_h, description="Escalation overhaul")
         payment = asyncio.run(
             mm_service.execute_payment(
                 db=db,
-                bolt11="lnbcrt12000u1pmockescalationinvoice00000000000000000000000000000000000000000000",
+                bolt11=escalation_inv,
                 amount_sats=1200,
                 vendor_name="Heavy Turbomachinery Overhaul Node",
                 event_id="EVT-VIB-001",

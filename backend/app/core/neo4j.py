@@ -4,6 +4,9 @@ Provider imports stay lazy so API modules and pure service tests do not need
 the full embedding/Qdrant stack merely to import their route definitions.
 """
 import logging
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +79,51 @@ _FALLBACK_WORK_ORDERS = {
         "decisions": [],
     },
 }
+
+
+_IN_MEMORY_GRAPH_NODES = {
+    "P-101": {"labels": ["Equipment"], "props": {"tag_id": "P-101", "name": "Crude Charge Pump P-101", "type": "Centrifugal Pump"}},
+    "P-101A": {"labels": ["Equipment"], "props": {"tag_id": "P-101A", "name": "Crude Charge Pump P-101A", "type": "Centrifugal Pump"}},
+    "P-101B": {"labels": ["Equipment"], "props": {"tag_id": "P-101B", "name": "Crude Charge Pump P-101B", "type": "Centrifugal Pump"}},
+    "C-201": {"labels": ["Equipment"], "props": {"tag_id": "C-201", "name": "Recycle Gas Compressor C-201", "type": "Centrifugal Compressor"}},
+    "HX-401": {"labels": ["Equipment"], "props": {"tag_id": "HX-401", "name": "Preheat Exchanger HX-401", "type": "Shell and Tube Exchanger"}},
+    "PSV-701": {"labels": ["Equipment"], "props": {"tag_id": "PSV-701", "name": "Pressure Safety Valve PSV-701", "type": "Safety Relief Valve"}},
+    "P-102": {"labels": ["Equipment"], "props": {"tag_id": "P-102", "name": "Booster Pump P-102", "type": "Centrifugal Pump"}},
+    "FE-001": {"labels": ["FailureEvent"], "props": {"id": "FE-001", "description": "Bearing Cage Degradation & Overheating", "root_cause": "Missed lubrication interval"}},
+    "FE-002": {"labels": ["FailureEvent"], "props": {"id": "FE-002", "description": "High Discharge Temperature Trip", "root_cause": "Fouled intercooler tubes"}},
+    "FE-003": {"labels": ["FailureEvent"], "props": {"id": "FE-003", "description": "Heat Transfer Degradation", "root_cause": "Tube bundle scaling"}},
+    "FE-004": {"labels": ["FailureEvent"], "props": {"id": "FE-004", "description": "Relief Valve Calibration Non-Compliance", "root_cause": "Overdue PSV bench test"}},
+    "FE-006": {"labels": ["FailureEvent"], "props": {"id": "FE-006", "description": "Mechanical Seal Leakage", "root_cause": "Thermal cycling degradation"}},
+    "WO-1001": {"labels": ["WorkOrder"], "props": {"id": "WO-1001", "description": "Monthly Bearing Greasing Routine", "status": "Completed"}},
+    "WO-1002": {"labels": ["WorkOrder"], "props": {"id": "WO-1002", "description": "Overhaul Bearing & Laser Alignment", "status": "Overdue"}},
+    "WO-1003": {"labels": ["WorkOrder"], "props": {"id": "WO-1003", "description": "Clean Intercooler Tube Bundle", "status": "Completed"}},
+    "WO-1007": {"labels": ["WorkOrder"], "props": {"id": "WO-1007", "description": "Scheduled Annual PSV Calibration", "status": "Overdue"}},
+    "WO-2026-P101": {"labels": ["WorkOrder"], "props": {"id": "WO-2026-P101", "description": "Emergency Outboard Bearing Overhaul", "status": "FUNDED"}},
+    "PROC-001": {"labels": ["Procedure"], "props": {"id": "PROC-001", "title": "Laser Alignment Standard Operating Procedure"}},
+    "PROC-002": {"labels": ["Procedure"], "props": {"id": "PROC-002", "title": "Compressor Intercooler Maintenance Procedure"}},
+    "FACT1948-S37": {"labels": ["RegulatoryClause"], "props": {"clause_id": "FACT1948-S37", "text": "Factories Act 1948 Section 37: Explosion prevention measures"}},
+    "OISD-STD-132-10.2ii": {"labels": ["RegulatoryClause"], "props": {"clause_id": "OISD-STD-132-10.2ii", "text": "OISD-STD-132 Clause 10.2(ii): PSV calibration history and periodic testing requirements"}},
+}
+
+_IN_MEMORY_GRAPH_EDGES = [
+    ("P-101", "FE-001", "EXPERIENCED"),
+    ("P-101A", "FE-001", "EXPERIENCED"),
+    ("P-101", "P-101A", "HAS_PART"),
+    ("FE-001", "WO-1002", "RESOLVED_BY"),
+    ("FE-001", "WO-1001", "DOCUMENTED_IN"),
+    ("WO-1002", "PROC-001", "GOVERNED_BY"),
+    ("FE-001", "WO-2026-P101", "RESOLVED_BY"),
+    ("P-101A", "WO-2026-P101", "PERFORMED_ON"),
+    ("C-201", "FE-002", "EXPERIENCED"),
+    ("FE-002", "WO-1003", "RESOLVED_BY"),
+    ("WO-1003", "PROC-002", "GOVERNED_BY"),
+    ("C-201", "FACT1948-S37", "GOVERNED_BY"),
+    ("PSV-701", "FE-004", "EXPERIENCED"),
+    ("FE-004", "WO-1007", "RESOLVED_BY"),
+    ("PSV-701", "OISD-STD-132-10.2ii", "APPLIES_TO"),
+    ("HX-401", "FE-003", "EXPERIENCED"),
+    ("P-102", "FE-006", "EXPERIENCED"),
+]
 
 
 class FallbackNeo4jSession:
@@ -171,6 +219,68 @@ class FallbackNeo4jSession:
 
         class FallbackResult:
             def data(self):
+                # 1. Entity discovery for pipeline/traversal
+                if "RETURN e.tag_id AS t" in query or "RETURN e.tag_id as t" in query or query.strip() == "MATCH (e:Equipment) RETURN e.tag_id AS t":
+                    return [
+                        {"t": "P-101", "tag_id": "P-101"},
+                        {"t": "P-101A", "tag_id": "P-101A"},
+                        {"t": "P-101B", "tag_id": "P-101B"},
+                        {"t": "C-201", "tag_id": "C-201"},
+                        {"t": "PSV-701", "tag_id": "PSV-701"},
+                    ]
+                if "RETURN p.name AS n" in query or "RETURN p.name as n" in query or query.strip() == "MATCH (p:Person) RETURN p.name AS n":
+                    return [
+                        {"n": "Dr. Rajesh Sharma", "name": "Dr. Rajesh Sharma"},
+                        {"n": "Anil K. Verma", "name": "Anil K. Verma"},
+                    ]
+
+                # 2. Equipment multi-hop traversal query (_EQUIPMENT_CYPHER)
+                if ("e:Equipment {tag_id:$tag}" in query) or ("failure_events" in query and "clauses" in query and "procedures" in query):
+                    tag = kwargs.get("tag", "P-101")
+                    if tag in ("P-101", "P-101A"):
+                        return [{
+                            "failure_events": [{"id": "FE-001", "date": "2025-03-14", "symptom": "High vibration and elevated bearing temperature on P-101", "root_cause": "Bearing cage degradation and improper lubrication"}],
+                            "work_orders": [
+                                {"id": "WO-1001", "date": "2025-03-15", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec"},
+                                {"id": "WO-1002", "date": "2025-02-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled quarterly lubrication service"},
+                            ],
+                            "clauses": [],
+                            "procedures": [{"id": "PROC-001", "title": "Laser Alignment Standard Operating Procedure", "version": "1.0"}],
+                            "chunks": [{"id": "DOC-LOG-001-C002", "text": "FE-001 — P-101 Drive-End Bearing Failure (2025-03-14). Symptom: Excessive vibration and high bearing temperature. Root cause: Bearing cage degradation due to missed lubrication interval WO-1002. Resolution: WO-1001 replaced bearing."}],
+                        }]
+                    elif tag == "C-201":
+                        return [{
+                            "failure_events": [{"id": "FE-002", "date": "2025-05-02", "symptom": "High discharge temperature trip on C-201", "root_cause": "Fouled intercooler tubes"}],
+                            "work_orders": [
+                                {"id": "WO-1003", "date": "2025-05-03", "type": "Corrective", "status": "Closed", "description": "Cleaned fouled intercooler tubes, reset high-discharge-temperature trip, and verified explosion-prevention enclosure integrity per Section 37"},
+                            ],
+                            "clauses": [
+                                {"id": "FACT1948-S37", "source": "Factories Act 1948", "text": "Where in any factory any manufacturing process produces dust, gas, fume or vapour of such character and to such extent as to be likely to explode on ignition, all practicable measures shall be taken to prevent any such explosion by effective enclosure of the plant or machinery, removal or prevention of accumulation of such dust, gas, fume or vapour, and exclusion or effective enclosure of all possible sources of ignition."},
+                            ],
+                            "procedures": [{"id": "PROC-002", "title": "Compressor Intercooler Maintenance Procedure", "version": "1.0"}],
+                            "chunks": [{"id": "DOC-LOG-001-C003", "text": "FE-002 — C-201 Compressor High Discharge Temperature Trip (2025-05-02). Cleaned fouled intercooler tubes under WO-1003."}],
+                        }]
+                    elif tag == "PSV-701":
+                        return [{
+                            "failure_events": [{"id": "FE-004", "date": "2025-07-15", "symptom": "PSV-701 failure to relieve pressure", "root_cause": "Overdue PSV bench test and spring degradation"}],
+                            "work_orders": [
+                                {"id": "WO-1006", "date": "2025-08-12", "type": "Corrective", "status": "Closed", "description": "Replaced relief valve spring and recalibrated set pressure"},
+                                {"id": "WO-1007", "date": "2025-07-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled annual PSV calibration"},
+                            ],
+                            "clauses": [
+                                {"id": "OISD-STD-132-10.2ii", "source": "OISD-STD-132", "text": "The Testing and Maintenance History of the Safety Relief Valve must be provided to the in-house testing team prior to testing or calibration (Clause 10.2(ii))."},
+                            ],
+                            "procedures": [],
+                            "chunks": [{"id": "DOC-LOG-001-C004", "text": "FE-004 — PSV-701 Calibration Non-Compliance (2025-07-15). Overdue annual calibration under WO-1007 violating OISD-STD-132-10.2ii."}],
+                        }]
+                    return [{
+                        "failure_events": [],
+                        "work_orders": [],
+                        "clauses": [],
+                        "procedures": [],
+                        "chunks": [],
+                    }]
+
                 if "Payment" in query or "payment" in query.lower():
                     p_node = {
                         "id": kwargs.get("payment_id", "PAY-DEMO-001"),
@@ -228,6 +338,46 @@ class FallbackNeo4jSession:
                         m = [p for p in all_p if p["person_id"] == str(person_id)]
                         return m if m else [p1]
                     return all_p
+                if "fe.id AS fe_id" in query or "collect(DISTINCT" in query or ("FailureEvent" in query and "OCCURRED_ON" in query):
+                    return [
+                        {
+                            "fe_id": "FE-001",
+                            "symptom": "High vibration and elevated bearing temperature on P-101",
+                            "root_cause": "Bearing cage degradation and improper lubrication",
+                            "tag": "P-101",
+                            "work_orders": [
+                                {"id": "WO-1001", "type": "Preventive", "status": "Closed", "description": "Overdue quarterly pump lubrication interval"},
+                                {"id": "WO-1002", "type": "Corrective", "status": "Closed", "description": "Bearing replacement and alignment per Section 37"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-002",
+                            "symptom": "High discharge temperature and vibration trip on C-201",
+                            "root_cause": "Lube oil pressure failure and bearing wiped due to missed lubrication interval",
+                            "tag": "C-201",
+                            "work_orders": [
+                                {"id": "WO-1003", "type": "Preventive", "status": "Closed", "description": "Missed lubrication interval and explosion-prevention bonding check per Section 37"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-003",
+                            "symptom": "Excessive leakage across mechanical seal on P-101B",
+                            "root_cause": "Thermal distortion and abrasive slurry ingress",
+                            "tag": "P-101B",
+                            "work_orders": [
+                                {"id": "WO-1005", "type": "Corrective", "status": "Closed", "description": "Mechanical seal replacement"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-004",
+                            "symptom": "Relief valve PSV-701 failed pop test at set pressure",
+                            "root_cause": "Nozzle corrosion and seat sticking from missed annual calibration",
+                            "tag": "PSV-701",
+                            "work_orders": [
+                                {"id": "WO-1007", "type": "Preventive", "status": "Closed", "description": "Annual pop test and calibration check per OISD-STD-132"},
+                            ],
+                        },
+                    ]
                 if "WorkOrder" in query or "work_order" in query.lower():
                     wo_id = kwargs.get("work_order_id") or kwargs.get("id")
                     if wo_id and wo_id in _FALLBACK_WORK_ORDERS:
@@ -297,37 +447,52 @@ class FallbackNeo4jSession:
                         }
                     ]
                 if "path_nodes" in query or "path_relationships" in query:
-                    p_nodes = [
-                        {
-                            "eid": "mock:eid:P-101A",
-                            "labels": ["Equipment"],
-                            "props": {"tag_id": "P-101A", "name": "Crude Charge Pump A", "type": "Centrifugal Pump"},
-                        },
-                        {
-                            "eid": "mock:eid:FE-001",
-                            "labels": ["FailureEvent"],
-                            "props": {"id": "FE-001", "description": "Bearing Degradation & Overheating"},
-                        },
-                        {
-                            "eid": "mock:eid:WO-1002",
-                            "labels": ["WorkOrder"],
-                            "props": {"id": "WO-1002", "description": "Overhaul Bearing & Check Alignment"},
-                        },
-                        {
-                            "eid": "mock:eid:PROC-001",
-                            "labels": ["Procedure"],
-                            "props": {"id": "PROC-001", "title": "Laser Alignment Standard Operating Procedure"},
-                        },
-                    ]
-                    p_rels = [
-                        {"source": "mock:eid:P-101A", "target": "mock:eid:FE-001", "type": "EXPERIENCED"},
-                        {"source": "mock:eid:FE-001", "target": "mock:eid:WO-1002", "type": "RESOLVED_BY"},
-                        {"source": "mock:eid:WO-1002", "target": "mock:eid:PROC-001", "type": "GOVERNED_BY"},
-                    ]
-                    return [{"path_nodes": p_nodes, "path_relationships": p_rels}]
+                    eids = kwargs.get("eids", [])
+                    requested_ids = set()
+                    for e in eids:
+                        if isinstance(e, str):
+                            parts = e.split(":")
+                            requested_ids.add(parts[-1])
+                    if not requested_ids:
+                        requested_ids = {"P-101", "FE-001", "WO-1002", "PROC-001"}
+
+                    # Expand to include 1-2 hop neighbors and connected edges
+                    included_node_ids = set(requested_ids)
+                    included_rels = []
+
+                    for src, tgt, rtype in _IN_MEMORY_GRAPH_EDGES:
+                        if src in requested_ids or tgt in requested_ids:
+                            included_node_ids.add(src)
+                            included_node_ids.add(tgt)
+                            included_rels.append({
+                                "source": f"mock:eid:{src}",
+                                "target": f"mock:eid:{tgt}",
+                                "type": rtype,
+                            })
+
+                    p_nodes = []
+                    for nid in included_node_ids:
+                        if nid in _IN_MEMORY_GRAPH_NODES:
+                            spec = _IN_MEMORY_GRAPH_NODES[nid]
+                            p_nodes.append({
+                                "eid": f"mock:eid:{nid}",
+                                "labels": spec["labels"],
+                                "props": spec["props"],
+                            })
+                        else:
+                            p_nodes.append({
+                                "eid": f"mock:eid:{nid}",
+                                "labels": ["Equipment" if ("P-" in nid or "C-" in nid) else "Document"],
+                                "props": {"id": nid, "tag_id": nid, "name": nid},
+                            })
+
+                    return [{"path_nodes": p_nodes, "path_relationships": included_rels}]
                 if "eid" in query and "props" in query:
-                    val = kwargs.get("val", "P-101A")
+                    val = kwargs.get("val", "P-101")
                     node_id = str(val)
+                    if node_id in _IN_MEMORY_GRAPH_NODES:
+                        spec = _IN_MEMORY_GRAPH_NODES[node_id]
+                        return [{"eid": f"mock:eid:{node_id}", "props": spec["props"]}]
                     node_props = {
                         "id": node_id,
                         "tag_id": node_id,
@@ -335,19 +500,117 @@ class FallbackNeo4jSession:
                         "type": "Centrifugal Pump" if "P-101" in node_id else "Equipment",
                     }
                     return [{"eid": f"mock:eid:{node_id}", "props": node_props}]
+                if "failure_events" in query and "work_orders" in query:
+                    tag = kwargs.get("tag", "P-101")
+                    if tag in ("P-101", "P-101A"):
+                        return [{
+                            "failure_events": [{"id": "FE-001", "date": "2025-03-14", "symptom": "High vibration and elevated bearing temperature on P-101", "root_cause": "Bearing cage degradation and improper lubrication"}],
+                            "work_orders": [
+                                {"id": "WO-1001", "date": "2025-03-15", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec"},
+                                {"id": "WO-1002", "date": "2025-02-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled quarterly lubrication service"},
+                            ],
+                            "clauses": [],
+                            "procedures": [{"id": "PROC-001", "title": "Laser Alignment Standard Operating Procedure", "version": "1.0"}],
+                            "chunks": [{"id": "DOC-LOG-001-C002", "text": "FE-001 — P-101 Drive-End Bearing Failure (2025-03-14). Symptom: Excessive vibration and high bearing temperature. Root cause: Bearing cage degradation due to missed lubrication interval WO-1002. Resolution: WO-1001 replaced bearing."}],
+                        }]
+                    elif tag == "C-201":
+                        return [{
+                            "failure_events": [{"id": "FE-002", "date": "2025-05-02", "symptom": "High discharge temperature trip on C-201", "root_cause": "Fouled intercooler tubes"}],
+                            "work_orders": [
+                                {"id": "WO-1003", "date": "2025-05-03", "type": "Corrective", "status": "Closed", "description": "Cleaned fouled intercooler tubes, reset high-discharge-temperature trip, and verified explosion-prevention enclosure integrity per Section 37"},
+                            ],
+                            "clauses": [
+                                {"id": "FACT1948-S37", "source": "Factories Act 1948", "text": "Where in any factory any manufacturing process produces dust, gas, fume or vapour of such character and to such extent as to be likely to explode on ignition, all practicable measures shall be taken to prevent any such explosion by effective enclosure of the plant or machinery, removal or prevention of accumulation of such dust, gas, fume or vapour, and exclusion or effective enclosure of all possible sources of ignition."},
+                            ],
+                            "procedures": [{"id": "PROC-002", "title": "Compressor Intercooler Maintenance Procedure", "version": "1.0"}],
+                            "chunks": [{"id": "DOC-LOG-001-C003", "text": "FE-002 — C-201 Compressor High Discharge Temperature Trip (2025-05-02). Cleaned fouled intercooler tubes under WO-1003."}],
+                        }]
+                    elif tag == "PSV-701":
+                        return [{
+                            "failure_events": [{"id": "FE-004", "date": "2025-07-15", "symptom": "PSV-701 failure to relieve pressure", "root_cause": "Overdue PSV bench test and spring degradation"}],
+                            "work_orders": [
+                                {"id": "WO-1006", "date": "2025-08-12", "type": "Corrective", "status": "Closed", "description": "Replaced relief valve spring and recalibrated set pressure"},
+                                {"id": "WO-1007", "date": "2025-07-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled annual PSV calibration"},
+                            ],
+                            "clauses": [
+                                {"id": "OISD-STD-132-10.2ii", "source": "OISD-STD-132", "text": "The Testing and Maintenance History of the Safety Relief Valve must be provided to the in-house testing team prior to testing or calibration (Clause 10.2(ii))."},
+                            ],
+                            "procedures": [],
+                            "chunks": [{"id": "DOC-LOG-001-C004", "text": "FE-004 — PSV-701 Calibration Non-Compliance (2025-07-15). Overdue annual calibration under WO-1007 violating OISD-STD-132-10.2ii."}],
+                        }]
+                    return [{
+                        "failure_events": [],
+                        "work_orders": [],
+                        "clauses": [],
+                        "procedures": [],
+                        "chunks": [],
+                    }]
+                if "fe_id" in query or ("OCCURRED_ON" in query and "work_orders" in query):
+                    return [
+                        {
+                            "fe_id": "FE-001",
+                            "symptom": "High vibration and elevated bearing temperature on P-101",
+                            "root_cause": "Bearing cage degradation and improper lubrication",
+                            "tag": "P-101",
+                            "work_orders": [
+                                {"id": "WO-1001", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec"},
+                                {"id": "WO-1002", "type": "Preventive", "status": "Overdue", "description": "Scheduled quarterly lubrication service"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-002",
+                            "symptom": "High discharge temperature trip on C-201",
+                            "root_cause": "Fouled intercooler tubes",
+                            "tag": "C-201",
+                            "work_orders": [
+                                {"id": "WO-1003", "type": "Corrective", "status": "Closed", "description": "Cleaned fouled intercooler tubes, reset high-discharge-temperature trip, and verified explosion-prevention enclosure integrity per Section 37"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-004",
+                            "symptom": "PSV-701 failure to relieve pressure",
+                            "root_cause": "Overdue PSV bench test and spring degradation",
+                            "tag": "PSV-701",
+                            "work_orders": [
+                                {"id": "WO-1006", "type": "Corrective", "status": "Closed", "description": "Replaced relief valve spring and recalibrated set pressure"},
+                                {"id": "WO-1007", "type": "Preventive", "status": "Overdue", "description": "Scheduled annual PSV calibration"},
+                            ],
+                        },
+                    ]
+                if "Chunk" in query:
+                    return [
+                        {"id": "DOC-LOG-001-C002", "text": "FE-001 — P-101 Drive-End Bearing Failure (2025-03-14). Excessive vibration and bearing degradation caused by missed quarterly lubrication WO-1002."},
+                        {"id": "DOC-LOG-001-C003", "text": "FE-002 — C-201 Compressor High Discharge Temperature Trip (2025-05-02). Fouled intercooler tubes cleaned under WO-1003."},
+                        {"id": "DOC-LOG-001-C004", "text": "FE-004 — PSV-701 Safety Relief Valve Calibration Non-Compliance (2025-07-15). Overdue WO-1007 calibration per OISD-STD-132-10.2ii."},
+                        {"id": "DOC-SOP-001-C001", "text": "PROC-001 Centrifugal Pump Preventive Maintenance SOP for P-101 and P-102. Quarterly bearing lubrication and laser alignment."},
+                    ]
                 if "Equipment" in query:
                     return [
-                        {"id": "P-101A", "tag_id": "P-101A", "t": "P-101A", "name": "Crude Charge Pump A", "type": "Centrifugal Pump"},
-                        {"id": "P-101B", "tag_id": "P-101B", "t": "P-101B", "name": "Crude Charge Pump B", "type": "Centrifugal Pump"},
-                        {"id": "PRV-04", "tag_id": "PRV-04", "t": "PRV-04", "name": "Pressure Relief Valve 04", "type": "Relief Valve"},
-                        {"id": "E-102", "tag_id": "E-102", "t": "E-102", "name": "Preheat Exchanger", "type": "Shell and Tube Exchanger"},
+                        {"id": "P-101", "tag_id": "P-101", "t": "P-101", "name": "Crude Charge Pump P-101", "type": "Centrifugal Pump"},
+                        {"id": "P-101A", "tag_id": "P-101A", "t": "P-101A", "name": "Crude Charge Pump P-101A", "type": "Centrifugal Pump"},
+                        {"id": "P-101B", "tag_id": "P-101B", "t": "P-101B", "name": "Crude Charge Pump P-101B", "type": "Centrifugal Pump"},
+                        {"id": "C-201", "tag_id": "C-201", "t": "C-201", "name": "Recycle Gas Compressor C-201", "type": "Centrifugal Compressor"},
+                        {"id": "HX-401", "tag_id": "HX-401", "t": "HX-401", "name": "Preheat Exchanger HX-401", "type": "Shell and Tube Exchanger"},
+                        {"id": "PSV-701", "tag_id": "PSV-701", "t": "PSV-701", "name": "Pressure Safety Valve PSV-701", "type": "Safety Relief Valve"},
+                        {"id": "P-102", "tag_id": "P-102", "t": "P-102", "name": "Booster Pump P-102", "type": "Centrifugal Pump"},
                     ]
                 if "RegulatoryClause" in query or "clause" in query.lower():
                     return [
                         {
-                            "id": "FACT-1948-SEC-31",
+                            "id": "FACT1948-S37",
+                            "clause_id": "FACT1948-S37",
+                            "text": "Factories Act 1948 Section 37: Explosion prevention measures by effective enclosure of plant and machinery.",
+                        },
+                        {
+                            "id": "OISD-STD-132-10.2ii",
+                            "clause_id": "OISD-STD-132-10.2ii",
+                            "text": "OISD-STD-132 Clause 10.2(ii): Testing and maintenance history of Safety Relief Valve must be provided prior to calibration.",
+                        },
+                        {
+                            "id": "FACT1948-S31",
+                            "clause_id": "FACT1948-S31",
                             "text": "Factories Act 1948 Section 31: Pressure plant must be examined periodically.",
-                        }
+                        },
                     ]
                 if "EvaluationRun" in query or "evaluation" in query.lower():
                     if "as key" in query.lower():
