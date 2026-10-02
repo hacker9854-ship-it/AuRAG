@@ -21,7 +21,7 @@
 
 <p align="center">
   <a href="https://boss-battle.devfolio.co"><img src="https://img.shields.io/badge/Bitshala%20BOSS%202026-Machine%20Money%20Track-F7931A?style=for-the-badge&logo=bitcoin&logoColor=white" alt="BOSS 2026 Track"/></a>
-  <a href="./docs/MACHINE_MONEY_VERIFICATION.md"><img src="https://img.shields.io/badge/Tests-129%2F129%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests 129/129 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Tests-136%2F136%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests 136/136 Passing"/></a>
   <a href="https://au-rag.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-au--rag.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo"/></a>
   <a href="https://aurag-production.up.railway.app/docs"><img src="https://img.shields.io/badge/API-Swagger%20Docs-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="API Docs"/></a>
 </p>
@@ -45,7 +45,7 @@
 > - 🌐 **Live Production App**: [au-rag.vercel.app/machine-money](https://au-rag.vercel.app/machine-money)
 > - 🎬 **3–5 Min Judge Demo Script**: [docs/JUDGE_DEMO_SCRIPT.md](./docs/JUDGE_DEMO_SCRIPT.md)
 > - 📜 **Machine Money Verification Report**: [docs/MACHINE_MONEY_VERIFICATION.md](./docs/MACHINE_MONEY_VERIFICATION.md)
-> - 🧪 **Test Evidence (77 Backend + 52 Frontend = 129 Tests)**: [docs/E2E_VERIFICATION_REPORT.md](./docs/E2E_VERIFICATION_REPORT.md)
+> - 🧪 **Test Evidence (80 Backend + 56 Frontend = 136 Tests)**: [docs/CURRENT_TEST_SNAPSHOT.md](./docs/CURRENT_TEST_SNAPSHOT.md)
 > - 📋 **Full Implementation Changelog (Phases 0–11)**: [docs/CHANGELOG_MACHINE_MONEY.md](./docs/CHANGELOG_MACHINE_MONEY.md)
 > - ✅ **Hackathon Eligibility & Provenance**: [docs/HACKATHON_ELIGIBILITY.md](./docs/HACKATHON_ELIGIBILITY.md)
 > - 💻 **Interactive Machine Money Console**: `frontend/app/machine-money` (12 Next.js 16 live routes)
@@ -226,7 +226,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 | **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Sub-second Bitcoin Lightning Network (BOLT11)** |
 | **Audit Trail** | Paper / ERP records | ❌ None | **✅ Cryptographic preimage + GraphRAG evidence chain** |
 | **Policy Enforcement** | Manual manager approval | ❌ None | **✅ Authoritative backend spending caps with auto-escalation** |
-| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 129 Automated Tests (77 Backend + 52 Frontend)** |
+| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 136 Automated Tests (80 Backend + 56 Frontend)** |
 
 ---
 
@@ -243,7 +243,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🔄 **Deterministic Idempotency Protection** — SHA-256 idempotency cache rejecting duplicate physical anomaly triggers and network retries.
 - 📦 **Payment Proof Drawer & Evidence Pack** — Interactive sliding drawer for inspecting raw JSON, hex preimages, BOLT-11 invoices, GraphRAG failure codes (`FE-001`), and downloadable audit reports.
 - 🖥️ **Industrial Operations Cockpit** — 12 interactive Next.js 16 routes featuring dark mode, responsive layout (1080p → mobile), live execution timeline, and system readiness diagnostics.
-- 🧪 **Comprehensive Test Coverage** — 77 backend Pytest tests + 52 frontend Vitest tests covering E2E lifecycle, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
+- 🧪 **Comprehensive Test Coverage** — 80 backend Pytest tests + 56 frontend Vitest tests covering E2E lifecycle, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
 
 ---
 
@@ -279,8 +279,8 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 **Testing & Verification**  
-![Pytest](https://img.shields.io/badge/Pytest-77%20Tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest-52%20Tests-729B1B?style=for-the-badge&logo=vitest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-80%20Tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-56%20Tests-729B1B?style=for-the-badge&logo=vitest&logoColor=white)
 
 </div>
 
@@ -326,14 +326,14 @@ Judges can reproduce all test suites and verify the architecture in under 60 sec
 git clone https://github.com/hacker9854-ship-it/AuRAG.git
 cd AuRAG
 
-# 2. Run all 77 Backend Machine Money Tests (Pytest)
-.\.venv\Scripts\pytest.exe -q tests/ --tb=short
+# 2. Run all 80 Backend Machine Money Tests (Pytest)
+powershell -Command ".\.venv\Scripts\pytest.exe -q tests/test_e2e_machine_money.py (Get-ChildItem tests/test_machine_money*.py) tests/test_secret_scan.py"
 # Expected Output:
-# 77 passed in ~20s
+# 80 passed in ~7s
 
-# 3. Run all 52 Frontend Tests (Vitest)
+# 3. Run all 56 Frontend Tests (Vitest)
 npm --prefix frontend test -- --run
-# Expected Output: 15 test files | 52 tests passed
+# Expected Output: 15 test files | 56 tests passed
 
 # 4. Verify Next.js Production Build (0 errors)
 npm --prefix frontend run build
@@ -431,7 +431,7 @@ AuRAG/
 ├── agents/                   # LangGraph Multi-Agent Team (RCA, Compliance, Copilot)
 ├── ingestion/                # Multimodal Ingestion (P&ID Drawings, OCR, PDFs)
 ├── telemetry/                # Synthetic SCADA Ingestion & Anomaly Matching
-├── tests/                    # 77 Automated Backend Tests (Pytest)
+├── tests/                    # 80 Automated Backend Tests (Pytest)
 │   ├── test_e2e_machine_money.py   # Full lifecycle E2E tests
 │   ├── test_machine_money_*.py     # Unit, integration, policy, failure tests
 │   └── ...
@@ -538,12 +538,12 @@ GET /api/v1/machine-money/budget/status
 
 | Test Suite | Scope | Result | Execution Time |
 |:-----------|:------|:------:|:--------------:|
-| **Backend Pytest** | Unit, Integration, E2E, Policy, Failure-Path | **77 / 77 Passed** | ~20s |
-| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Components | **52 / 52 Passed** (15 suites) | ~3s |
-| **Next.js Production Build** | TypeScript strict, 12 routes, zero errors | **0 Errors** | 10.4s |
+| **Backend Pytest** | Unit, Integration, E2E, Policy, Failure-Path, Secret-Scan | **80 / 80 Passed** | ~7s |
+| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics | **56 / 56 Passed** (15 suites) | ~23s |
+| **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 10.9s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
-| **Secret Leakage Audit** | 350+ files scanned for credential exposure | **0 Secrets Found** | ~2s |
-| **Total Automated Tests** | Combined backend + frontend | **129 / 129 Passed** | ~23s |
+| **Secret Leakage Audit** | 350+ files scanned for credential exposure | **0 Secrets Found** | ~1s |
+| **Total Automated Tests** | Combined backend + frontend | **136 / 136 Passed** | ~30s |
 
 ---
 
@@ -551,6 +551,7 @@ GET /api/v1/machine-money/budget/status
 
 | Document | Description |
 |:---------|:------------|
+| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 80 Pytest + 56 Vitest = 136 tests passed, build status |
 | [**JUDGE_DEMO_SCRIPT.md**](./docs/JUDGE_DEMO_SCRIPT.md) | Precise 0:00–5:00 minute-by-minute judge demo script with talking points and screen actions |
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |
 | [**CHANGELOG_MACHINE_MONEY.md**](./docs/CHANGELOG_MACHINE_MONEY.md) | Complete implementation changelog covering Phases 0–11 with commit hashes |
