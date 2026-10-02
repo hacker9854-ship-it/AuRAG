@@ -187,4 +187,16 @@ cd frontend && npm test
 | **Failure-Path Audit (Task 9.3)** | Automated testing covering all 6 critical error paths: (1) provider offline with retry guidance & 0 sats deducted, (2) Neo4j offline write handling (graceful warning, no crash), (3) Neo4j offline read fallback, (4) bad quote/unknown service graceful fallback, (5) idempotent duplicate prevention, (6) expired BOLT11 invoice rejection with `InvoiceExpiredError`, and (7) low-confidence/ungrounded anomaly gating into `PENDING_APPROVAL`. | PASS | `tests/test_machine_money_failure_paths.py` (7 passed in 1.52s, commit `90f2d7a`) |
 | **Total Test Suite Regression** | 77 Backend Pytest tests & 47 Frontend Vitest tests passing with 0 regressions across the entire repository. | PASS | 100% green tests in both Python (`pytest`) and TypeScript (`vitest`) |
 
+---
+
+## 13. Phase 10 Verification Results (Deployment + Demo Observability)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Production Build & Lint (Task 10.1)** | `eslint` runs with 0 errors across entire frontend codebase; `next build` produces optimized production bundle with 100% route generation in 6.5s and 0 TypeScript errors; backend pytest regression suite passes. | PASS | `npm run lint`, `npm run build`, and `pytest` (commit `066ebe0`) |
+| **Deployment Config Audit (Task 10.2)** | Full environment configuration audited: `NEXT_PUBLIC_API_URL` routing, `BACKEND_CORS_ORIGINS` allowing Vercel domains (`au-rag.vercel.app`), local storage backend without mandatory S3, SQLite/PostgreSQL relational storage, and Neo4j fallback resilience. | PASS | `docs/DEPLOYMENT_CONFIG_AUDIT.md` (commit `a4fbf57`) |
+| **Safe System Readiness (Task 10.3)** | Integrated `SystemReadinessModal.tsx` displaying live health across 6 subsystems (Lightning, Policy, Dual-Persistence, RFQ Marketplace, Economics Engine, Security Perimeter); sanitizes all environment credentials (0 leaked secrets); verified by unit tests. | PASS | `SystemReadinessModal.tsx` & `SystemReadinessModal.test.tsx` (5 passed, commit `610d6dd`) |
+| **Total Test Suite Regression** | 77 Backend Pytest tests & 52 Frontend Vitest tests passing with 0 regressions across the entire repository. | PASS | 100% green tests in both Python (`pytest`) and TypeScript (`vitest`) |
+
+
 
