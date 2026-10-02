@@ -44,6 +44,7 @@ from backend.app.services.machine_money.schemas import (
     ServiceQuote,
     SimulationRequest,
     SimulationResult,
+    MachineMoneyMetrics,
 )
 
 logger = logging.getLogger(__name__)
@@ -921,4 +922,10 @@ class MachineMoneyService:
         if not isinstance(request, VendorRFQRequest):
             request = VendorRFQRequest(**request) if isinstance(request, dict) else VendorRFQRequest()
         return process_vendor_rfq(request)
+
+    def get_analytics_metrics(self, db: Optional[Session] = None) -> MachineMoneyMetrics:
+        """Compute aggregated Machine Money metrics across the payment ledger (Task 5.1)."""
+        from backend.app.services.machine_money.analytics import calculate_machine_money_metrics
+        return calculate_machine_money_metrics(db)
+
 

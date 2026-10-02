@@ -19,6 +19,7 @@ from backend.app.services.machine_money.schemas import (
     SimulationResult,
     VendorRFQRequest,
     VendorRFQResponse,
+    MachineMoneyMetrics,
 )
 from backend.app.services.machine_money.service import MachineMoneyService
 
@@ -332,6 +333,16 @@ async def get_service_rfq(
         return service.get_vendor_rfq(req)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/analytics/metrics", response_model=MachineMoneyMetrics)
+def get_machine_money_metrics(db: Session = Depends(get_db)):
+    """Task 5.1: Retrieve aggregate Machine Money metrics across the payment ledger."""
+    try:
+        return service.get_analytics_metrics(db)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
 
 
 

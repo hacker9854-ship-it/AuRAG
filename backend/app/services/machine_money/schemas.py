@@ -207,3 +207,32 @@ class VendorRFQResponse(BaseModel):
     synthetic_disclosure: str = "Synthetic vendor quote model for Bitshala BOSS Battle Machine Money autonomous bidding demonstration"
 
 
+class VendorSpendItem(BaseModel):
+    vendor_name: str
+    spend_sats: int
+    payment_count: int
+    percentage: float
+
+
+class MachineMoneyMetrics(BaseModel):
+    total_spend_sats: int = Field(default=0, description="Total satoshis settled across all completed payments")
+    total_spend_msat: int = Field(default=0, description="Total milli-satoshis settled")
+    total_fee_sats: int = Field(default=0, description="Total routing fees paid in satoshis")
+    fiat_spend_usd_estimate: float = Field(default=0.0, description="Estimated fiat USD equivalent (spot estimate)")
+    settled_count: int = Field(default=0, description="Number of successfully settled Lightning payments")
+    pending_count: int = Field(default=0, description="Number of payments currently pending or awaiting human approval")
+    failed_count: int = Field(default=0, description="Number of failed, rejected, or expired payments")
+    total_transactions: int = Field(default=0, description="Total payment records in ledger")
+    autonomous_count: int = Field(default=0, description="Settled payments approved autonomously within policy cap")
+    human_approval_count: int = Field(default=0, description="Payments requiring or completed via human sign-off")
+    autonomous_rate_percentage: float = Field(default=0.0, description="Percentage of settlements that were autonomous")
+    average_settlement_latency_ms: float = Field(default=0.0, description="Average settlement latency in milliseconds")
+    average_settlement_latency_seconds: float = Field(default=0.0, description="Average settlement latency in seconds")
+    vendor_spend: List[VendorSpendItem] = Field(default_factory=list, description="Spend breakdown by vendor node")
+    total_quotes_generated: int = Field(default=0, description="Total maintenance quotes registered")
+    quotes_converted: int = Field(default=0, description="Quotes successfully converted into settled payments")
+    quote_to_payment_conversion_rate: float = Field(default=0.0, description="Percentage of quotes converted to settlements (0-100%)")
+    computed_at: datetime = Field(default_factory=utcnow)
+
+
+
