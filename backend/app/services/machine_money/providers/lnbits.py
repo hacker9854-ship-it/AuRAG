@@ -50,9 +50,13 @@ class LNbitsProvider(LightningProvider):
 
     async def health(self) -> ProviderHealth:
         """Check wallet connection and balance using LNbits wallet API."""
+        is_live_net = self.network.lower() in ("mainnet", "signet")
         if not self.admin_key and not self.invoice_key:
             return ProviderHealth(
                 provider_name="lnbits",
+                provider_mode="LIVE" if is_live_net else "MOCK",
+                settlement_source="LIGHTNING_NODE" if is_live_net else "SIMULATED",
+                is_live=False,
                 is_connected=False,
                 network=self.network,
                 details={"error": "LNBITS_ADMIN_KEY or LNBITS_INVOICE_KEY is not configured"},
@@ -67,6 +71,9 @@ class LNbitsProvider(LightningProvider):
                     balance_msat = data.get("balance", 0)
                     return ProviderHealth(
                         provider_name="lnbits",
+                        provider_mode="LIVE" if is_live_net else "MOCK",
+                        settlement_source="LIGHTNING_NODE" if is_live_net else "SIMULATED",
+                        is_live=is_live_net,
                         is_connected=True,
                         network=self.network,
                         balance_sats=balance_msat // 1000,
@@ -75,6 +82,9 @@ class LNbitsProvider(LightningProvider):
                     )
                 return ProviderHealth(
                     provider_name="lnbits",
+                    provider_mode="LIVE" if is_live_net else "MOCK",
+                    settlement_source="LIGHTNING_NODE" if is_live_net else "SIMULATED",
+                    is_live=False,
                     is_connected=False,
                     network=self.network,
                     details={"http_status": res.status_code, "response": res.text[:200]},
@@ -83,6 +93,9 @@ class LNbitsProvider(LightningProvider):
             logger.warning(f"LNbits health check failed: {exc}")
             return ProviderHealth(
                 provider_name="lnbits",
+                provider_mode="LIVE" if is_live_net else "MOCK",
+                settlement_source="LIGHTNING_NODE" if is_live_net else "SIMULATED",
+                is_live=False,
                 is_connected=False,
                 network=self.network,
                 details={"error": str(exc)},

@@ -119,6 +119,7 @@ app.include_router(events.router, prefix="/api")
 app.include_router(connectors.router, prefix="/api")
 app.include_router(automations.router, prefix="/api")
 app.include_router(machine_money.router, prefix="/api")
+app.include_router(machine_money.router, prefix="/api/v1")
 
 
 # On Render free tier (512MB RAM), pre-warming torch and sentence_transformers

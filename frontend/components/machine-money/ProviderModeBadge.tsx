@@ -6,6 +6,8 @@ import { ShieldAlert, ShieldCheck, Zap, Activity, Info } from "lucide-react";
 export interface ProviderModeBadgeProps {
   providerName?: string;
   network?: string;
+  providerMode?: "MOCK" | "LIVE";
+  settlementSource?: "SIMULATED" | "LIGHTNING_NODE";
   isMock?: boolean;
   latencyMs?: number;
   balanceSats?: number;
@@ -16,14 +18,23 @@ export interface ProviderModeBadgeProps {
 export function ProviderModeBadge({
   providerName = "mock",
   network = "regtest",
+  providerMode,
+  settlementSource,
   isMock = true,
   latencyMs,
   balanceSats,
   className = "",
   showDetails = false,
 }: ProviderModeBadgeProps) {
-  // Infer mock if providerName is mock or explicitly passed
-  const isSimulation = isMock || providerName.toLowerCase().includes("mock");
+  // Infer mock if providerMode is MOCK, settlementSource is SIMULATED, isMock is true, or providerName includes mock
+  const isSimulation =
+    providerMode === "MOCK" ||
+    settlementSource === "SIMULATED" ||
+    isMock ||
+    providerName.toLowerCase().includes("mock");
+
+  const effectiveSettlementSource =
+    settlementSource || (isSimulation ? "SIMULATED" : "LIGHTNING_NODE");
 
   return (
     <div
@@ -50,6 +61,15 @@ export function ProviderModeBadge({
       <span className="opacity-40">•</span>
       <span data-testid="provider-network" className="font-mono text-[10px] uppercase opacity-90">
         {network}
+      </span>
+
+      {/* Settlement Source */}
+      <span className="opacity-40">•</span>
+      <span
+        data-testid="provider-settlement-source"
+        className="font-mono text-[10px] uppercase opacity-90"
+      >
+        {effectiveSettlementSource === "SIMULATED" ? "SIMULATED" : "LIGHTNING NODE"}
       </span>
 
       {/* Provider Name */}

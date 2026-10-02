@@ -62,6 +62,12 @@ async def machine_money_health():
     return await service.get_health()
 
 
+@router.get("/provider-status", response_model=ProviderHealth)
+async def machine_money_provider_status():
+    """Canonical backend-derived provider status and network settlement source (PRD3 Task 1.2)."""
+    return await service.get_health()
+
+
 @router.get("/providers")
 def get_providers():
     """List registered demo service providers and verifiable service specifications (Section 12)."""

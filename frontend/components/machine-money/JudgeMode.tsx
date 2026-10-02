@@ -102,6 +102,8 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 shrink-0">
           <ProviderModeBadge
             providerName={response?.provider_mode?.includes("MOCK") ? "mock" : "lnbits"}
+            providerMode={response?.provider_mode?.includes("MOCK") ? "MOCK" : "LIVE"}
+            settlementSource={response?.provider_mode?.includes("MOCK") ? "SIMULATED" : "LIGHTNING_NODE"}
             isMock={response ? response.provider_mode.includes("MOCK") : true}
             network="regtest"
             showDetails={true}

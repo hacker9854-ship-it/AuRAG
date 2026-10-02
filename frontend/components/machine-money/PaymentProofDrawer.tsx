@@ -196,6 +196,8 @@ export function PaymentProofDrawer({
                     </div>
                     <ProviderModeBadge
                       providerName={data.provider_mode.includes("MOCK") ? "mock" : "lnbits"}
+                      providerMode={data.provider_mode.includes("MOCK") ? "MOCK" : "LIVE"}
+                      settlementSource={data.provider_mode.includes("MOCK") ? "SIMULATED" : "LIGHTNING_NODE"}
                       isMock={data.provider_mode.includes("MOCK")}
                       network={data.payment.network}
                     />
@@ -205,6 +207,7 @@ export function PaymentProofDrawer({
                     paymentHash={data.cryptographic_proof.payment_hash}
                     preimage={data.cryptographic_proof.preimage}
                     isMock={data.provider_mode.includes("MOCK")}
+                    settlementSource={data.provider_mode.includes("MOCK") ? "SIMULATED" : "LIGHTNING_NODE"}
                   />
 
                   {/* Settlement Metadata Row */}

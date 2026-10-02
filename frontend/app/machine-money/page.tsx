@@ -283,8 +283,10 @@ export default function MachineMoneyPage() {
         <div className="flex flex-wrap items-center gap-2">
           <ProviderModeBadge
             providerName={health?.provider_name || "mock"}
+            providerMode={health?.provider_mode || (health?.is_mock ? "MOCK" : "MOCK")}
+            settlementSource={health?.settlement_source || "SIMULATED"}
             network={health?.network || "regtest"}
-            isMock={health?.provider_name?.toLowerCase().includes("mock") ?? true}
+            isMock={health?.is_mock ?? (health?.provider_name?.toLowerCase().includes("mock") ?? true)}
             balanceSats={health?.balance_sats ?? 1000000}
             latencyMs={health?.latency_ms ?? 1.2}
             showDetails={true}

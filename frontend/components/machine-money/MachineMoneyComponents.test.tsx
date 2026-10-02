@@ -59,7 +59,7 @@ describe("Machine Money Phase 1 Components", () => {
   });
 
   describe("ProofVerification", () => {
-    it("verifies matching preimage and payment hash", async () => {
+    it("verifies matching preimage and payment hash in simulation mode", async () => {
       const preimage = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f";
       const paymentHash = await sha256Hex(preimage, true);
 
@@ -67,10 +67,32 @@ describe("Machine Money Phase 1 Components", () => {
 
       await waitFor(() => {
         expect(screen.getByTestId("proof-status-badge")).toHaveTextContent(
-          "SIMULATED CRYPTOGRAPHIC VERIFICATION"
+          "SIMULATION INTEGRITY VERIFIED"
         );
         expect(screen.getByTestId("verification-result-box")).toBeInTheDocument();
         expect(screen.getByText("Cryptographic Match Confirmed")).toBeInTheDocument();
+        expect(screen.getByText(/Simulation integrity check/)).toBeInTheDocument();
+      });
+    });
+
+    it("verifies live network settlement when in live mode", async () => {
+      const preimage = "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f";
+      const paymentHash = await sha256Hex(preimage, true);
+
+      render(
+        <ProofVerification
+          preimage={preimage}
+          paymentHash={paymentHash}
+          isMock={false}
+          settlementSource="LIGHTNING_NODE"
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByTestId("proof-status-badge")).toHaveTextContent(
+          "NETWORK SETTLEMENT VERIFIED"
+        );
+        expect(screen.getByText(/Network settlement verified/)).toBeInTheDocument();
       });
     });
 

@@ -35,6 +35,9 @@ class MockLightningProvider(LightningProvider):
         """Report mock provider status."""
         return ProviderHealth(
             provider_name="mock",
+            provider_mode="MOCK",
+            settlement_source="SIMULATED",
+            is_live=False,
             is_connected=True,
             network=self.network,
             balance_sats=self.balance_sats,

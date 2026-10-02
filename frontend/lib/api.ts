@@ -560,6 +560,9 @@ export async function updateRemediationStatus(
 
 export interface MachineMoneyHealth {
   provider_name: string;
+  provider_mode?: "MOCK" | "LIVE";
+  settlement_source?: "SIMULATED" | "LIGHTNING_NODE";
+  is_live?: boolean;
   is_connected: boolean;
   network: string;
   is_mock?: boolean;
@@ -1060,6 +1063,26 @@ export async function getPlantAssumptions(equipmentTag: string): Promise<Industr
   if (!res.ok) throw new Error(`Failed to load plant assumptions for ${equipmentTag}.`);
   return res.json();
 }
+
+export interface ProviderStatusResponse {
+  provider_name: string;
+  provider_mode: "MOCK" | "LIVE";
+  network: string;
+  settlement_source: "SIMULATED" | "LIGHTNING_NODE";
+  is_live: boolean;
+  is_connected: boolean;
+  balance_sats?: number;
+  node_pubkey?: string;
+  latency_ms?: number;
+  details?: Record<string, any>;
+}
+
+export async function getProviderStatus(): Promise<ProviderStatusResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/provider-status`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to load provider status.");
+  return res.json();
+}
+
 
 
 

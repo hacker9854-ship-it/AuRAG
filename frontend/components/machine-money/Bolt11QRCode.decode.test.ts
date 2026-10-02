@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import jsQR from "jsqr";
+import { isRecognizedInvoiceFormat } from "./Bolt11QRCode";
 
 /**
  * Helper to generate a binary QR matrix and convert it into RGBA imageData for jsQR,
@@ -38,9 +39,8 @@ function createQrImageData(modules: boolean[][], scale = 8, border = 4): {
   return { data: rgba, width: fullSize, height: fullSize };
 }
 
-describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 7.4)", () => {
+describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 1.1)", () => {
   it("verifies that a real BOLT11 invoice encoded in standard QR decodes to the exact string", async () => {
-    // Dynamically import QRCode encoder
     const QRCode = await import("qrcode");
     const testInvoice = "lnbcrt2500u1pmocksimulatedinvoice0000000000000000000000000000000000";
 
@@ -104,5 +104,21 @@ describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 7.4)",
     expect(Boolean(qrData.modules.get(0, 0))).toBe(true);
     // Center of top-left finder (3, 3) must be black/true
     expect(Boolean(qrData.modules.get(3, 3))).toBe(true);
+  });
+
+  it("accurately validates standard BOLT11 invoice formats via isRecognizedInvoiceFormat", () => {
+    expect(isRecognizedInvoiceFormat("lnbc2500u1...")).toBe(true);
+    expect(isRecognizedInvoiceFormat("lnbcrt50u1...")).toBe(true);
+    expect(isRecognizedInvoiceFormat("lntb1000u1...")).toBe(true);
+    expect(isRecognizedInvoiceFormat("lnsb250u1...")).toBe(true);
+    expect(isRecognizedInvoiceFormat("  LNBCRT250U1... ")).toBe(true); // case-insensitive + trim
+  });
+
+  it("negative test: rejects non-BOLT11 or malformed invoice payloads", () => {
+    expect(isRecognizedInvoiceFormat("")).toBe(false);
+    expect(isRecognizedInvoiceFormat("bitcoin:1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa")).toBe(false);
+    expect(isRecognizedInvoiceFormat("http://example.com/invoice")).toBe(false);
+    expect(isRecognizedInvoiceFormat("random-gibberish-string")).toBe(false);
+    expect(isRecognizedInvoiceFormat(null as unknown as string)).toBe(false);
   });
 });

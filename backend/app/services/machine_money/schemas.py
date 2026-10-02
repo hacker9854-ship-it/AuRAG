@@ -26,8 +26,11 @@ class PaymentStatus(str, Enum):
 
 class ProviderHealth(BaseModel):
     provider_name: str
-    is_connected: bool
+    provider_mode: str = "MOCK"  # "MOCK" | "LIVE"
     network: str = "regtest"
+    settlement_source: str = "SIMULATED"  # "SIMULATED" | "LIGHTNING_NODE"
+    is_live: bool = False
+    is_connected: bool = True
     balance_sats: Optional[int] = None
     node_pubkey: Optional[str] = None
     latency_ms: Optional[float] = None

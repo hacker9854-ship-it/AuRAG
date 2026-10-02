@@ -8,6 +8,7 @@ export interface ProofVerificationProps {
   preimage?: string;
   paymentHash?: string;
   isMock?: boolean;
+  settlementSource?: "SIMULATED" | "LIGHTNING_NODE";
   className?: string;
   autoVerify?: boolean;
 }
@@ -16,6 +17,7 @@ export function ProofVerification({
   preimage = "",
   paymentHash = "",
   isMock = true,
+  settlementSource,
   className = "",
   autoVerify = true,
 }: ProofVerificationProps) {
@@ -94,15 +96,15 @@ export function ProofVerification({
             <span
               data-testid="proof-status-badge"
               className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wider uppercase border ${
-                isMock
+                isMock || settlementSource === "SIMULATED"
                   ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30"
                   : "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
               }`}
             >
               <CheckCircle2 className="w-3 h-3 text-current" />
-              {isMock
-                ? "SIMULATED CRYPTOGRAPHIC VERIFICATION"
-                : "CRYPTOGRAPHIC PROOF VERIFIED"}
+              {isMock || settlementSource === "SIMULATED"
+                ? "SIMULATION INTEGRITY VERIFIED"
+                : "NETWORK SETTLEMENT VERIFIED"}
             </span>
           ) : (
             <span
@@ -212,9 +214,9 @@ export function ProofVerification({
                 : "Hash Mismatch Detected"}
             </p>
             <p className="text-[11px] opacity-90 font-mono">
-              {isMock
-                ? "SHA-256(preimage) matches the simulated payment hash. Proof is authentic and unforgeable under deterministic evaluation."
-                : "SHA-256(preimage) matches the on-chain/Lightning payment hash. Proof is authentic and unforgeable."}
+              {isMock || settlementSource === "SIMULATED"
+                ? "Simulation integrity check: SHA-256(preimage) matches the simulated payment hash. Proves data consistency under deterministic evaluation, not live network settlement."
+                : "Network settlement verified: SHA-256(preimage) matches the on-chain/Lightning payment hash. Payment receipt confirmed by configured Lightning node."}
             </p>
           </div>
         </div>
