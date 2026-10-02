@@ -1,8 +1,9 @@
-"""FastAPI router for Machine Money endpoints (payment intents, invoices, quotes, and audit)."""
+import os
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
+
 
 from backend.app.core.neo4j import get_session
 from backend.app.db.database import get_db
@@ -97,6 +98,14 @@ async def create_invoice(req: InvoiceRequest, db: Session = Depends(get_db)):
 @router.post("/pay")
 async def pay_invoice(req: PayInvoiceRequest, db: Session = Depends(get_db)):
     """Execute a Lightning payment under automated spending policy governance."""
+    # Task 6.1: Backend policy is authoritative. A client cannot unilaterally bypass spending caps.
+    max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
+    if req.bypass_policy and req.amount_sats > max_autopay:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Policy violation: Client cannot bypass autonomous spending cap of {max_autopay} sats. Explicit human operator approval required via /approve.",
+        )
+
     try:
         record = await service.execute_payment(
             db=db,
@@ -113,6 +122,7 @@ async def pay_invoice(req: PayInvoiceRequest, db: Session = Depends(get_db)):
         return record.to_dict()
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
 
 
 @router.get("/payments")

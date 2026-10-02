@@ -186,7 +186,16 @@ class MachineMoneyService:
             max_cap=max_autopay,
         )
 
-        requires_human_approval = not bypass_policy and not policy_decision["authorized"]
+        # Task 6.1: Backend policy is authoritative.
+        # A caller cannot unilaterally bypass the spending limit cap. If amount exceeds max_autopay,
+        # human approval is unconditionally required.
+        if amount_sats > max_autopay:
+            requires_human_approval = True
+        elif not policy_decision["authorized"]:
+            requires_human_approval = not bypass_policy
+        else:
+            requires_human_approval = False
+
 
         provider_name = os.environ.get("MACHINE_MONEY_PROVIDER", "mock")
         network = os.environ.get("MACHINE_MONEY_NETWORK", "regtest")
