@@ -123,7 +123,7 @@ export function VendorRFQ({
             Cap: <strong className="text-emerald-500">{policyCapSats} sats</strong>
           </span>
           <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg border border-purple-500/20">
-            Synthetic RFQ Model
+            Pre-approved Synthetic Vendor Nodes
           </span>
         </div>
       </div>
@@ -208,7 +208,7 @@ export function VendorRFQ({
           </span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {rfq?.candidates.map((c) => {
             const isWinner = c.candidate_id === selectedCandidateId;
             const exceedsCap = !c.within_policy_cap;
@@ -249,12 +249,19 @@ export function VendorRFQ({
 
                   {/* Vendor Name */}
                   <div>
-                    <h4 className="font-bold text-xs leading-snug truncate" title={c.vendor_name}>
-                      {c.vendor_name}
-                    </h4>
-                    <span className="text-[10px] text-muted-foreground font-mono truncate block">
-                      {c.vendor_id}
-                    </span>
+                    <div className="flex items-center justify-between gap-1">
+                      <h4 className="font-bold text-xs leading-snug truncate" title={c.vendor_name}>
+                        {c.vendor_name}
+                      </h4>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[10px] text-muted-foreground font-mono truncate">
+                        {c.vendor_id}
+                      </span>
+                      <span className="text-[8px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-1 py-0.2 rounded border border-purple-500/20">
+                        Synthetic Node
+                      </span>
+                    </div>
                   </div>
 
                   {/* Price & SLA Highlights */}
@@ -363,18 +370,22 @@ export function VendorRFQ({
           data-testid="rfq-rationale-box"
           className="p-4 bg-muted/40 rounded-xl border border-border/60 space-y-2 text-xs"
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
             <span className="font-semibold text-foreground flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>Explainable Autonomous Selection Rationale</span>
             </span>
-            <span className="font-mono text-[10px] text-muted-foreground">
+            <span className="font-mono text-[10px] text-muted-foreground bg-muted/80 px-2 py-0.5 rounded border border-border/40">
               Rule: {String(rfq.scoring_model?.rule || rfq.strategy)}
             </span>
           </div>
           <p className="text-muted-foreground leading-relaxed text-xs">
             {rfq.selection_rationale}
           </p>
+          <div className="p-2 rounded-lg bg-background/60 border border-border/40 flex items-center justify-between text-[11px] font-mono">
+            <span className="text-muted-foreground text-[10px] uppercase font-bold">Scoring Model:</span>
+            <span className="text-primary text-[10px]">Score = (0.5 &times; CostNorm) + (0.3 &times; LatencyNorm) + (0.2 &times; SLANorm)</span>
+          </div>
           <div className="pt-2 border-t border-border/40 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
             <span>
               RFQ ID: <strong className="font-mono text-foreground">{rfq.rfq_id}</strong>
@@ -385,6 +396,11 @@ export function VendorRFQ({
             <span>
               Sats: <strong className="font-mono text-amber-500">{rfq.selected_vendor.amount_sats} sats</strong>
             </span>
+            {rfq.selected_vendor.score !== undefined && (
+              <span>
+                Composite Score: <strong className="font-mono text-emerald-500">{rfq.selected_vendor.score}/100</strong>
+              </span>
+            )}
           </div>
         </div>
       )}

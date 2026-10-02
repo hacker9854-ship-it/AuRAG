@@ -25,6 +25,7 @@ from backend.app.services.machine_money.schemas import (
     IndustrialEconomicsRequest,
     IndustrialPlantAssumptions,
     HumanApprovalEvidencePackage,
+    JudgeScenarioFixture,
 )
 from backend.app.services.machine_money.service import MachineMoneyService
 
@@ -298,7 +299,10 @@ def get_payment_approval_evidence(payment_id: str, db: Session = Depends(get_db)
         return service.get_approval_evidence(db=db, payment_id=payment_id)
     except Exception as exc:
         raise HTTPException(status_code=404, detail=str(exc))
-
+@router.get("/judge/fixture", response_model=JudgeScenarioFixture)
+def get_judge_scenario_fixture():
+    """PRD3 Task 2.1: Canonical single source of truth scenario fixture for Bitshala BOSS Battle demo."""
+    return JudgeScenarioFixture()
 
 
 @router.post("/judge/execute", response_model=JudgeExecutionResponse)

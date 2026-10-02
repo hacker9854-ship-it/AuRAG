@@ -13,74 +13,74 @@ const mockRFQResponse: api.VendorRFQResponse = {
   candidates: [
     {
       candidate_id: "BID-01",
-      vendor_id: "maintenance-node-a",
-      vendor_name: "Industrial Dynamics Specialist Node A",
+      vendor_id: "apex-diagnostics",
+      vendor_name: "Apex Diagnostics",
       node_pubkey: "02" + "a1".repeat(32),
       service_id: "bearing-inspection",
-      service_name: "High-Frequency Vibration Bearing Diagnostic",
+      service_name: "Precision Bearing Inspection & Laser Alignment",
       amount_sats: 250,
-      sla_hours: 2.0,
-      reliability_score: 0.98,
-      reputation_tier: "A+",
-      parts_included: ["Synthetic Ester Lubricant"],
+      sla_hours: 1.2,
+      reliability_score: 0.994,
+      reputation_tier: "AAA",
+      parts_included: ["Laser Coupling Targets", "Acoustic Sensor Pods", "Mobil SHC 100"],
       is_synthetic: true,
       within_policy_cap: true,
-      score: 80.0,
+      score: 92.5,
       valid_until: new Date(Date.now() + 900000).toISOString(),
     },
     {
       candidate_id: "BID-02",
-      vendor_id: "eco-rotary-nodes",
-      vendor_name: "EcoRotary Maintenance Collective",
+      vendor_id: "precision-dynamics",
+      vendor_name: "Precision Dynamics",
       node_pubkey: "03" + "b2".repeat(32),
       service_id: "bearing-inspection",
-      service_name: "Standard Bearing Inspection",
-      amount_sats: 180,
-      sla_hours: 3.5,
-      reliability_score: 0.91,
-      reputation_tier: "B",
-      parts_included: ["Standard Grease"],
+      service_name: "Express Ultrasound Diagnostic & Vibration Analysis",
+      amount_sats: 320,
+      sla_hours: 0.8,
+      reliability_score: 0.989,
+      reputation_tier: "AA+",
+      parts_included: ["Ultrasound Sensor Probe", "Sensor Coupling Gel"],
       is_synthetic: true,
       within_policy_cap: true,
-      score: 65.0,
+      score: 96.0,
       valid_until: new Date(Date.now() + 900000).toISOString(),
     },
     {
       candidate_id: "BID-03",
-      vendor_id: "apex-industrial-robotics",
-      vendor_name: "Apex Industrial Robotics Dispatch",
+      vendor_id: "quantum-reliability",
+      vendor_name: "Quantum Reliability",
       node_pubkey: "02" + "c3".repeat(32),
       service_id: "bearing-inspection",
-      service_name: "Precision Bearing Diagnostic",
-      amount_sats: 320,
-      sla_hours: 1.0,
-      reliability_score: 0.99,
-      reputation_tier: "AAA",
-      parts_included: ["Laser Coupling Targets"],
+      service_name: "Comprehensive Rotary Dynamics & Bearing Overhaul",
+      amount_sats: 450,
+      sla_hours: 2.5,
+      reliability_score: 0.975,
+      reputation_tier: "A",
+      parts_included: ["Complete Bearing Assembly", "Synthetic Lubricant Pack"],
       is_synthetic: true,
       within_policy_cap: true,
-      score: 95.0,
+      score: 68.0,
       valid_until: new Date(Date.now() + 900000).toISOString(),
     },
   ],
   selected_vendor: {
-    candidate_id: "BID-03",
-    vendor_id: "apex-industrial-robotics",
-    vendor_name: "Apex Industrial Robotics Dispatch",
-    node_pubkey: "02" + "c3".repeat(32),
+    candidate_id: "BID-02",
+    vendor_id: "precision-dynamics",
+    vendor_name: "Precision Dynamics",
+    node_pubkey: "03" + "b2".repeat(32),
     service_id: "bearing-inspection",
-    service_name: "Precision Bearing Diagnostic",
+    service_name: "Express Ultrasound Diagnostic & Vibration Analysis",
     amount_sats: 320,
-    sla_hours: 1.0,
-    reliability_score: 0.99,
-    reputation_tier: "AAA",
-    parts_included: ["Laser Coupling Targets"],
+    sla_hours: 0.8,
+    reliability_score: 0.989,
+    reputation_tier: "AA+",
+    parts_included: ["Ultrasound Sensor Probe", "Sensor Coupling Gel"],
     is_synthetic: true,
     within_policy_cap: true,
-    score: 95.0,
+    score: 96.0,
     valid_until: new Date(Date.now() + 900000).toISOString(),
   },
-  selection_rationale: "Selected vendor: Apex Industrial Robotics Dispatch (apex-industrial-robotics). Reason: Fastest dispatch SLA (1.0h vs catalog avg 2.2h) within the authorized spending policy (320 sats <= 500 sats cap).",
+  selection_rationale: "Selected vendor: Precision Dynamics (precision-dynamics). Reason: Fastest dispatch SLA (0.8h vs catalog avg 1.5h) within authorized spending policy (320 sats <= 500 sats cap).",
   scoring_model: {
     rule: "Minimize SLA hours subject to amount_sats <= policy_cap_sats",
     strategy: "FASTEST_SLA",
@@ -108,7 +108,7 @@ describe("Machine Money Phase 4: Multi-Vendor RFQ Component", () => {
 
     expect(screen.getByTestId("vendor-rfq-container")).toBeInTheDocument();
     expect(screen.getByText("Autonomous RFQ Marketplace")).toBeInTheDocument();
-    expect(screen.getByText("Synthetic RFQ Model")).toBeInTheDocument();
+    expect(screen.getByText("Pre-approved Synthetic Vendor Nodes")).toBeInTheDocument();
 
     // 4 Strategy buttons
     expect(screen.getByTestId("strategy-fastest_sla")).toBeInTheDocument();
@@ -123,33 +123,34 @@ describe("Machine Money Phase 4: Multi-Vendor RFQ Component", () => {
     render(<VendorRFQ initialRFQ={mockRFQResponse} />);
 
     // Check candidate cards
-    expect(screen.getByTestId("vendor-card-maintenance-node-a")).toBeInTheDocument();
-    expect(screen.getByTestId("vendor-card-eco-rotary-nodes")).toBeInTheDocument();
-    expect(screen.getByTestId("vendor-card-apex-industrial-robotics")).toBeInTheDocument();
+    expect(screen.getByTestId("vendor-card-apex-diagnostics")).toBeInTheDocument();
+    expect(screen.getByTestId("vendor-card-precision-dynamics")).toBeInTheDocument();
+    expect(screen.getByTestId("vendor-card-quantum-reliability")).toBeInTheDocument();
 
     // Check values
     expect(screen.getByText("250 sats")).toBeInTheDocument();
-    expect(screen.getByText("180 sats")).toBeInTheDocument();
     expect(screen.getAllByText("320 sats").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText("1 hrs")).toBeInTheDocument();
-    expect(screen.getByText("99%")).toBeInTheDocument();
+    expect(screen.getByText("450 sats")).toBeInTheDocument();
+    expect(screen.getByText("0.8 hrs")).toBeInTheDocument();
+    expect(screen.getAllByText(/Synthetic Node/).length).toBe(3);
   });
 
-  it("renders explainable selection rationale box", async () => {
+  it("renders explainable selection rationale box with scoring model", async () => {
     vi.spyOn(api, "requestVendorRFQ").mockResolvedValue(mockRFQResponse);
 
     render(<VendorRFQ initialRFQ={mockRFQResponse} />);
 
     expect(screen.getByTestId("rfq-rationale-box")).toBeInTheDocument();
-    expect(screen.getByText(/Fastest dispatch SLA \(1.0h vs catalog avg 2.2h\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Fastest dispatch SLA \(0.8h vs catalog avg 1.5h\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Score = \(0.5 × CostNorm\) \+ \(0.3 × LatencyNorm\) \+ \(0.2 × SLANorm\)/)).toBeInTheDocument();
   });
 
   it("switches strategy and requests updated RFQ", async () => {
     const rfqSpy = vi.spyOn(api, "requestVendorRFQ").mockResolvedValue({
       ...mockRFQResponse,
       strategy: "LOWEST_COST",
-      selected_vendor: mockRFQResponse.candidates[1],
-      selection_rationale: "Selected EcoRotary Maintenance Collective for lowest cost.",
+      selected_vendor: mockRFQResponse.candidates[0],
+      selection_rationale: "Selected Apex Diagnostics for lowest cost (250 sats).",
     });
 
     render(<VendorRFQ initialRFQ={mockRFQResponse} />);
@@ -177,12 +178,12 @@ describe("Machine Money Phase 4: Multi-Vendor RFQ Component", () => {
       />
     );
 
-    const ecoCard = screen.getByTestId("vendor-card-eco-rotary-nodes");
-    fireEvent.click(ecoCard);
+    const apexCard = screen.getByTestId("vendor-card-apex-diagnostics");
+    fireEvent.click(apexCard);
 
     expect(handleSelect).toHaveBeenCalledWith(
       expect.objectContaining({
-        vendor_id: "eco-rotary-nodes",
+        vendor_id: "apex-diagnostics",
       })
     );
   });

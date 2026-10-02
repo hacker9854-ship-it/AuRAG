@@ -1,4 +1,4 @@
-"""Unit tests for Multi-Vendor Request-For-Quote (RFQ) and Explainable Selection Engine (Phase 4)."""
+"""Unit tests for Multi-Vendor Request-For-Quote (RFQ) and Explainable Selection Engine (Phase 4 / PRD3 Phase 2)."""
 import pytest
 from datetime import datetime, timezone
 from fastapi.testclient import TestClient
@@ -23,7 +23,7 @@ def client():
 def test_rfq_bids_generation_and_synthetic_integrity():
     """Verify candidate quotes generation, synthetic labeling, and future validity window."""
     candidates = get_candidate_quotes_for_service("bearing-inspection", equipment_id="P-101A")
-    assert len(candidates) >= 3
+    assert len(candidates) == 3
 
     now = datetime.now(timezone.utc)
     for c in candidates:
@@ -49,13 +49,14 @@ def test_rfq_selection_fastest_sla_under_cap():
     assert isinstance(res, VendorRFQResponse)
     assert res.is_synthetic is True
     assert res.policy_cap_sats == 500
-    assert len(res.candidates) >= 4
+    assert len(res.candidates) == 3
 
-    # Apex Robotics has 1.0h SLA at 320 sats (under 500 cap).
-    # Heavy Turbomachinery has 0.5h SLA but costs 1200 sats (exceeds cap).
-    # Therefore, Apex Robotics must win!
-    assert res.selected_vendor.vendor_id == "apex-industrial-robotics"
-    assert res.selected_vendor.sla_hours == 1.0
+    # Precision Dynamics has 0.8h SLA at 320 sats (under 500 cap).
+    # Apex Diagnostics has 1.2h SLA.
+    # Quantum Reliability has 2.5h SLA.
+    # Therefore, Precision Dynamics must win FASTEST_SLA!
+    assert res.selected_vendor.vendor_id == "precision-dynamics"
+    assert res.selected_vendor.sla_hours == 0.8
     assert res.selected_vendor.amount_sats == 320
     assert res.selected_vendor.within_policy_cap is True
 
@@ -74,9 +75,9 @@ def test_rfq_selection_lowest_cost():
     )
     res = process_vendor_rfq(req)
 
-    # EcoRotary offers 180 sats
-    assert res.selected_vendor.vendor_id == "eco-rotary-nodes"
-    assert res.selected_vendor.amount_sats == 180
+    # Apex Diagnostics offers 250 sats (canonical happy path amount)
+    assert res.selected_vendor.vendor_id == "apex-diagnostics"
+    assert res.selected_vendor.amount_sats == 250
     assert "Lowest satoshi expenditure" in res.selection_rationale
 
 
@@ -90,9 +91,9 @@ def test_rfq_selection_highest_reliability():
     )
     res = process_vendor_rfq(req)
 
-    # Apex has 0.99 (99%) reliability under 500 cap
-    assert res.selected_vendor.vendor_id == "apex-industrial-robotics"
-    assert res.selected_vendor.reliability_score == 0.99
+    # Apex Diagnostics has 0.994 (99.4%) reliability under 500 cap
+    assert res.selected_vendor.vendor_id == "apex-diagnostics"
+    assert res.selected_vendor.reliability_score == 0.994
     assert "Peak historical reliability rating" in res.selection_rationale
 
 
@@ -108,6 +109,7 @@ def test_rfq_selection_balanced():
 
     assert res.selected_vendor is not None
     assert res.selected_vendor.within_policy_cap is True
+    assert res.selected_vendor.vendor_id == "apex-diagnostics"
     assert "Optimal multi-objective score" in res.selection_rationale
 
 
@@ -117,7 +119,7 @@ def test_rfq_budget_cap_escalation():
         equipment_id="P-101A",
         service_id="bearing-inspection",
         strategy=SelectionStrategy.FASTEST_SLA,
-        max_budget_sats=100,  # All bearing inspection bids > 100 sats
+        max_budget_sats=200,  # All bearing inspection bids >= 250 sats
     )
     res = process_vendor_rfq(req)
 
@@ -142,12 +144,12 @@ def test_rfq_api_endpoints(client):
     data = post_resp.json()
     assert "rfq_id" in data
     assert data["service_id"] == "bearing-inspection"
-    assert len(data["candidates"]) >= 4
-    assert data["selected_vendor"]["vendor_id"] == "apex-industrial-robotics"
+    assert len(data["candidates"]) == 3
+    assert data["selected_vendor"]["vendor_id"] == "precision-dynamics"
 
     # 2. GET request with query params
     get_resp = client.get("/api/machine-money/rfq/bearing-inspection?strategy=LOWEST_COST&max_budget_sats=500")
     assert get_resp.status_code == 200
     get_data = get_resp.json()
-    assert get_data["selected_vendor"]["vendor_id"] == "eco-rotary-nodes"
-    assert get_data["selected_vendor"]["amount_sats"] == 180
+    assert get_data["selected_vendor"]["vendor_id"] == "apex-diagnostics"
+    assert get_data["selected_vendor"]["amount_sats"] == 250

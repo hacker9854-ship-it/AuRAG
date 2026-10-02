@@ -136,3 +136,35 @@ def test_judge_mode_api_endpoint(client):
     assert crypto_proof["is_verified"] is True
     assert crypto_proof["payment_hash"] is not None
     assert crypto_proof["preimage"] is not None
+
+    # Verify RFQ winning vendor bound into operational context (PRD3 Task 2.3)
+    op_ctx = proof_pkg["operational_context"]
+    assert op_ctx["vendor_id"] == "apex-diagnostics"
+    assert op_ctx["vendor_name"] == "Apex Diagnostics"
+    assert op_ctx["vendor_pubkey"].startswith("02a1")
+
+
+def test_judge_scenario_fixture_endpoint(client):
+    """PRD3 Task 2.1: Verify canonical single-source-of-truth scenario fixture endpoint."""
+    resp = client.get("/api/machine-money/judge/fixture")
+    assert resp.status_code == 200
+    data = resp.json()
+
+    assert data["site_id"] == "SITE-TX-401"
+    assert data["equipment_id"] == "P-101A"
+    assert data["sensor_id"] == "VIB-301-BEARING"
+    assert data["reading"] == 5.4
+    assert data["threshold"] == 4.5
+    assert data["failure_signature"] == "FE-001"
+    assert data["procedure_id"] == "PROC-001"
+    assert data["canonical_payment_sats"] == 250
+    assert data["spending_cap_sats"] == 500
+    assert data["selected_vendor"] == "Apex Diagnostics"
+    assert data["selected_vendor_id"] == "apex-diagnostics"
+    assert data["selected_vendor_pubkey"].startswith("02a1")
+    assert data["candidates_count"] == 3
+
+    # Also test /api/v1/ prefix
+    resp_v1 = client.get("/api/v1/machine-money/judge/fixture")
+    assert resp_v1.status_code == 200
+    assert resp_v1.json()["canonical_payment_sats"] == 250

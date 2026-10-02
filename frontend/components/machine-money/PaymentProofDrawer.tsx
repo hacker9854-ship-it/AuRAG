@@ -291,10 +291,20 @@ export function PaymentProofDrawer({
                     </div>
 
                     <div className="p-3 bg-muted/40 rounded-xl border border-border/40 space-y-1">
-                      <span className="text-[10px] text-muted-foreground uppercase font-mono">Service Provider &amp; Procedure</span>
-                      <p className="font-semibold text-foreground">
-                        {data.operational_context.vendor_name}
+                      <span className="text-[10px] text-muted-foreground uppercase font-mono">Service Provider &amp; Node</span>
+                      <p className="font-semibold text-foreground flex items-center justify-between">
+                        <span>{data.operational_context.vendor_name}</span>
+                        {data.operational_context.vendor_id && (
+                          <span className="text-[9px] font-mono text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border/40">
+                            {data.operational_context.vendor_id}
+                          </span>
+                        )}
                       </p>
+                      {data.operational_context.vendor_pubkey && (
+                        <p className="font-mono text-[10px] text-muted-foreground truncate" title={data.operational_context.vendor_pubkey}>
+                          Pubkey: {data.operational_context.vendor_pubkey.slice(0, 16)}...
+                        </p>
+                      )}
                       <p className="text-muted-foreground">
                         Governing Standard: {data.operational_context.governing_procedure}
                       </p>

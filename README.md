@@ -69,8 +69,8 @@
 ---
 
 ### 💰 Machine Money — Industrial Economics Dashboard
-<img src="./docs/screenshots/machine-money-economics.png" width="100%" alt="Machine Money Economics — ROI calculator showing $1.17M downtime avoided vs 50 sat payment"/>
-<p><i>Interactive ROI calculator quantifying $1.17M downtime avoided vs. 50-sat micro-payment — 2.34M:1 return ratio with explicit synthetic data disclosures</i></p>
+<img src="./docs/screenshots/machine-money-economics.png" width="100%" alt="Machine Money Economics — ROI calculator showing $1.17M downtime avoided vs 250 sat payment"/>
+<p><i>Interactive ROI calculator quantifying $1.17M downtime avoided vs. 250-sat micro-payment — 7,800,000:1 return ratio with explicit synthetic data disclosures</i></p>
 
 ---
 
@@ -145,17 +145,17 @@ sequenceDiagram
     participant Ledger as 📜 Dual-Layer Audit (Neo4j + SQL)
 
     SCADA->>Telemetry: Vibration excursion (5.4 mm/s > 4.5 threshold)
-    Telemetry->>GraphRAG: Trigger anomaly diagnosis for PUMP-301
+    Telemetry->>GraphRAG: Trigger anomaly diagnosis for P-101A
     GraphRAG->>GraphRAG: Traverse (Equipment)-[:HAS_FAILURE]->(BearingWear)
-    GraphRAG->>M2M: Initiate RFQ for replacement seal (Part #SKF-6205)
-    M2M->>M2M: Negotiate vendor quote (25,000 sats + BOLT11 invoice)
+    GraphRAG->>M2M: Initiate RFQ for bearing inspection & diagnostic
+    M2M->>M2M: Negotiate vendor quote (250 sats + BOLT11 invoice)
     M2M->>Policy: Validate spending limits & idempotency key
-    Note over Policy: Checks: 25k sats <= 50k single cap<br/>Daily spend: 48.5k + 25k <= 250k cap
+    Note over Policy: Checks: 250 sats <= 500 sat autonomous cap<br/>Daily spend within budget
     Policy-->>M2M: APPROVED (Zero-Trust Verified)
-    M2M->>LNbits: POST /api/v1/payments (Pay BOLT11 Invoice)
+    M2M->>LNbits: POST /api/machine-money/payments/execute (Pay BOLT11 Invoice)
     LNbits-->>M2M: Payment Settled (Preimage: 6a4f29c3d4e8b91a...)
     M2M->>Ledger: Commit Work Order + Preimage + TX Hash
-    Ledger-->>SCADA: Work Order #WO-2026 Dispatched & Logged
+    Ledger-->>SCADA: Work Order #WO-2026-P101 Dispatched & Logged
 ```
 
 ---
@@ -380,9 +380,9 @@ Navigate to [au-rag.vercel.app/machine-money](https://au-rag.vercel.app/machine-
 
 | Preset | What It Demonstrates | Amount |
 |:-------|:--------------------|:-------|
-| **Happy Path Intervene** | Full autonomous lifecycle: telemetry → diagnosis → RFQ → settlement | 50 sats |
-| **Policy Escalate** | Spending cap violation triggers human approval workflow | 750 sats |
-| **Provider Fallback** | Lightning provider failure with graceful degradation | N/A |
+| **Happy Path Intervene** | Full autonomous lifecycle: telemetry → diagnosis → RFQ → settlement | 250 sats |
+| **Policy Escalate** | Spending cap violation triggers human approval workflow | 1,200 sats |
+| **Provider Fallback** | Lightning provider failure with graceful degradation | 250 sats |
 
 ---
 
@@ -463,19 +463,19 @@ Content-Type: application/json
 Idempotency-Key: m2m-req-001
 
 {
-  "equipment_id": "PUMP-301",
-  "service_type": "bearing_seal_replacement",
-  "max_sats": 35000
+  "equipment_id": "P-101A",
+  "service_type": "bearing-inspection",
+  "max_sats": 500
 }
 ```
 **Response (200 OK):**
 ```json
 {
   "quote_id": "q-9b81e4a2",
-  "equipment_id": "PUMP-301",
-  "vendor_id": "industrial-spares-ln",
-  "amount_sats": 25000,
-  "bolt11": "lnbc250u1p3...",
+  "equipment_id": "P-101A",
+  "vendor_id": "apex-diagnostics",
+  "amount_sats": 250,
+  "bolt11": "lnbcrt2500n1p3...",
   "status": "PENDING"
 }
 ```
@@ -495,7 +495,7 @@ Idempotency-Key: m2m-pay-001
 {
   "payment_id": "pay-8c11e",
   "status": "SETTLED",
-  "amount_sats": 25000,
+  "amount_sats": 250,
   "payment_preimage": "6a4f29c3d4e8b91a7f0e21c3b5a79e4d...",
   "tx_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "recorded_in_graph": true

@@ -37,7 +37,7 @@
   > Watch the live **Execution Timeline**:
   > 1. **Telemetry Detected:** Sensor excursion confirmed at 12ms.
   > 2. **Evidence Matched:** Graph ontology binds failure signature FE-001.
-  > 3. **Autonomous RFQ Resolved:** 4 decentralized specialist maintenance nodes bid; the algorithm selects the optimal SLA provider for 250 sats.
+  > 3. **Autonomous RFQ Resolved:** 3 pre-approved synthetic vendor nodes bid; the algorithm selects the optimal SLA provider for 250 sats.
   > 4. **Policy Evaluated:** 250 sats is within our plant automated cap of 500 sats. Approved.
   > 5. **Invoice Generated:** Real BOLT11 payment request synthesized.
   > 6. **Payment Authorized & Settled:** Micro-payment settled via Lightning adapter in under 200ms.

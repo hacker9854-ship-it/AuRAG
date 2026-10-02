@@ -841,7 +841,9 @@ export interface ProofPackageResponse {
     event_id: string;
     work_order_id: string;
     failure_event_id: string;
+    vendor_id?: string;
     vendor_name: string;
+    vendor_pubkey?: string;
     reason: string;
     governing_procedure: string;
   };
@@ -868,6 +870,39 @@ export interface ProofPackageResponse {
     recorded_at: string;
   };
   provider_mode: string;
+}
+
+export interface JudgeScenarioFixture {
+  scenario_id: string;
+  site_id: string;
+  equipment_id: string;
+  equipment_name: string;
+  sensor_id: string;
+  reading: number;
+  threshold: number;
+  unit: string;
+  iso_zone: string;
+  failure_signature: string;
+  failure_title: string;
+  procedure_id: string;
+  procedure_title: string;
+  work_order_id: string;
+  service_type: string;
+  canonical_payment_sats: number;
+  spending_cap_sats: number;
+  provider_mode: string;
+  settlement_source: string;
+  selected_vendor: string;
+  selected_vendor_id: string;
+  selected_vendor_pubkey: string;
+  selection_strategy: string;
+  candidates_count: number;
+}
+
+export async function getJudgeScenarioFixture(): Promise<JudgeScenarioFixture> {
+  const res = await fetch(`${API_URL}/api/machine-money/judge/fixture`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch judge scenario fixture.");
+  return res.json();
 }
 
 export async function getPaymentProofPackage(paymentId: string): Promise<ProofPackageResponse> {

@@ -19,48 +19,37 @@ from backend.app.services.machine_money.schemas import (
 CANDIDATE_VENDORS_BY_SERVICE: Dict[str, List[Dict[str, Any]]] = {
     "bearing-inspection": [
         {
-            "vendor_id": "maintenance-node-a",
-            "vendor_name": "Industrial Dynamics Specialist Node A",
+            "vendor_id": "apex-diagnostics",
+            "vendor_name": "Apex Diagnostics",
             "node_pubkey": "02" + "a1" * 32,
-            "service_name": "High-Frequency Vibration & Ultrasound Bearing Diagnostic",
-            "amount_sats": 250,
-            "sla_hours": 2.0,
-            "reliability_score": 0.98,
-            "reputation_tier": "A+",
-            "parts_included": ["Synthetic Ester Lubricant Sample", "Sensor Coupling Pad"],
-        },
-        {
-            "vendor_id": "eco-rotary-nodes",
-            "vendor_name": "EcoRotary Maintenance Collective",
-            "node_pubkey": "03" + "b2" * 32,
-            "service_name": "Standard Bearing Inspection & Grease Repack",
-            "amount_sats": 180,
-            "sla_hours": 3.5,
-            "reliability_score": 0.91,
-            "reputation_tier": "B",
-            "parts_included": ["Standard Mineral Grease", "Inspection Checklist"],
-        },
-        {
-            "vendor_id": "apex-industrial-robotics",
-            "vendor_name": "Apex Industrial Robotics Dispatch",
-            "node_pubkey": "02" + "c3" * 32,
             "service_name": "Precision Bearing Inspection & Laser Alignment",
-            "amount_sats": 320,
-            "sla_hours": 1.0,
-            "reliability_score": 0.99,
+            "amount_sats": 250,
+            "sla_hours": 1.2,
+            "reliability_score": 0.994,
             "reputation_tier": "AAA",
             "parts_included": ["Laser Coupling Targets", "Acoustic Sensor Pods", "Mobil SHC 100"],
         },
         {
-            "vendor_id": "heavy-turbomachinery-ltd",
-            "vendor_name": "Heavy Turbomachinery Services Ltd",
-            "node_pubkey": "03" + "d4" * 32,
-            "service_name": "Emergency Complete Bearing Assembly & Housing Overhaul",
-            "amount_sats": 1200,
-            "sla_hours": 0.5,
-            "reliability_score": 0.995,
-            "reputation_tier": "AAA+",
-            "parts_included": ["Complete Bearing Assembly", "Housing Resurfacing Kit"],
+            "vendor_id": "precision-dynamics",
+            "vendor_name": "Precision Dynamics",
+            "node_pubkey": "03" + "b2" * 32,
+            "service_name": "Express Ultrasound Diagnostic & Vibration Analysis",
+            "amount_sats": 320,
+            "sla_hours": 0.8,
+            "reliability_score": 0.989,
+            "reputation_tier": "AA+",
+            "parts_included": ["Ultrasound Sensor Probe", "Sensor Coupling Gel"],
+        },
+        {
+            "vendor_id": "quantum-reliability",
+            "vendor_name": "Quantum Reliability",
+            "node_pubkey": "02" + "c3" * 32,
+            "service_name": "Comprehensive Rotary Dynamics & Bearing Overhaul",
+            "amount_sats": 450,
+            "sla_hours": 2.5,
+            "reliability_score": 0.975,
+            "reputation_tier": "A",
+            "parts_included": ["Complete Bearing Assembly", "Synthetic Lubricant Pack"],
         },
     ],
     "thermal-diagnostics": [
@@ -285,12 +274,12 @@ def process_vendor_rfq(request: VendorRFQRequest) -> VendorRFQResponse:
             )
 
     else:  # BALANCED
-        scoring_model_meta["rule"] = "Weighted composite: 0.40 * cost_efficiency + 0.35 * sla_speed + 0.25 * reliability"
+        scoring_model_meta["rule"] = "Score = (0.5 * CostNorm) + (0.3 * LatencyNorm) + (0.2 * SLANorm)"
         for c in candidates:
             norm_cost = max(0.0, 1.0 - (c.amount_sats / max(1, request.max_budget_sats)))
             norm_sla = max(0.0, 1.0 - (c.sla_hours / 4.0))
             norm_rel = c.reliability_score
-            composite = (0.40 * norm_cost) + (0.35 * norm_sla) + (0.25 * norm_rel)
+            composite = (0.50 * norm_cost) + (0.30 * norm_sla) + (0.20 * norm_rel)
             if not c.within_policy_cap:
                 composite -= 5.0
             c.score = round(composite * 100.0, 2)

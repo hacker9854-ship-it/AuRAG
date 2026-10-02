@@ -210,6 +210,34 @@ class VendorRFQResponse(BaseModel):
     synthetic_disclosure: str = "Synthetic vendor quote model for Bitshala BOSS Battle Machine Money autonomous bidding demonstration"
 
 
+class JudgeScenarioFixture(BaseModel):
+    """Canonical Single-Source-of-Truth Demo Fixture for Bitshala BOSS Battle 2026 (PRD3 Task 2.1)."""
+    scenario_id: str = "SCENARIO-BEARING-OVERHEAT-P101A"
+    site_id: str = "SITE-TX-401"
+    equipment_id: str = "P-101A"
+    equipment_name: str = "Slurry Feed Pump P-101A"
+    sensor_id: str = "VIB-301-BEARING"
+    reading: float = 5.4
+    threshold: float = 4.5
+    unit: str = "mm/s"
+    iso_zone: str = "Zone C (Unrestricted Operation Not Permissible)"
+    failure_signature: str = "FE-001"
+    failure_title: str = "Bearing inner race spalling & degradation"
+    procedure_id: str = "PROC-001"
+    procedure_title: str = "High-Frequency Vibration Diagnostics & Bearing Lubrication"
+    work_order_id: str = "WO-2026-P101"
+    service_type: str = "bearing-inspection"
+    canonical_payment_sats: int = 250
+    spending_cap_sats: int = 500
+    provider_mode: str = "MOCK"
+    settlement_source: str = "SIMULATED"
+    selected_vendor: str = "Apex Diagnostics"
+    selected_vendor_id: str = "apex-diagnostics"
+    selected_vendor_pubkey: str = "02" + "a1" * 32
+    selection_strategy: str = "BALANCED"
+    candidates_count: int = 3
+
+
 class VendorSpendItem(BaseModel):
     vendor_name: str
     spend_sats: int

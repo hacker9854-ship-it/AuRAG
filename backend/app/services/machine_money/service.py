@@ -361,7 +361,9 @@ class MachineMoneyService:
             meta.update({
                 "settled_at": receipt.settled_at.isoformat(),
                 "receipt_id": receipt.receipt_id,
-                "vendor_name": vendor_name or "Industrial Dynamics Specialist Node",
+                "vendor_name": vendor_name or "Apex Diagnostics",
+                "vendor_id": meta.get("vendor_id", "apex-diagnostics"),
+                "vendor_pubkey": meta.get("vendor_pubkey", "02" + "a1" * 32),
             })
             record.metadata_json = json.dumps(meta)
         else:
@@ -385,7 +387,9 @@ class MachineMoneyService:
                 metadata_json=json.dumps({
                     "settled_at": receipt.settled_at.isoformat(),
                     "receipt_id": receipt.receipt_id,
-                    "vendor_name": vendor_name or "Industrial Dynamics Specialist Node",
+                    "vendor_name": vendor_name or "Apex Diagnostics",
+                    "vendor_id": "apex-diagnostics",
+                    "vendor_pubkey": "02" + "a1" * 32,
                 }),
             )
             db.add(record)
@@ -658,14 +662,15 @@ class MachineMoneyService:
 
         # Stage 1: ANOMALY_DETECTED
         evt_id = f"EVT-VIB-{uuid.uuid4().hex[:6].upper()}"
+        sensor_id = "VIB-301-BEARING"
         events.append(
             ExecutionStageEvent(
                 stage=ExecutionStage.ANOMALY_DETECTED,
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
-                message=f"Sensor anomaly detected on {equipment_id}: Radial vibration 5.8 mm/s exceeding ISO 10816 Zone C threshold (4.5 mm/s), Bearing temp 88°C.",
-                evidence_refs=[equipment_id, evt_id],
-                data={"equipment_id": equipment_id, "vibration_mms": 5.8, "temperature_c": 88, "event_id": evt_id},
+                message=f"Sensor anomaly detected on {equipment_id} ({sensor_id}): Radial vibration 5.4 mm/s exceeding ISO 10816 Zone C threshold (4.5 mm/s), Bearing temp 88°C.",
+                evidence_refs=[equipment_id, sensor_id, evt_id],
+                data={"equipment_id": equipment_id, "sensor_id": sensor_id, "vibration_mms": 5.4, "threshold_mms": 4.5, "temperature_c": 88, "event_id": evt_id},
             )
         )
 
@@ -689,7 +694,7 @@ class MachineMoneyService:
             )
         )
 
-        # Stage 3: QUOTE_RESOLVED (Multi-Vendor RFQ - FR-04)
+        # Stage 3: QUOTE_RESOLVED (Multi-Vendor RFQ - FR-04 & PRD3 Task 2.3)
         service_id = "bearing-inspection"
         from backend.app.services.machine_money.rfq import process_vendor_rfq
         from backend.app.services.machine_money.schemas import VendorRFQRequest, SelectionStrategy
@@ -699,13 +704,15 @@ class MachineMoneyService:
             VendorRFQRequest(
                 equipment_id=equipment_id,
                 service_id=service_id,
-                strategy=SelectionStrategy.FASTEST_SLA,
+                strategy=SelectionStrategy.BALANCED,
                 max_budget_sats=max_autopay,
             )
         )
         selected_cand = rfq_res.selected_vendor
         cost_sats = override_cost_sats if override_cost_sats is not None else selected_cand.amount_sats
-        vendor_name = selected_cand.vendor_name if override_cost_sats is None else ("Heavy Turbomachinery Overhaul Node" if cost_sats > 500 else selected_cand.vendor_name)
+        vendor_id = selected_cand.vendor_id if override_cost_sats is None else ("quantum-reliability" if cost_sats > 500 else selected_cand.vendor_id)
+        vendor_name = selected_cand.vendor_name if override_cost_sats is None else ("Quantum Reliability Heavy Node" if cost_sats > 500 else selected_cand.vendor_name)
+        vendor_pubkey = selected_cand.node_pubkey if override_cost_sats is None else ("02" + "c3" * 32 if cost_sats > 500 else selected_cand.node_pubkey)
         quote_id = f"QTE-JM-{uuid.uuid4().hex[:8].upper()}"
 
         events.append(
@@ -720,6 +727,8 @@ class MachineMoneyService:
                     "rfq_id": rfq_res.rfq_id,
                     "cost_sats": cost_sats,
                     "vendor": vendor_name,
+                    "vendor_id": vendor_id,
+                    "vendor_pubkey": vendor_pubkey,
                     "service_id": service_id,
                     "sla_hours": selected_cand.sla_hours,
                     "reliability_score": selected_cand.reliability_score,
@@ -773,6 +782,9 @@ class MachineMoneyService:
                     "amount_sats": cost_sats,
                     "status": "PENDING_APPROVAL",
                     "vendor": vendor_name,
+                    "vendor_id": vendor_id,
+                    "vendor_name": vendor_name,
+                    "vendor_pubkey": vendor_pubkey,
                     "idempotency_key": idempotency_key,
                 },
                 evidence_package=evidence_pkg,
@@ -883,6 +895,9 @@ class MachineMoneyService:
                     "retry_guidance": retry_guidance,
                     "bolt11": invoice.payment_request,
                     "idempotency_key": idempotency_key,
+                    "vendor_id": vendor_id,
+                    "vendor_name": vendor_name,
+                    "vendor_pubkey": vendor_pubkey,
                 },
                 evidence_package=evidence_pkg,
                 provider_mode=provider_mode,
@@ -961,7 +976,9 @@ class MachineMoneyService:
                 "bolt11": invoice.payment_request,
                 "work_order_id": "WO-2026-P101",
                 "event_id": evt_id,
+                "vendor_id": vendor_id,
                 "vendor_name": vendor_name,
+                "vendor_pubkey": vendor_pubkey,
                 "paid_at": receipt.settled_at.isoformat(),
                 "idempotency_key": idempotency_key,
             },
@@ -1027,7 +1044,9 @@ class MachineMoneyService:
                 "event_id": (record.predictive_event_id if record else None) or meta.get("event_id", "EVT-VIB-001"),
                 "work_order_id": (record.work_order_id if record else None) or meta.get("work_order_id", "WO-2026-P101"),
                 "failure_event_id": meta.get("failure_event_id", "FE-001"),
-                "vendor_name": meta.get("vendor_name", "Industrial Dynamics Specialist Node"),
+                "vendor_id": meta.get("vendor_id", "apex-diagnostics"),
+                "vendor_name": meta.get("vendor_name", "Apex Diagnostics"),
+                "vendor_pubkey": meta.get("vendor_pubkey", "02" + "a1" * 32),
                 "reason": meta.get("reason", "Bearing vibration anomaly exceeding safety threshold"),
                 "governing_procedure": meta.get("governing_procedure", "PROC-001"),
             },

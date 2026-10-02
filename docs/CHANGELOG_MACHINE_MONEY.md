@@ -48,7 +48,7 @@ The resulting system is an end-to-end cyber-physical autonomous micro-settlement
 - **Commit:** `ebaa4ef` (2026-10-02)
 - **Message:** `feat(machine-money): add judge mode orchestration, structured events, and live execution timeline`
 - **Key Deliverables:**
-  - Added 3 judge presets: "Happy Path Intervene" (50 sats), "Policy Escalate" (750 sats), and "Provider Fallback".
+  - Added 3 judge presets: "Happy Path Intervene" (250 sats), "Policy Escalate" (1,200 sats), and "Provider Fallback".
   - Created 6-step live execution timeline: `Telemetry Ingestion` → `GraphRAG Analysis` → `Multi-Vendor RFQ` → `Invoice Issuance` → `Spending Policy Check` → `Settlement & Proof`.
   - Implemented real-time event log streamer with nanosecond timestamps and severity indicators.
 
@@ -79,7 +79,7 @@ The resulting system is an end-to-end cyber-physical autonomous micro-settlement
 ---
 
 ### Phase 5: Machine Money Analytics & Industrial Economics
-*Quantifies the macro-economic justification of micro-payments ($1.17M downtime avoided vs. 50 sat payment).*
+*Quantifies the macro-economic justification of micro-payments ($1.17M downtime avoided vs. 250 sat payment).*
 
 - **Commits:**
   - `08d6c46` (2026-10-02) — `feat(machine-money): add machine money analytics metrics`
@@ -87,7 +87,7 @@ The resulting system is an end-to-end cyber-physical autonomous micro-settlement
   - `7d51633` (2026-10-02) — `feat(machine-money): add industrial economics dashboard`
   - `dac97bb` (2026-10-02) — `feat(machine-money): explain industrial impact estimates`
 - **Key Deliverables:**
-  - Added key financial metrics: Net Savings, ROI Ratio (2.34M : 1), Settlement Latency (412ms), and Success Rate (99.8%).
+  - Added key financial metrics: Net Savings, ROI Ratio (7.80M : 1), Settlement Latency (412ms), and Success Rate (99.8%).
   - Built interactive ROI calculator with parameter sliders for downtime cost/hr and MTBF extension.
   - Explicit disclosures identifying figures as **Modelled Estimates based on synthetic plant parameters**.
 
