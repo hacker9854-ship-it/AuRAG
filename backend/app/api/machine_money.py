@@ -20,6 +20,9 @@ from backend.app.services.machine_money.schemas import (
     VendorRFQRequest,
     VendorRFQResponse,
     MachineMoneyMetrics,
+    IndustrialEconomicsModel,
+    IndustrialEconomicsRequest,
+    IndustrialPlantAssumptions,
 )
 from backend.app.services.machine_money.service import MachineMoneyService
 
@@ -342,6 +345,45 @@ def get_machine_money_metrics(db: Session = Depends(get_db)):
         return service.get_analytics_metrics(db)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/analytics/economics", response_model=IndustrialEconomicsModel)
+def get_industrial_economics(
+    equipment_tag: str = Query("P-101A", description="Asset tag to evaluate"),
+    intervention_cost_sats: Optional[int] = Query(None, description="Intervention cost in satoshis"),
+    hourly_downtime_cost_usd: Optional[float] = Query(None, description="Hourly outage loss estimate in USD"),
+    unmitigated_downtime_hours: Optional[float] = Query(None, description="Estimated unmitigated downtime hours"),
+):
+    """Task 5.2 / BE-05: Transparent, versioned industrial economics calculation."""
+    try:
+        req = IndustrialEconomicsRequest(
+            equipment_tag=equipment_tag,
+            intervention_cost_sats=intervention_cost_sats,
+            hourly_downtime_cost_usd=hourly_downtime_cost_usd,
+            unmitigated_downtime_hours=unmitigated_downtime_hours,
+        )
+        return service.get_industrial_economics(req)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.post("/analytics/economics", response_model=IndustrialEconomicsModel)
+def calculate_custom_industrial_economics(req: IndustrialEconomicsRequest):
+    """Task 5.2 / BE-05: Calculate custom industrial economics with parameter overrides."""
+    try:
+        return service.get_industrial_economics(req)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
+
+@router.get("/analytics/assumptions/{equipment_tag}", response_model=IndustrialPlantAssumptions)
+def get_plant_assumptions_for_tag(equipment_tag: str):
+    """Task 5.2: Retrieve baseline synthetic plant assumptions stored separately for equipment."""
+    try:
+        return service.get_plant_assumptions(equipment_tag)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc))
+
 
 
 

@@ -235,4 +235,54 @@ class MachineMoneyMetrics(BaseModel):
     computed_at: datetime = Field(default_factory=utcnow)
 
 
+class IndustrialPlantAssumptions(BaseModel):
+    plant_id: str = "plant-mumbai-01"
+    equipment_tag: str = "P-101A"
+    equipment_name: str = "Heavy Crude Distillation Charge Pump P-101A"
+    criticality_tier: str = "TIER_1_CRITICAL"
+    hourly_downtime_cost_usd: float = 260000.0
+    unmitigated_downtime_hours: float = 4.5
+    catastrophic_failure_probability: float = 0.85
+    manual_procurement_hours: float = 4.2
+    autonomous_m2m_dispatch_seconds: float = 2.1
+    default_intervention_sats: int = 250
+    btc_fiat_usd_rate: float = 65000.0
+    data_basis: str = "Synthetic plant model (Petrochemical refining unit P-101A)"
+    assumptions_version: str = "2026.1-synthetic"
+
+
+class IndustrialEconomicsModel(BaseModel):
+    is_estimated: bool = Field(default=True, description="Marker indicating synthetic/modelled calculation")
+    estimated_marker: str = Field(default="ESTIMATED_SYNTHETIC_MODEL", description="Standard estimation disclosure")
+    calculation_version: str = Field(default="v2026.1-industrial-m2m", description="Version of the calculation engine")
+    equipment_tag: str = "P-101A"
+    equipment_name: str = "Heavy Crude Distillation Charge Pump P-101A"
+    downtime_hours_avoided: float = 4.5
+    hourly_downtime_cost_usd: float = 260000.0
+    estimated_downtime_exposure_usd: float = 1170000.0
+    risk_weighted_exposure_usd: float = 994500.0
+    intervention_cost_sats: int = 250
+    intervention_cost_usd: float = 0.1625
+    net_value_preserved_usd: float = 1169999.84
+    protection_multiple: float = 7200000.0
+    lead_time_saved_hours: float = 4.2
+    assumptions: IndustrialPlantAssumptions = Field(default_factory=IndustrialPlantAssumptions)
+    formula: str = "Net Value Preserved = (Avoided Downtime Hours * Hourly Outage Rate) - Intervention Cost USD"
+    risk_weighted_formula: str = "Risk-Weighted Exposure = Gross Exposure * Failure Probability Factor"
+    data_basis: str = "Synthetic plant model (Petrochemical refining unit P-101A)"
+    transparency_notes: str = (
+        "Modelled estimate based on synthetic industrial plant assumptions for hackathon demonstration. "
+        "All assumptions and formulas are inspectable and customizable."
+    )
+    computed_at: datetime = Field(default_factory=utcnow)
+
+
+class IndustrialEconomicsRequest(BaseModel):
+    equipment_tag: str = Field(default="P-101A", description="Equipment tag identifier")
+    intervention_cost_sats: Optional[int] = Field(default=None, description="Optional override satoshi intervention cost")
+    hourly_downtime_cost_usd: Optional[float] = Field(default=None, description="Optional override hourly downtime loss")
+    unmitigated_downtime_hours: Optional[float] = Field(default=None, description="Optional override downtime hours")
+
+
+
 

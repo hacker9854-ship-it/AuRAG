@@ -45,6 +45,9 @@ from backend.app.services.machine_money.schemas import (
     SimulationRequest,
     SimulationResult,
     MachineMoneyMetrics,
+    IndustrialEconomicsModel,
+    IndustrialEconomicsRequest,
+    IndustrialPlantAssumptions,
 )
 
 logger = logging.getLogger(__name__)
@@ -927,5 +930,21 @@ class MachineMoneyService:
         """Compute aggregated Machine Money metrics across the payment ledger (Task 5.1)."""
         from backend.app.services.machine_money.analytics import calculate_machine_money_metrics
         return calculate_machine_money_metrics(db)
+
+    def get_industrial_economics(
+        self, req: Optional[Any] = None
+    ) -> IndustrialEconomicsModel:
+        """Calculate transparent, versioned industrial economics model (Task 5.2, FR-14, BE-05)."""
+        from backend.app.services.machine_money.economics import calculate_industrial_economics
+        from backend.app.services.machine_money.schemas import IndustrialEconomicsRequest
+        if req is not None and not isinstance(req, IndustrialEconomicsRequest):
+            req = IndustrialEconomicsRequest(**req) if isinstance(req, dict) else IndustrialEconomicsRequest()
+        return calculate_industrial_economics(req)
+
+    def get_plant_assumptions(self, equipment_tag: str = "P-101A") -> IndustrialPlantAssumptions:
+        """Retrieve inspectable synthetic plant baseline assumptions (Task 5.2)."""
+        from backend.app.services.machine_money.economics import get_plant_assumptions
+        return get_plant_assumptions(equipment_tag)
+
 
 
