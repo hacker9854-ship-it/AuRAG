@@ -174,8 +174,8 @@ export default function MachineMoneyPage() {
       });
       setExecutionResult(res);
       setActiveTrailPaymentId(res.payment_id);
-      loadPaymentTrail(res.payment_id);
-      setSuccessMsg(`M2M Settlement triggered successfully: ${res.payment_id} (${res.status})`);
+      const isSim = (health?.provider_name || "").toLowerCase().includes("mock") || health?.is_mock !== false;
+      setSuccessMsg(`M2M Settlement triggered: ${res.payment_id} (${res.status} • ${isSim ? "Simulation" : "Live Lightning"})`);
       // Refresh ledger
       const updated = await listMachineMoneyPayments(20);
       setPayments(updated);
@@ -238,7 +238,8 @@ export default function MachineMoneyPage() {
         "lead-operator-mumbai",
         "Sign-off verified: Bearing overhaul urgent to prevent plant downtime."
       );
-      setSuccessMsg(`Payment ${paymentId} approved and settled on Lightning!`);
+      const isSim = (health?.provider_name || "").toLowerCase().includes("mock") || health?.is_mock !== false;
+      setSuccessMsg(`Payment ${paymentId} approved and settled (${isSim ? "Simulated Ledger" : "Live Lightning Network"})!`);
       const updated = await listMachineMoneyPayments(20);
       setPayments(updated);
       loadPaymentTrail(paymentId);

@@ -212,7 +212,9 @@ export function ProofVerification({
                 : "Hash Mismatch Detected"}
             </p>
             <p className="text-[11px] opacity-90 font-mono">
-              SHA256(preimage) matches the on-chain/Lightning payment hash. Proof is authentic and unforgeable.
+              {isMock
+                ? "SHA-256(preimage) matches the simulated payment hash. Proof is authentic and unforgeable under deterministic evaluation."
+                : "SHA-256(preimage) matches the on-chain/Lightning payment hash. Proof is authentic and unforgeable."}
             </p>
           </div>
         </div>
