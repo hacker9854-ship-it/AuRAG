@@ -1,11 +1,11 @@
 # AuRAG — Canonical Test Suite & Verification Snapshot
 
 **Document ID:** `DOC-TEST-SNAPSHOT-2026-10-02`  
-**Generated At:** 2026-10-02T21:52:00+05:30  
+**Generated At:** 2026-10-02T23:25:00+05:30  
 **Target Event:** Bitshala BOSS Battle 2026 — Machine Money Track  
-**Git Commit SHA:** `92e3dd3a8b4a897b5c9fdf040c1f5f74b9022e76`  
+**Git Commit SHA:** `74eb31c`  
 **Branch:** `main`  
-**Overall Status:** `100% PASSING (136 / 136 TESTS)`  
+**Overall Status:** `100% PASSING (141 / 141 TESTS)`  
 
 ---
 
@@ -13,24 +13,26 @@
 
 | Metric | Verified Count | Execution Time | Status |
 |:-------|:---------------|:---------------|:-------|
-| **Backend Pytest Tests** | **80 Passed** (0 failed, 0 skipped) | 6.91s | PASS ✅ |
-| **Frontend Vitest Tests** | **56 Passed** (15 test files) | 23.00s | PASS ✅ |
-| **Total Automated Tests** | **136 / 136 Passed** | ~30s combined | PASS ✅ |
-| **Next.js Production Build** | **12 / 12 Routes Compiled** (0 errors) | 10.9s compile, 17.9s typecheck | PASS ✅ |
-| **Zero Secret Leakage Scan** | **350+ files scanned, 0 secrets** | 1.22s | PASS ✅ |
+| **Backend Pytest Tests** | **85 Passed** (0 failed, 0 skipped) | 7.45s | PASS ✅ |
+| **Frontend Vitest Tests** | **56 Passed** (15 test files) | 19.64s | PASS ✅ |
+| **Total Automated Tests** | **141 / 141 Passed** | ~27s combined | PASS ✅ |
+| **Next.js Production Build** | **12 / 12 Routes Compiled** (0 errors) | 11.1s compile, 18.1s typecheck | PASS ✅ |
+| **Zero Secret Leakage Scan** | **350+ files scanned, 0 secrets** | 0.78s | PASS ✅ |
+| **Documentation Link Audit** | **103+ relative links checked, 0 broken** | 0.85s | PASS ✅ |
 | **Working Tree Cleanliness** | Synchronized with `origin/main` | Real-time | PASS ✅ |
 
 ---
 
-## 🧪 1. Backend Pytest Breakdown (80 Tests)
+## 🧪 1. Backend Pytest Breakdown (85 Tests)
 
 Command executed:
 ```bash
-powershell -Command ".\.venv\Scripts\pytest.exe -v tests/test_e2e_machine_money.py (Get-ChildItem tests/test_machine_money*.py) tests/test_secret_scan.py"
+powershell -Command ".\.venv\Scripts\pytest.exe -v tests/test_bolt11.py tests/test_e2e_machine_money.py (Get-ChildItem tests/test_machine_money*.py) tests/test_secret_scan.py"
 ```
 
 | Test Module | Test Functions | Scope / Focus | Result |
 |:------------|:---------------|:--------------|:-------|
+| `test_bolt11.py` | 5 | BOLT #11 invoice encoding, Bech32 checksum, amount multipliers, tamper detection, and mock provider integration | 5 PASSED |
 | `test_e2e_machine_money.py` | 17 | Complete 6-step autonomous lifecycle, policy gates, idempotency, QR decoding, and cryptographic proof chain | 17 PASSED |
 | `test_machine_money_analytics.py` | 3 | Machine Money KPIs, spend aggregation, latency calculation, and REST endpoint | 3 PASSED |
 | `test_machine_money_approval_evidence.py` | 1 | Human approval evidence dossier structure, failure code binding, and risk exposure | 1 PASSED |
@@ -47,7 +49,7 @@ powershell -Command ".\.venv\Scripts\pytest.exe -v tests/test_e2e_machine_money.
 | `test_machine_money_task5.py` | 6 | Provider registry, idempotency generation, duplicate prevention, dry-run simulation mode, and operator sign-off | 6 PASSED |
 | `test_machine_money_task6.py` | 5 | Evidence package contract, ISO 10816 telemetry mapping, autonomous trigger, and governed tool boundary | 5 PASSED |
 | `test_secret_scan.py` | 2 | Pre-submission regex scan across git-tracked repository files for leaked API keys, tokens, or credentials | 2 PASSED |
-| **Total Backend** | **80 Tests** | **100% Machine Money & Governance Coverage** | **80 PASSED** |
+| **Total Backend** | **85 Tests** | **100% Machine Money & Governance Coverage** | **85 PASSED** |
 
 ---
 

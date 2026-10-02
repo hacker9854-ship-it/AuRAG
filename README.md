@@ -561,11 +561,11 @@ GET /api/v1/machine-money/budget/status
 
 | Test Suite | Scope | Result | Execution Time |
 |:-----------|:------|:------:|:--------------:|
-| **Backend Pytest** | Unit, Integration, E2E, Policy, Failure-Path, Secret-Scan | **80 / 80 Passed** | ~7s |
-| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics | **56 / 56 Passed** (15 suites) | ~23s |
-| **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 10.9s |
+| **Backend Pytest** | Unit, Integration, E2E, BOLT11, Policy, Failure-Path, Secret-Scan | **85 / 85 Passed** | ~7s |
+| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics | **56 / 56 Passed** (15 suites) | ~20s |
+| **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 11.1s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
-| **Total Automated Tests** | Combined backend + frontend | **136 / 136 Passed** | ~30s |
+| **Total Automated Tests** | Combined backend + frontend | **141 / 141 Passed** | ~27s |
 
 ### 🛡️ Claim-to-Evidence Verification Matrix
 
@@ -588,13 +588,15 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 
 | Document | Description |
 |:---------|:------------|
-| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 80 Pytest + 56 Vitest = 136 tests passed, build status |
+| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 85 Pytest + 56 Vitest = 141 tests passed, build status |
+| [**CLAIM_EVIDENCE_MATRIX.md**](./docs/CLAIM_EVIDENCE_MATRIX.md) | Master claim-to-evidence verification matrix auditing 13 technical claims with allowed wording |
 | [**JUDGE_DEMO_SCRIPT.md**](./docs/JUDGE_DEMO_SCRIPT.md) | Precise 0:00–5:00 minute-by-minute judge demo script with talking points and screen actions |
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |
 | [**CHANGELOG_MACHINE_MONEY.md**](./docs/CHANGELOG_MACHINE_MONEY.md) | Complete implementation changelog covering Phases 0–11 with commit hashes |
 | [**HACKATHON_ELIGIBILITY.md**](./docs/HACKATHON_ELIGIBILITY.md) | Provenance audit, event rules review, and eligibility sign-off |
 | [**PRD2.md**](./PRD2.md) | Machine Money Product Requirements Document (baseline specification) |
 | [**PRD3.md**](./PRD3.md) | Autonomous Machine Money Production Hardening & Truthfulness PRD |
+| [**AuRAG_FINAL_PRD.md**](./AuRAG_FINAL_PRD.md) | Master phased execution plan, live status tracker, and acceptance gates |
 | [**E2E_VERIFICATION_REPORT.md**](./docs/E2E_VERIFICATION_REPORT.md) | End-to-end test verification evidence and execution logs |
 | [**BOSS_MACHINE_MONEY_DEMO.md**](./docs/BOSS_MACHINE_MONEY_DEMO.md) | 3-minute video walkthrough storyboard and recording guide |
 | [**MACHINE_MONEY_ACCEPTANCE.md**](./docs/MACHINE_MONEY_ACCEPTANCE.md) | Official acceptance report with cryptographic proofs |
