@@ -65,6 +65,7 @@ import { EvidenceSummaryCard } from "@/components/machine-money/EvidenceSummaryC
 import { PaymentProofDrawer } from "@/components/machine-money/PaymentProofDrawer";
 import { VendorRFQ } from "@/components/machine-money/VendorRFQ";
 import { IndustrialEconomics } from "@/components/machine-money/IndustrialEconomics";
+import { SystemReadinessModal } from "@/components/machine-money/SystemReadinessModal";
 import type { VendorQuoteCandidate } from "@/lib/api";
 
 export default function MachineMoneyPage() {
@@ -102,6 +103,7 @@ export default function MachineMoneyPage() {
   // Proof Drawer state
   const [proofDrawerOpen, setProofDrawerOpen] = useState(false);
   const [selectedProofPaymentId, setSelectedProofPaymentId] = useState<string | undefined>(undefined);
+  const [readinessModalOpen, setReadinessModalOpen] = useState(false);
 
   const openProofDrawer = (pid?: string) => {
     setSelectedProofPaymentId(pid || executionResult?.payment_id || (payments.length > 0 ? payments[0].payment_id : undefined));
@@ -287,6 +289,17 @@ export default function MachineMoneyPage() {
             latencyMs={health?.latency_ms ?? 1.2}
             showDetails={true}
           />
+
+          <Button
+            variant="outline"
+            size="sm"
+            data-testid="system-readiness-trigger"
+            onClick={() => setReadinessModalOpen(true)}
+            className="h-8 gap-1.5 border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10"
+          >
+            <ShieldCheckIcon className="size-3.5 text-emerald-500" />
+            System Readiness
+          </Button>
 
           <Button
             variant="outline"
@@ -1175,6 +1188,15 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
         isOpen={proofDrawerOpen}
         onClose={() => setProofDrawerOpen(false)}
         paymentId={selectedProofPaymentId}
+      />
+
+      {/* --------------------------------------------------------------------- */}
+      {/* Safe System Readiness & Operational Health Modal (Task 10.3)         */}
+      {/* --------------------------------------------------------------------- */}
+      <SystemReadinessModal
+        isOpen={readinessModalOpen}
+        onClose={() => setReadinessModalOpen(false)}
+        health={health}
       />
     </div>
   );
