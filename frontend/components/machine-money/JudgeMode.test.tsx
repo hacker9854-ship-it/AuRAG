@@ -195,5 +195,15 @@ describe("Machine Money Phase 2: Judge Mode & Timeline Components", () => {
         expect(api.resetJudgeMode).toHaveBeenCalledTimes(1);
       });
     });
+
+    it("renders the 5-question above-the-fold value ribbon answering core judge questions", () => {
+      render(<JudgeMode />);
+      expect(screen.getByTestId("judge-value-ribbon")).toBeInTheDocument();
+      expect(screen.getByText("1. Why We Pay")).toBeInTheDocument();
+      expect(screen.getByText("2. Justified By")).toBeInTheDocument();
+      expect(screen.getByText("3. Why Allowed")).toBeInTheDocument();
+      expect(screen.getByText("4. Settlement")).toBeInTheDocument();
+      expect(screen.getByText("5. Business Impact")).toBeInTheDocument();
+    });
   });
 });

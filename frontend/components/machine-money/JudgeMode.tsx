@@ -2,12 +2,18 @@
 
 import React, { useState } from "react";
 import {
+  Activity,
   AlertOctagon,
   AlertTriangle,
   Clock,
+  Database,
+  DollarSign,
   Play,
   RotateCcw,
   ShieldAlert,
+  ShieldCheck,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import {
   executeJudgeMode,
@@ -71,10 +77,11 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
       className={`p-6 bg-gradient-to-br from-card via-card to-muted/20 border-2 border-primary/20 hover:border-primary/40 rounded-3xl shadow-lg transition-all ${className}`}
     >
       {/* Top Banner: Judge Briefing & Status */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-5 border-b border-border/60">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-border/60">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-bold text-[10px] uppercase tracking-wider border border-amber-500/30">
+            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 font-bold text-[10px] uppercase tracking-wider border border-amber-500/30 flex items-center gap-1">
+              <Sparkles className="w-3 h-3" />
               Judge Mode • One-Click Autonomous M2M Pipeline
             </span>
             {response && (
@@ -102,15 +109,86 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         </div>
       </div>
 
+      {/* 5-Question Orientation Ribbon (Task 8.1 Above-The-Fold Value Prop) */}
+      <div
+        data-testid="judge-value-ribbon"
+        className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 py-4 border-b border-border/40"
+      >
+        <div className="p-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-col gap-1 hover:border-amber-500/40 transition-colors">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+            <Activity className="w-3 h-3 text-amber-500" />
+            1. Why We Pay
+          </span>
+          <span className="text-xs font-semibold text-foreground">
+            Telemetry Anomaly
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            Vibration &gt; 4.5 mm/s (Zone C)
+          </span>
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-col gap-1 hover:border-sky-500/40 transition-colors">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+            <Database className="w-3 h-3 text-sky-500" />
+            2. Justified By
+          </span>
+          <span className="text-xs font-semibold text-foreground">
+            GraphRAG Evidence
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            FE-001 &bull; PROC-001 (94%)
+          </span>
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-col gap-1 hover:border-emerald-500/40 transition-colors">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+            <ShieldCheck className="w-3 h-3 text-emerald-500" />
+            3. Why Allowed
+          </span>
+          <span className="text-xs font-semibold text-foreground">
+            Autonomous Policy
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            250 sats &le; 500 sat cap
+          </span>
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-col gap-1 hover:border-amber-500/40 transition-colors">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+            <Zap className="w-3 h-3 text-amber-500" />
+            4. Settlement
+          </span>
+          <span className="text-xs font-semibold text-foreground">
+            Lightning Micro-Pay
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            Instant BOLT11 + Preimage
+          </span>
+        </div>
+
+        <div className="p-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-col gap-1 col-span-2 sm:col-span-1 hover:border-emerald-500/40 transition-colors">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+            <DollarSign className="w-3 h-3 text-emerald-500" />
+            5. Business Impact
+          </span>
+          <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+            $1.17M Loss Averted
+          </span>
+          <span className="text-[10px] text-muted-foreground font-mono">
+            4.5h Outage Avoided
+          </span>
+        </div>
+      </div>
+
       {/* Control Buttons Grid */}
-      <div className="py-5 flex flex-wrap items-center gap-3">
+      <div className="py-4 flex flex-wrap items-center gap-3">
         {/* Primary CTA */}
         <button
           type="button"
           data-testid="run-emergency-button"
           onClick={() => handleRunScenario("INDUSTRIAL_EMERGENCY", 250)}
           disabled={isRunning}
-          className="relative group overflow-hidden px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-bold text-sm rounded-xl shadow-md hover:shadow-xl transition-all flex items-center gap-2.5 disabled:opacity-50 cursor-pointer active:scale-95"
+          className="relative group overflow-hidden px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-amber-500/25 transition-all flex items-center gap-2.5 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-amber-500/40 hover:ring-amber-500"
         >
           <Play className={`w-4 h-4 fill-current ${isRunning ? "animate-spin" : "group-hover:translate-x-0.5 transition-transform"}`} />
           <span>RUN INDUSTRIAL EMERGENCY</span>
