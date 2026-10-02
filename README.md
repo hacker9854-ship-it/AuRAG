@@ -38,7 +38,8 @@
 
 </div>
 
-> ### 🏆 For Bitshala BOSS Battle 2026 Judges (30-Second Executive Summary)
+### 🏆 For Bitshala BOSS Battle 2026 Judges (30-Second Executive Summary)
+
 > **AuRAG** is an industrial-grade implementation of **Machine Money**: connecting physical SCADA telemetry, Neo4j GraphRAG root-cause analysis, and autonomous Bitcoin Lightning settlement. When critical machinery fails, AuRAG diagnoses the issue, negotiates quotes with vendor APIs, settles micro-payments in satoshis over Lightning, and binds the cryptographic preimage to the plant maintenance ledger — executing in under 15 seconds (measured in simulated test runtime; real Lightning settlement typically settles in 500ms–2000ms depending on routing hops).
 >
 > 📌 **Direct Judge Links**:
@@ -56,31 +57,49 @@
 
 <div align="center">
 
-### ⚡ Machine Money — Autonomous Payment Console
+### ⚡ 1. Machine Money — Autonomous Payment Console
 <img src="./docs/screenshots/machine-money-above-fold.png" width="100%" alt="Machine Money Console — Judge presets, live telemetry, and Lightning payment execution"/>
 <p><i>Single-click Judge Presets, real-time sensor telemetry, multi-vendor RFQ bidding, and BOLT-11 Lightning invoice settlement with cryptographic preimage proofs</i></p>
 
 ---
 
-### 📊 Machine Money — Execution Timeline & Evidence
+### 📊 2. Machine Money — Execution Timeline & Anomaly Detection
 <img src="./docs/screenshots/machine-money-execution-timeline.png" width="100%" alt="Machine Money Execution Timeline — 6-step autonomous lifecycle with live status tracking"/>
 <p><i>6-step live execution pipeline: Telemetry Ingestion → GraphRAG Analysis → Multi-Vendor RFQ → Invoice Issuance → Spending Policy Check → Settlement & Proof</i></p>
 
 ---
 
-### 💰 Machine Money — Industrial Economics Dashboard
-<img src="./docs/screenshots/machine-money-economics.png" width="100%" alt="Machine Money Economics — ROI calculator showing $1.17M downtime avoided vs 250 sat payment"/>
-<p><i>Interactive ROI calculator quantifying $1.17M downtime avoided vs. 250-sat micro-payment — 7,800,000:1 return ratio with explicit synthetic data disclosures</i></p>
+### 🔐 3. Machine Money — Cryptographic Payment Proof Drawer
+<img src="./docs/screenshots/machine-money-proof-drawer.png" width="100%" alt="Payment Proof Drawer — SHA-256 preimage verification, BOLT11 QR matrix, and Neo4j graph lineage"/>
+<p><i>Inspectable cryptographic proof package: SHA-256(preimage) matching payment hash, standards-compliant BOLT11 QR code matrix, and Neo4j causal graph trail</i></p>
 
 ---
 
-### 🖥️ Command Center — Operator Dashboard
+### 🛡️ 4. Machine Money — Policy Escalation Gate (>500 Sats)
+<img src="./docs/screenshots/machine-money-policy-escalation.png" width="100%" alt="Policy Escalation Gate — Quoted amount exceeds 500-sat autonomous cap requiring human digital sign-off"/>
+<p><i>Zero-Trust policy enforcement: Quotes exceeding the 500-sat cap unconditionally halt in PENDING_APPROVAL; unilateral API bypass attempts rejected with HTTP 403</i></p>
+
+---
+
+### ⚠️ 5. Machine Money — Provider Failure & Graceful Degradation
+<img src="./docs/screenshots/machine-money-provider-failure.png" width="100%" alt="Provider Failure Simulation — Channel liquidity exhaustion handling with retry guidance and zero lost funds"/>
+<p><i>Resilience verification: Temporary channel failure safely preserves wallet balance (0 sats deducted), records structured failure audit, and outputs remediation guidance</i></p>
+
+---
+
+### 💰 6. Machine Money — Industrial Economics & Explainability Drawer
+<img src="./docs/screenshots/machine-money-economics.png" width="100%" alt="Industrial Economics Explainability Drawer — Step-by-step formula derivation, assumptions table, and sensitivity sandbox"/>
+<p><i>Step-by-step economic derivation ($1.17M modelled downtime exposure vs. 250-sat payment, 7,800,000:1 ratio) with interactive sensitivity sandbox and synthetic disclosures</i></p>
+
+---
+
+### 🖥️ 7. Command Center — Operator Dashboard
 <img src="./docs/screenshots/command-center.png" width="100%" alt="AuRAG Command Center — Industrial operations dashboard with system health, knowledge graph, and quick actions"/>
 <p><i>Industrial operations command center with system health monitoring, knowledge graph status, active alerts, and quick-action panels</i></p>
 
 ---
 
-### 📡 Predictive Watch — SCADA Telemetry Monitor
+### 📡 8. Predictive Watch — SCADA Telemetry Monitor
 <img src="./docs/screenshots/predictive-watch.png" width="100%" alt="Predictive Watch — Real-time SCADA telemetry monitoring with vibration, pressure, and temperature sensors"/>
 <p><i>Real-time SCADA sensor monitoring with vibration excursion detection, ISO 10816 zone classification, and automated anomaly alerting</i></p>
 
@@ -100,12 +119,14 @@
 - [✨ Key Features](#-key-features)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🌐 Live Deployment](#-live-deployment)
+- [🏛️ Deployment Architecture: "What Is Live Today" vs. "Production Target Architecture"](#️-deployment-architecture-what-is-live-today-vs-production-target-architecture)
 - [🚀 Quick Reproduction (Judge's 60-Second Test)](#-quick-reproduction-judges-60-second-test)
 - [💻 Usage Examples](#-usage-examples)
 - [🏗️ System Architecture](#️-system-architecture)
 - [⚙️ Configuration Inventory](#️-configuration-inventory)
 - [📡 API Reference](#-api-reference)
 - [⚡ Performance & Test Results](#-performance--test-results)
+- [🛡️ Claim-to-Evidence Verification Matrix](#️-claim-to-evidence-verification-matrix)
 - [📖 Documentation Index](#-documentation-index)
 - [🤝 Contributing](#-contributing)
 - [❓ FAQ](#-faq)
@@ -441,7 +462,9 @@ AuRAG/
 │   ├── MACHINE_MONEY_VERIFICATION.md  # Phase-by-phase verification
 │   ├── CHANGELOG_MACHINE_MONEY.md     # Full implementation changelog
 │   ├── HACKATHON_ELIGIBILITY.md       # Provenance & eligibility audit
-│   └── PRD2.md               # Machine Money Product Requirements
+│   └── CURRENT_TEST_SNAPSHOT.md       # Authoritative 136-test verification snapshot
+├── PRD2.md                   # Machine Money Product Requirements
+├── PRD3.md                   # Machine Money Production Hardening PRD
 └── infra/                    # Docker, Terraform, & Deployment Configs
 ```
 
@@ -542,8 +565,22 @@ GET /api/v1/machine-money/budget/status
 | **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics | **56 / 56 Passed** (15 suites) | ~23s |
 | **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 10.9s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
-| **Secret Leakage Audit** | 350+ files scanned for credential exposure | **0 Secrets Found** | ~1s |
 | **Total Automated Tests** | Combined backend + frontend | **136 / 136 Passed** | ~30s |
+
+### 🛡️ Claim-to-Evidence Verification Matrix
+
+Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and architectural claim directly to its test implementation, live UI proof, and verification status:
+
+| Technical Claim | Architectural Specification & Test Proof | Verification Evidence | Status |
+|:----------------|:-----------------------------------------|:----------------------|:------:|
+| **Standards-Compliant QR** | `qrcode.react` rendered SVG matrix; verified with optical `jsQR` decoder tests proving byte-for-byte fidelity with invoice payload. | `tests/test_e2e_machine_money.py::test_e2e_16_qr_payload_exact_bolt11_regression`<br/>`frontend/components/machine-money/Bolt11QRCode.decode.test.ts` | PASS ✅ |
+| **Truthful Settlement** | Backend authoritative `provider_mode: MOCK` on `regtest`; explicitly labeled throughout UI and logs; zero fake nominal data. | `backend/app/api/machine_money.py` (`/api/v1/machine-money/health`)<br/>`frontend/components/machine-money/SystemReadinessModal.tsx` | PASS ✅ |
+| **Cryptographic Preimage Proof** | SHA-256 hash lock verified via Web Crypto API in browser and Python `hashlib` on backend: `SHA256(preimage) === payment_hash`. | `frontend/lib/crypto.ts`<br/>`tests/test_e2e_machine_money.py::test_e2e_17_complete_payment_proof_chain_regression` | PASS ✅ |
+| **Multi-Vendor RFQ** | 3 pre-approved synthetic vendor bids (Apex, Precision, Quantum) with transparent mathematical scoring `(0.5×Cost + 0.3×Latency + 0.2×SLA)`. | `backend/app/services/machine_money/rfq.py`<br/>`tests/test_machine_money_rfq.py`<br/>`frontend/components/machine-money/VendorRFQ.tsx` | PASS ✅ |
+| **Policy Spending Cap** | Strict per-transaction spending limit (500 sats); quotes >500 sats held in `PENDING_APPROVAL`; unilateral client bypass rejected with HTTP 403. | `backend/app/services/machine_money/service.py`<br/>`tests/test_machine_money_policy_hardening.py`<br/>`tests/test_e2e_machine_money.py::test_e2e_06` | PASS ✅ |
+| **Deterministic Idempotency** | SHA-256 idempotency cache (`sha256(site:equipment:service:event)`) rejects duplicate physical anomaly triggers and network retries. | `backend/app/services/machine_money/service.py`<br/>`tests/test_machine_money_idempotency.py` | PASS ✅ |
+| **Modelled Economics** | $1.17M gross downtime exposure parameterized on synthetic plant model; inspectable step-by-step formula in Explainability Drawer. | `backend/app/services/machine_money/economics.py`<br/>`frontend/components/machine-money/IndustrialEconomics.tsx`<br/>`tests/test_machine_money_economics.py` | PASS ✅ |
+| **Zero Secrets Leaked** | 350+ repository files scanned with zero exposed API keys or tokens; `.env` strictly untracked and gitignored. | `tests/test_secret_scan.py` (2 passed)<br/>`docs/CURRENT_TEST_SNAPSHOT.md` | PASS ✅ |
 
 ---
 
@@ -556,7 +593,8 @@ GET /api/v1/machine-money/budget/status
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |
 | [**CHANGELOG_MACHINE_MONEY.md**](./docs/CHANGELOG_MACHINE_MONEY.md) | Complete implementation changelog covering Phases 0–11 with commit hashes |
 | [**HACKATHON_ELIGIBILITY.md**](./docs/HACKATHON_ELIGIBILITY.md) | Provenance audit, event rules review, and eligibility sign-off |
-| [**PRD2.md**](./docs/PRD2.md) | Machine Money Product Requirements Document (specification) |
+| [**PRD2.md**](./PRD2.md) | Machine Money Product Requirements Document (baseline specification) |
+| [**PRD3.md**](./PRD3.md) | Autonomous Machine Money Production Hardening & Truthfulness PRD |
 | [**E2E_VERIFICATION_REPORT.md**](./docs/E2E_VERIFICATION_REPORT.md) | End-to-end test verification evidence and execution logs |
 | [**BOSS_MACHINE_MONEY_DEMO.md**](./docs/BOSS_MACHINE_MONEY_DEMO.md) | 3-minute video walkthrough storyboard and recording guide |
 | [**MACHINE_MONEY_ACCEPTANCE.md**](./docs/MACHINE_MONEY_ACCEPTANCE.md) | Official acceptance report with cryptographic proofs |
