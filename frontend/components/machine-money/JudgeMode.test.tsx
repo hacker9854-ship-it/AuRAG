@@ -61,13 +61,15 @@ describe("Machine Money Phase 2: Judge Mode & Timeline Components", () => {
   });
 
   describe("JudgeMode Component", () => {
-    it("renders primary CTA button and secondary actions", () => {
+    it("renders primary CTA button, escalation button, and provider failure button", () => {
       render(<JudgeMode />);
 
       expect(screen.getByTestId("run-emergency-button")).toBeInTheDocument();
       expect(screen.getByTestId("run-escalation-button")).toBeInTheDocument();
+      expect(screen.getByTestId("run-provider-failure-button")).toBeInTheDocument();
       expect(screen.getByTestId("reset-scenario-button")).toBeInTheDocument();
       expect(screen.getByText("RUN INDUSTRIAL EMERGENCY")).toBeInTheDocument();
+      expect(screen.getByText("Run Provider Failure")).toBeInTheDocument();
     });
 
     it("executes industrial emergency scenario and updates timeline", async () => {
@@ -116,6 +118,64 @@ describe("Machine Money Phase 2: Judge Mode & Timeline Components", () => {
         });
         expect(screen.getByText("ID: EXEC-JM-TEST1234")).toBeInTheDocument();
         expect(screen.getByText("185ms")).toBeInTheDocument();
+      });
+    });
+
+    it("executes provider failure scenario and shows failure alert without false success toast", async () => {
+      const mockFailureResponse: api.JudgeExecutionResponse = {
+        execution_id: "EXEC-FAIL-TEST",
+        scenario: "PROVIDER_FAILURE",
+        status: "FAILED",
+        total_elapsed_ms: 140,
+        provider_mode: "MOCK / SIMULATION",
+        summary: "Provider Failure Simulated: Channel liquidity exhausted.",
+        payment_record: {
+          payment_id: "PAY-EXEC-FAIL-TEST",
+          amount_sats: 250,
+          status: "FAILED",
+          retry_guidance: "Payment not executed. Zero satoshis deducted. Retry guidance: Re-balance payment channel via LSP.",
+        },
+        events: [
+          {
+            stage: "ANOMALY_DETECTED",
+            status: "SUCCESS",
+            elapsed_ms: 10,
+            message: "Sensor anomaly detected",
+            evidence_refs: ["P-101A"],
+            data: {},
+            timestamp: new Date().toISOString(),
+          },
+          {
+            stage: "SETTLEMENT_CONFIRMED",
+            status: "FAILED",
+            elapsed_ms: 135,
+            message: "Lightning settlement failed: Channel route liquidity exhausted",
+            evidence_refs: ["ERR-CHANNEL-LIQUIDITY"],
+            data: { settled: false },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      };
+
+      vi.spyOn(api, "executeJudgeMode").mockResolvedValueOnce(mockFailureResponse);
+
+      render(<JudgeMode />);
+
+      const failureButton = screen.getByTestId("run-provider-failure-button");
+      fireEvent.click(failureButton);
+
+      await waitFor(() => {
+        expect(api.executeJudgeMode).toHaveBeenCalledWith({
+          scenario: "PROVIDER_FAILURE",
+          equipment_id: "P-101A",
+          override_cost_sats: 250,
+          auto_approve: true,
+        });
+        expect(screen.getByTestId("provider-failure-alert")).toBeInTheDocument();
+        expect(screen.getByText("Payment Unsettled — Simulated Provider Failure")).toBeInTheDocument();
+        expect(screen.getByText(/Payment not executed\. Zero satoshis deducted\./i)).toBeInTheDocument();
+        expect(screen.getAllByText("FAILED").length).toBeGreaterThanOrEqual(1);
+        expect(screen.queryByText("Autonomous Settlement Complete")).not.toBeInTheDocument();
       });
     });
 

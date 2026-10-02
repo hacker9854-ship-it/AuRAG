@@ -301,6 +301,7 @@ class MachineMoneyService:
             fee_sats = receipt.fee_sats
         except Exception as exc:
             logger.error(f"Lightning payment failed: {exc}")
+            retry_guidance = "Payment not executed. Zero satoshis deducted. Retry guidance: Re-balance payment channel via LSP or route through alternative peering node."
             if existing_record:
                 record = existing_record
                 record.status = PaymentStatus.FAILED.value
@@ -322,9 +323,30 @@ class MachineMoneyService:
                     idempotency_key=idempotency_key,
                 )
                 db.add(record)
+
+            # Task 6.3: Audit record reflects failure and provides clear retry guidance
+            audit = AuditEvent(
+                event_id=f"AUDIT-FAIL-{uuid.uuid4().hex[:10]}",
+                user_id="ai-agent-supervisor",
+                site_id="plant-mumbai-01",
+                role="AUTONOMOUS_PAYMENT_SUPERVISOR",
+                action_type="PAYMENT_SETTLEMENT_FAILED",
+                resource_type="PAYMENT",
+                resource_id=record.payment_id,
+                details_json=json.dumps({
+                    "payment_id": record.payment_id,
+                    "amount_sats": amount_sats,
+                    "error_code": "PROVIDER_PAY_FAILED",
+                    "error_message": str(exc),
+                    "retry_guidance": retry_guidance,
+                }),
+                status="FAILED",
+            )
+            db.add(audit)
             db.commit()
             db.refresh(record)
             return record
+
 
         # 4. Save Settled Record & Audit Event
         if existing_record:
@@ -801,6 +823,69 @@ class MachineMoneyService:
         )
 
         # Stage 7: SETTLEMENT_CONFIRMED
+        if scenario == "PROVIDER_FAILURE":
+            # Task 6.3: Simulated provider failure path
+            retry_guidance = "Payment not executed. Zero satoshis deducted. Retry guidance: Re-balance payment channel via LSP or route through alternative peering node."
+            events.append(
+                ExecutionStageEvent(
+                    stage=ExecutionStage.SETTLEMENT_CONFIRMED,
+                    status="FAILED",
+                    elapsed_ms=get_elapsed_ms(),
+                    message="Lightning settlement failed: Channel route liquidity exhausted (TEMPORARY_CHANNEL_FAILURE). Payment held unsettled.",
+                    evidence_refs=[invoice.invoice_id, invoice.payment_hash, "ERR-CHANNEL-LIQUIDITY"],
+                    data={
+                        "error_code": "PROVIDER_PAY_FAILED",
+                        "retry_guidance": retry_guidance,
+                        "amount_sats": cost_sats,
+                        "settled": False,
+                    },
+                )
+            )
+
+            # Persist failure AuditEvent in SQL
+            if db:
+                audit = AuditEvent(
+                    event_id=f"AUDIT-FAIL-{uuid.uuid4().hex[:10]}",
+                    user_id="ai-agent-supervisor",
+                    site_id="plant-mumbai-01",
+                    role="AUTONOMOUS_PAYMENT_SUPERVISOR",
+                    action_type="PAYMENT_SETTLEMENT_FAILED",
+                    resource_type="PAYMENT",
+                    resource_id=f"PAY-{execution_id}",
+                    details_json=json.dumps({
+                        "payment_id": f"PAY-{execution_id}",
+                        "amount_sats": cost_sats,
+                        "error_code": "PROVIDER_PAY_FAILED",
+                        "error_message": "TEMPORARY_CHANNEL_FAILURE: Insufficient outbound liquidity",
+                        "retry_guidance": retry_guidance,
+                        "scenario": "PROVIDER_FAILURE",
+                    }),
+                    status="FAILED",
+                )
+                db.add(audit)
+                db.commit()
+
+            total_elapsed = get_elapsed_ms()
+            return JudgeExecutionResponse(
+                execution_id=execution_id,
+                scenario=scenario,
+                status="FAILED",
+                total_elapsed_ms=total_elapsed,
+                events=events,
+                payment_record={
+                    "payment_id": f"PAY-{execution_id}",
+                    "amount_sats": cost_sats,
+                    "status": "FAILED",
+                    "error_code": "PROVIDER_PAY_FAILED",
+                    "error_message": "TEMPORARY_CHANNEL_FAILURE: Insufficient outbound liquidity",
+                    "retry_guidance": retry_guidance,
+                    "bolt11": invoice.payment_request,
+                },
+                evidence_package=evidence_pkg,
+                provider_mode=provider_mode,
+                summary=f"Provider Failure Simulated: Payment of {cost_sats} sats failed due to channel liquidity exhaustion. Payment remains unsettled. Audit record committed with retry guidance.",
+            )
+
         receipt = await self.provider.pay_invoice(invoice.payment_request)
         events.append(
             ExecutionStageEvent(
@@ -808,6 +893,7 @@ class MachineMoneyService:
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
                 message=f"Lightning micro-payment settled: Preimage {receipt.preimage[:16] if receipt.preimage else 'N/A'}... Routing fee: {receipt.fee_sats} sats.",
+
                 evidence_refs=[receipt.receipt_id, receipt.payment_hash],
                 data={
                     "payment_hash": receipt.payment_hash,

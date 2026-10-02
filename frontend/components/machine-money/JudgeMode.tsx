@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import {
+  AlertOctagon,
   AlertTriangle,
   Clock,
   Play,
@@ -27,7 +28,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
   const [error, setError] = useState<string | null>(null);
 
   const handleRunScenario = async (
-    scenario: "INDUSTRIAL_EMERGENCY" | "POLICY_ESCALATION" = "INDUSTRIAL_EMERGENCY",
+    scenario: "INDUSTRIAL_EMERGENCY" | "POLICY_ESCALATION" | "PROVIDER_FAILURE" = "INDUSTRIAL_EMERGENCY",
     costOverride?: number
   ) => {
     setIsRunning(true);
@@ -131,6 +132,19 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           <span className="text-[10px] font-mono opacity-70">1,200 sats</span>
         </button>
 
+        {/* Provider Failure Trigger (Task 6.3 / FE-03) */}
+        <button
+          type="button"
+          data-testid="run-provider-failure-button"
+          onClick={() => handleRunScenario("PROVIDER_FAILURE", 250)}
+          disabled={isRunning}
+          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center gap-2 disabled:opacity-50 hover:border-rose-500/40"
+        >
+          <AlertOctagon className="w-4 h-4 text-rose-500" />
+          <span>Run Provider Failure</span>
+          <span className="text-[10px] font-mono opacity-70">250 sats</span>
+        </button>
+
         {/* Reset State Button */}
         <button
           type="button"
@@ -166,6 +180,36 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           </div>
         )}
       </div>
+
+      {/* Provider Failure Scenario Status & Retry Guidance (Task 6.3) */}
+      {response?.status === "FAILED" && (
+        <div
+          data-testid="provider-failure-alert"
+          className="mb-4 p-4 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-xs space-y-2.5 animate-in fade-in"
+        >
+          <div className="flex items-center gap-2 font-bold text-rose-600 dark:text-rose-400">
+            <AlertOctagon className="w-4 h-4 shrink-0 text-rose-500" />
+            <span>Payment Unsettled — Simulated Provider Failure</span>
+          </div>
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            {response.summary || "Payment halted at settlement stage. Outbound channel route liquidity exhausted."}
+          </p>
+          <div className="p-3 bg-card/80 border border-rose-500/20 rounded-xl space-y-1">
+            <span className="font-semibold text-rose-600 dark:text-rose-400 text-[11px] block">
+              Retry &amp; Remediation Guidance:
+            </span>
+            <p className="font-mono text-[11px] text-foreground">
+              {response.payment_record?.retry_guidance ||
+                "Payment not executed. Zero satoshis deducted. Retry guidance: Re-balance payment channel via LSP or route through alternative peering node."}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono text-muted-foreground pt-0.5">
+            <span>Audit: <strong className="text-rose-600 dark:text-rose-400 font-semibold">PAYMENT_SETTLEMENT_FAILED</strong></span>
+            <span>Settled Sats: <strong className="text-foreground">0</strong></span>
+            <span>Duplicate Risk: <strong className="text-emerald-600 dark:text-emerald-400">PREVENTED</strong></span>
+          </div>
+        </div>
+      )}
 
       {/* Error Alert */}
       {error && (
