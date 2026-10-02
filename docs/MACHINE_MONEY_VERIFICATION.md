@@ -122,3 +122,20 @@ cd frontend && npm test
 | **Frontend Unit Suite** | 5 tests verifying container rendering, strategy switching, candidate selection, and synthetic disclosures | PASS | `frontend/components/machine-money/VendorRFQ.test.tsx` (5 passed) |
 | **Total Test Suite** | 44 Backend Pytest tests & 38 Frontend Vitest tests passing across 13 test files | PASS | 100% green tests across entire repository (zero regressions, zero linter errors) |
 
+---
+
+## 8. Phase 5 Verification Results (Machine Money Intelligence & Industrial Economics)
+
+| Milestone | Acceptance Criteria | Status | Evidence |
+|---|---|---|---|
+| **Metrics Model (Task 5.1)** | Backend calculations for spend, settled, pending, autonomous count, human approvals, average settlement latency, vendor spend breakdown, and quote-to-payment conversion | PASS | `backend/app/services/machine_money/analytics.py` & `schemas.py` |
+| **Economics Model (Task 5.2)** | Transparent calculation using synthetic plant assumptions (downtime hours, hourly outage loss, exposure avoided, protection multiple); assumptions stored separately; versioned calculation (`v2026.1-industrial-m2m`); `is_estimated` marker | PASS | `backend/app/services/machine_money/economics.py` & `schemas.py` |
+| **Analytics API Endpoints** | `GET /api/machine-money/analytics/metrics`, `GET /api/machine-money/analytics/economics`, `POST /api/machine-money/analytics/economics`, and `GET /api/machine-money/analytics/assumptions/{tag}` | PASS | `backend/app/api/machine_money.py` |
+| **Backend Unit & Integration Tests** | 7 tests verifying metrics aggregation (empty DB, settled/pending, latency, vendor spend, quotes) and economics models (baseline P-101A, separate assumptions, overrides, API endpoints) | PASS | `tests/test_machine_money_analytics.py` & `tests/test_machine_money_economics.py` (7 passed in 6.8s) |
+| **Analytics Dashboard UI (Task 5.3)** | Machine Money Intelligence KPIs (Total Spend, Autonomous Execution %, Instant Settlement Latency, Quote Conversion) and Asset Downtime Avoidance impact panel (4.5h, $1.17M exposure averted, 250 sats intervention, 7.2M× protection multiple) | PASS | `frontend/components/machine-money/IndustrialEconomics.tsx` |
+| **Explainability Drawer (Task 5.4)** | Full mathematical formula disclosure (`Net Value Preserved = (Avoided Outage Hours × Hourly Rate) - Intervention Cost`), parameterized synthetic plant assumption table, copyable formula, and real-time interactive sensitivity sandbox | PASS | `frontend/components/machine-money/IndustrialEconomics.tsx` |
+| **Frontend Unit Suite** | 3 tests verifying KPI cards, version badges, drawer trigger, formula copy, and assumption table inspection | PASS | `frontend/components/machine-money/IndustrialEconomics.test.tsx` (3 passed in 894ms) |
+| **Total Test Suite** | 51 Backend Pytest tests & 41 Frontend Vitest tests passing across 14 test files | PASS | 100% green tests across entire repository (zero regressions, zero linter errors) |
+
+
+
