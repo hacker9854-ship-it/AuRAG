@@ -12,12 +12,14 @@ Validates complete system integration across:
 import os
 import uuid
 import pytest
+import hashlib
 from fastapi.testclient import TestClient
 
 from backend.app.core.neo4j import get_session
 from backend.app.db.database import get_db, init_db
 from backend.app.db.models import PaymentRecord
 from backend.app.main import app
+from backend.app.services.machine_money.bolt11 import encode_bolt11
 from backend.app.services.machine_money.registry import DEMO_SERVICES, generate_idempotency_key
 from backend.app.services.machine_money.schemas import PaymentStatus
 
@@ -730,6 +732,53 @@ def test_e2e_17_complete_payment_proof_chain_regression():
     )
     assert audit is not None
     assert pid in audit.details_json
+
+
+# -----------------------------------------------------------------------------
+# Phase 1: E2E Invalid & Unregistered BOLT11 Invoice Rejection Guard
+# -----------------------------------------------------------------------------
+def test_e2e_18_unregistered_and_malformed_invoice_rejection():
+    """Verify that posting invalid or unregistered invoices to /api/machine-money/pay fails with 0 sats deducted."""
+    # 1. Unregistered valid BOLT11 invoice
+    unregistered_hash = hashlib.sha256(b"e2e_unregistered_invoice_test").hexdigest()
+    unreg_bolt11 = encode_bolt11(
+        network="bcrt",
+        amount_sats=250,
+        payment_hash_hex=unregistered_hash,
+        description="E2E Unregistered invoice test",
+    )
+
+    res_unreg = client.post(
+        "/api/machine-money/pay",
+        json={
+            "bolt11": unreg_bolt11,
+            "amount_sats": 250,
+            "work_order_id": "WO-E2E-UNREG",
+            "confidence": 0.95,
+        },
+    )
+    assert res_unreg.status_code == 200
+    data_unreg = res_unreg.json()
+    assert data_unreg["status"] == "FAILED"
+    assert data_unreg["error_code"] == "PROVIDER_PAY_FAILED"
+    assert "unregistered" in data_unreg["error_message"].lower()
+    assert data_unreg["preimage"] is None
+
+    # 2. Malformed invoice string
+    res_malformed = client.post(
+        "/api/machine-money/pay",
+        json={
+            "bolt11": "lnbcrt_not_a_valid_bolt11_string",
+            "amount_sats": 250,
+            "work_order_id": "WO-E2E-MALFORMED",
+            "confidence": 0.95,
+        },
+    )
+    assert res_malformed.status_code == 200
+    data_malformed = res_malformed.json()
+    assert data_malformed["status"] == "FAILED"
+    assert data_malformed["error_code"] == "PROVIDER_PAY_FAILED"
+    assert data_malformed["preimage"] is None
 
 
 

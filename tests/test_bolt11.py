@@ -11,8 +11,13 @@ from backend.app.services.machine_money.bolt11 import (
     encode_bolt11,
     is_valid_bolt11,
 )
-from backend.app.services.machine_money.providers.mock import MockLightningProvider
-from backend.app.services.machine_money.schemas import InvoiceRequest
+from backend.app.services.machine_money.exceptions import ProviderError, InvoiceExpiredError
+from backend.app.services.machine_money.providers.mock import (
+    MockLightningProvider,
+    register_preimage,
+    verify_preimage_proof,
+)
+from backend.app.services.machine_money.schemas import InvoiceRequest, PaymentStatus
 
 
 def test_bolt11_encode_decode_roundtrip():
@@ -126,3 +131,141 @@ def test_mock_lightning_provider_pays_and_decodes_external_invoice():
     assert receipt.amount_sats == 450
     assert receipt.status.value in ["MOCK_PAID", "PAID", "SETTLED"]
     assert provider.balance_sats == 10000 - 450
+
+
+# -----------------------------------------------------------------------------
+# Phase 1 Acceptance Gate Tests (PRD4 Section 1)
+# -----------------------------------------------------------------------------
+
+def test_mock_provider_rejects_malformed_invoice_zero_sats_lost():
+    """Phase 1.1: Malformed invoice string must be rejected with ProviderError, 0 sats lost."""
+    provider = MockLightningProvider(initial_balance_sats=50000)
+    initial_balance = provider.balance_sats
+
+    malformed_invoices = [
+        "not_a_bolt11_invoice",
+        "lnbcrt1",
+        "lnbcrt1qqq",
+        "lnbc2500n1badcharacter!!$$",
+        "",
+    ]
+
+    for inv_str in malformed_invoices:
+        with pytest.raises(ProviderError):
+            asyncio.run(provider.pay_invoice(inv_str))
+        assert provider.balance_sats == initial_balance, f"Balance was modified on {inv_str}"
+
+
+def test_mock_provider_rejects_corrupt_checksum_zero_sats_lost():
+    """Phase 1.1: Corrupt checksum must be rejected with ProviderError, 0 sats lost."""
+    provider = MockLightningProvider(initial_balance_sats=50000)
+    initial_balance = provider.balance_sats
+
+    valid_inv = encode_bolt11(
+        network="bcrt",
+        amount_sats=250,
+        payment_hash_hex="01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+        description="Tamper test",
+    )
+    corrupted_inv = valid_inv[:-1] + ("q" if valid_inv[-1] != "q" else "p")
+
+    with pytest.raises(ProviderError) as exc_info:
+        asyncio.run(provider.pay_invoice(corrupted_inv))
+
+    assert "checksum" in str(exc_info.value).lower() or "structure" in str(exc_info.value).lower()
+    assert provider.balance_sats == initial_balance
+
+
+def test_mock_provider_rejects_valid_unregistered_invoice_zero_sats_lost():
+    """Phase 1.2 & 1.4: Valid BOLT11 invoice whose payment hash is not registered must be REJECTED with 0 sats deducted."""
+    provider = MockLightningProvider(initial_balance_sats=50000)
+    initial_balance = provider.balance_sats
+
+    unregistered_hash = hashlib.sha256(b"totally_unregistered_hash_unknown_to_mock").hexdigest()
+    unregistered_inv = encode_bolt11(
+        network="bcrt",
+        amount_sats=300,
+        payment_hash_hex=unregistered_hash,
+        description="Unregistered invoice",
+    )
+
+    with pytest.raises(ProviderError) as exc_info:
+        asyncio.run(provider.pay_invoice(unregistered_inv))
+
+    assert "unregistered" in str(exc_info.value).lower()
+    assert provider.balance_sats == initial_balance
+    assert unregistered_hash not in provider._payments
+
+
+def test_mock_provider_settles_registered_invoice_with_cryptographic_proof():
+    """Phase 1.3 & 1.5: Valid registered invoice settles with sha256(preimage) == payment_hash verified."""
+    provider = MockLightningProvider(initial_balance_sats=50000)
+    initial_balance = provider.balance_sats
+
+    req = InvoiceRequest(
+        amount_sats=350,
+        memo="Cryptographic proof validation payment",
+        expiry_seconds=1800,
+    )
+    inv = asyncio.run(provider.create_invoice(req))
+
+    receipt = asyncio.run(provider.pay_invoice(inv.payment_request))
+    assert receipt.status == PaymentStatus.MOCK_PAID
+    assert receipt.amount_sats == 350
+    assert receipt.payment_hash == inv.payment_hash
+    assert verify_preimage_proof(receipt.preimage, receipt.payment_hash) is True
+    # Invariant: sha256(preimage) == payment_hash
+    computed_hash = hashlib.sha256(bytes.fromhex(receipt.preimage)).hexdigest()
+    assert computed_hash == receipt.payment_hash
+    assert provider.balance_sats == initial_balance - 350
+
+
+def test_mock_provider_rejects_mismatched_preimage_zero_sats_lost():
+    """Phase 1.3: If registered preimage does not hash to invoice payment_hash, reject with ProviderError, 0 sats lost."""
+    provider = MockLightningProvider(initial_balance_sats=50000)
+    initial_balance = provider.balance_sats
+
+    real_hash = hashlib.sha256(b"real_payment_payload_data").hexdigest()
+    # Register an intentional preimage mismatch
+    bogus_preimage = "ff" * 32
+    register_preimage(real_hash, bogus_preimage)
+
+    inv = encode_bolt11(
+        network="bcrt",
+        amount_sats=400,
+        payment_hash_hex=real_hash,
+        description="Mismatched proof test",
+    )
+
+    with pytest.raises(ProviderError) as exc_info:
+        asyncio.run(provider.pay_invoice(inv))
+
+    assert "mismatch" in str(exc_info.value).lower() or "proof" in str(exc_info.value).lower()
+    assert provider.balance_sats == initial_balance
+    assert real_hash not in provider._payments
+
+
+def test_mock_provider_rejects_expired_invoice_zero_sats_lost():
+    """Phase 1.1: Expired invoice rejected with InvoiceExpiredError / ProviderError, 0 sats lost."""
+    import time
+    provider = MockLightningProvider(initial_balance_sats=50000)
+    initial_balance = provider.balance_sats
+
+    registered_hash = hashlib.sha256(b"expired_registered_test").hexdigest()
+    register_preimage(registered_hash, b"expired_registered_test".hex())
+
+    # Create invoice timestamped 2 hours ago with 1 hour expiry
+    past_timestamp = int(time.time()) - 7200
+    expired_inv = encode_bolt11(
+        network="bcrt",
+        amount_sats=250,
+        payment_hash_hex=registered_hash,
+        description="Expired invoice test",
+        timestamp=past_timestamp,
+        expiry_seconds=3600,
+    )
+
+    with pytest.raises(InvoiceExpiredError):
+        asyncio.run(provider.pay_invoice(expired_inv))
+
+    assert provider.balance_sats == initial_balance

@@ -9,6 +9,9 @@ from sqlalchemy.orm import sessionmaker
 
 from backend.app.db.models import Base, PaymentRecord, AuditEvent
 from backend.app.main import app
+import hashlib
+from backend.app.services.machine_money.bolt11 import encode_bolt11
+from backend.app.services.machine_money.providers.mock import register_preimage
 from backend.app.services.machine_money.schemas import (
     ExecutionStage,
     JudgeExecutionResponse,
@@ -143,3 +146,104 @@ def test_judge_mode_provider_failure_api_endpoint(client):
     assert data["payment_record"]["status"] == "FAILED"
     assert "retry_guidance" in data["payment_record"]
     assert "Channel route liquidity exhausted" in data["events"][-1]["message"]
+
+
+# -----------------------------------------------------------------------------
+# Phase 1: Machine Money Service & Provider Rejection Tests
+# -----------------------------------------------------------------------------
+
+def test_execute_payment_rejects_unregistered_invoice_zero_sats_lost(service, test_db):
+    """Phase 1.2 & 1.4: Service attempting to pay an unregistered invoice records FAILED, 0 sats lost."""
+    initial_balance = service.provider.balance_sats
+    unregistered_hash = hashlib.sha256(b"unregistered_payment_hash_test_service").hexdigest()
+    unreg_bolt11 = encode_bolt11(
+        network="bcrt",
+        amount_sats=250,
+        payment_hash_hex=unregistered_hash,
+        description="Unregistered service test",
+    )
+
+    record = asyncio.run(
+        service.execute_payment(
+            db=test_db,
+            bolt11=unreg_bolt11,
+            amount_sats=250,
+            work_order_id="WO-UNREG-01",
+            event_id="EVT-UNREG-01",
+            idempotency_key="idemp-unreg-01",
+        )
+    )
+
+    assert record.status == PaymentStatus.FAILED.value
+    assert record.error_code == "PROVIDER_PAY_FAILED"
+    assert "unregistered" in record.error_message.lower()
+    assert record.preimage is None
+    assert record.paid_at is None
+    assert service.provider.balance_sats == initial_balance
+
+    # Verify audit event
+    audit = (
+        test_db.query(AuditEvent)
+        .filter(
+            AuditEvent.action_type == "PAYMENT_SETTLEMENT_FAILED",
+            AuditEvent.resource_id == record.payment_id,
+        )
+        .first()
+    )
+    assert audit is not None
+    assert audit.status == "FAILED"
+    details = json.loads(audit.details_json)
+    assert "Zero satoshis deducted" in details["retry_guidance"]
+
+
+def test_execute_payment_rejects_malformed_invoice_zero_sats_lost(service, test_db):
+    """Phase 1.1: Service attempting to pay malformed invoice string records FAILED, 0 sats lost."""
+    initial_balance = service.provider.balance_sats
+    malformed_bolt11 = "lnbcrt_totally_invalid_data"
+
+    record = asyncio.run(
+        service.execute_payment(
+            db=test_db,
+            bolt11=malformed_bolt11,
+            amount_sats=250,
+            work_order_id="WO-MALFORM-01",
+            event_id="EVT-MALFORM-01",
+            idempotency_key="idemp-malform-01",
+        )
+    )
+
+    assert record.status == PaymentStatus.FAILED.value
+    assert record.error_code == "PROVIDER_PAY_FAILED"
+    assert record.preimage is None
+    assert service.provider.balance_sats == initial_balance
+
+
+def test_execute_payment_rejects_mismatched_preimage_zero_sats_lost(service, test_db):
+    """Phase 1.3: Service attempting to pay with mismatched preimage records FAILED, 0 sats lost."""
+    initial_balance = service.provider.balance_sats
+    test_hash = hashlib.sha256(b"preimage_mismatch_service_test").hexdigest()
+    register_preimage(test_hash, "ee" * 32)  # Bogus preimage
+
+    mismatch_bolt11 = encode_bolt11(
+        network="bcrt",
+        amount_sats=250,
+        payment_hash_hex=test_hash,
+        description="Mismatched proof test",
+    )
+
+    record = asyncio.run(
+        service.execute_payment(
+            db=test_db,
+            bolt11=mismatch_bolt11,
+            amount_sats=250,
+            work_order_id="WO-MISMATCH-01",
+            event_id="EVT-MISMATCH-01",
+            idempotency_key="idemp-mismatch-01",
+        )
+    )
+
+    assert record.status == PaymentStatus.FAILED.value
+    assert record.error_code == "PROVIDER_PAY_FAILED"
+    assert "mismatch" in record.error_message.lower() or "proof" in record.error_message.lower()
+    assert record.preimage is None
+    assert service.provider.balance_sats == initial_balance

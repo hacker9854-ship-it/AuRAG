@@ -30,6 +30,6 @@ class DuplicatePaymentError(MachineMoneyError):
     pass
 
 
-class InvoiceExpiredError(MachineMoneyError):
+class InvoiceExpiredError(ProviderError):
     """Raised when attempting to pay a BOLT11 invoice that has already expired."""
     pass

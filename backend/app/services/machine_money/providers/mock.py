@@ -33,12 +33,22 @@ _GLOBAL_PREIMAGES: Dict[str, str] = {
     hashlib.sha256(b"external_payment_test").hexdigest(): b"external_payment_test".hex(),
     hashlib.sha256(bytes.fromhex("000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f")).hexdigest(): "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
     hashlib.sha256(bytes.fromhex("6170706c65")).hexdigest(): "6170706c65",
+    hashlib.sha256(b"turbomachinery_overhaul_1200").hexdigest(): b"turbomachinery_overhaul_1200".hex(),
+    hashlib.sha256(b"idemp_test_invoice_250").hexdigest(): b"idemp_test_invoice_250".hex(),
+    hashlib.sha256(b"idemp_test").hexdigest(): b"idemp_test".hex(),
 }
 
 
 def register_preimage(payment_hash: str, preimage: str) -> None:
-    """Register a known preimage for a payment hash."""
+    """Register a known preimage for a payment hash in the mock store."""
     _GLOBAL_PREIMAGES[payment_hash] = preimage
+
+
+def register_invoice(invoice: BOLT11Invoice, preimage: Optional[str] = None) -> None:
+    """Register an invoice and optional preimage in the mock provider registry."""
+    _GLOBAL_INVOICES[invoice.payment_hash] = invoice
+    if preimage:
+        _GLOBAL_PREIMAGES[invoice.payment_hash] = preimage
 
 
 def verify_preimage_proof(preimage: str, payment_hash: str) -> bool:
@@ -122,63 +132,85 @@ class MockLightningProvider(LightningProvider):
         return invoice
 
     async def pay_invoice(self, bolt11: str, max_fee_sats: int = 20) -> PaymentReceipt:
-        """Simulate paying a BOLT11 invoice and return a verifiable cryptographic receipt."""
-        matching_hash = None
-        matching_invoice = None
-        for p_hash, inv in self._invoices.items():
-            if inv.payment_request == bolt11:
-                matching_hash = p_hash
-                matching_invoice = inv
-                break
+        """Simulate paying a BOLT11 invoice and return a verifiable cryptographic receipt.
 
+        Strictly enforces:
+        1. BOLT11 decode and structure validation (raising ProviderError on malformed/invalid).
+        2. Cryptographic checksum and signature verification.
+        3. Expiration validation (raising InvoiceExpiredError on expired invoices).
+        4. Mock registry restriction: only invoices created by mock provider or explicitly registered
+           test invoices may be settled. Rejects unknown/unregistered invoices.
+        5. Zero random preimage fallbacks (secrets.token_hex never used during payment).
+        6. Cryptographic invariant proof: sha256(preimage) == payment_hash verified prior to settlement.
+        7. Zero balance deduction on any rejection.
+        """
+        # 1. Non-empty string check
+        if not bolt11 or not isinstance(bolt11, str):
+            raise ProviderError("Invalid BOLT11 invoice: invoice must be a non-empty string")
+
+        # 2. Strict BOLT11 decode gate (validates structure, Bech32 charset, and checksum)
+        try:
+            decoded = decode_bolt11(bolt11)
+        except Exception as exc:
+            raise ProviderError(f"Invalid BOLT11 invoice structure or checksum: {exc}") from exc
+
+        # 3. Cryptographic signature verification
+        if not decoded.get("is_signature_valid"):
+            raise ProviderError("Invalid BOLT11 invoice: secp256k1 signature verification failed")
+
+        # 4. Extract and validate tagged fields
+        tags = decoded.get("tags", {})
+        payment_hash = tags.get("payment_hash")
+        if not payment_hash:
+            raise ProviderError("Invalid BOLT11 invoice: missing mandatory payment_hash tag ('p')")
+
+        amount_sats = decoded.get("amount_sats")
+        if amount_sats is None or amount_sats <= 0:
+            raise ProviderError("Invalid BOLT11 invoice: invoice must specify a positive satoshi amount")
+
+        # 5. Expiration check
         now = utcnow()
-        if matching_invoice:
-            if matching_invoice.expires_at < now:
-                matching_invoice.status = PaymentStatus.EXPIRED
-                raise InvoiceExpiredError("Mock invoice has expired")
-            
-            amount_sats = matching_invoice.amount_sats
-            payment_hash = matching_hash
-            preimage = self._preimages.get(matching_hash)
-            if not preimage:
-                # Fallback generate and bind matching preimage
-                preimage = secrets.token_hex(32)
-                payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
-                self._preimages[payment_hash] = preimage
-            matching_invoice.status = PaymentStatus.MOCK_PAID
-        else:
-            # External or simulated ad-hoc invoice
-            decoded = None
-            try:
-                decoded = decode_bolt11(bolt11)
-            except Exception:
-                pass
+        now_ts = int(now.timestamp())
+        timestamp = decoded.get("timestamp", 0)
+        expiry_seconds = tags.get("expiry", 3600)
+        if timestamp + expiry_seconds < now_ts:
+            matching_inv = self._invoices.get(payment_hash) or _GLOBAL_INVOICES.get(payment_hash)
+            if matching_inv:
+                matching_inv.status = PaymentStatus.EXPIRED
+            raise InvoiceExpiredError(
+                f"BOLT11 invoice has expired (expired at {timestamp + expiry_seconds}, now is {now_ts})"
+            )
 
-            if decoded and decoded.get("tags", {}).get("payment_hash"):
-                payment_hash = decoded["tags"]["payment_hash"]
-                amount_sats = decoded.get("amount_sats") or 150
-                # Check if we have registered preimage for this hash
-                preimage = self._preimages.get(payment_hash) or _GLOBAL_PREIMAGES.get(payment_hash)
-                if not preimage:
-                    preimage = secrets.token_hex(32)
-                    self._preimages[payment_hash] = preimage
-                    _GLOBAL_PREIMAGES[payment_hash] = preimage
-            else:
-                preimage = secrets.token_hex(32)
-                payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
-                amount_sats = 150
-                self._preimages[payment_hash] = preimage
-                _GLOBAL_PREIMAGES[payment_hash] = preimage
+        matching_invoice = self._invoices.get(payment_hash) or _GLOBAL_INVOICES.get(payment_hash)
+        if matching_invoice and matching_invoice.expires_at < now:
+            matching_invoice.status = PaymentStatus.EXPIRED
+            raise InvoiceExpiredError("Mock invoice has expired")
 
+        # 6. Restrict mock provider registry: unknown invoice -> REJECT with 0 sats deducted
+        preimage = self._preimages.get(payment_hash) or _GLOBAL_PREIMAGES.get(payment_hash)
+        if not preimage:
+            raise ProviderError(
+                f"Unregistered invoice: payment hash {payment_hash} is not registered in mock provider store. "
+                "Simulated settlement rejected (0 satoshis deducted)."
+            )
+
+        # 7. Enforce cryptographic invariant: sha256(preimage) == invoice.payment_hash
+        if not verify_preimage_proof(preimage, payment_hash):
+            raise ProviderError(
+                f"Cryptographic proof mismatch: sha256(preimage) != payment_hash {payment_hash}. "
+                "Simulated settlement rejected (0 satoshis deducted)."
+            )
+
+        # 8. Balance check
         if self.balance_sats < amount_sats:
-            raise ProviderError(f"Insufficient mock wallet balance: {self.balance_sats} < {amount_sats}")
+            raise ProviderError(
+                f"Insufficient mock wallet balance: {self.balance_sats} sats available < {amount_sats} sats required"
+            )
 
+        # 9. Settlement execution: balance deducted only after all gates pass
         self.balance_sats -= amount_sats
-
-        # Record cryptographic match status
-        proof_verified = verify_preimage_proof(preimage, payment_hash)
-        if proof_verified:
-            logger.info(f"Mock payment proof verified: sha256({preimage[:8]}...) == {payment_hash[:8]}...")
+        if matching_invoice:
+            matching_invoice.status = PaymentStatus.MOCK_PAID
 
         receipt = PaymentReceipt(
             receipt_id=f"rcpt-mock-{payment_hash[:10]}",
