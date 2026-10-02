@@ -132,12 +132,16 @@ async def trigger_m2m_settlement_for_event(
         predictive_event_id=evt_id,
     )
 
-    # 5. Check if already settled for this idempotency key
+    # 5. Check if already settled or pending approval for this idempotency key
     existing = db.query(PaymentRecord).filter(
         PaymentRecord.idempotency_key == idempotency_key
     ).first()
-    if existing and existing.status in (PaymentStatus.SETTLED.value, PaymentStatus.MOCK_PAID.value):
-        logger.info(f"Payment already settled for idempotency key {idempotency_key}")
+    if existing and existing.status in (
+        PaymentStatus.SETTLED.value,
+        PaymentStatus.MOCK_PAID.value,
+        PaymentStatus.PENDING_APPROVAL.value,
+    ):
+        logger.info(f"Payment already exists ({existing.status}) for idempotency key {idempotency_key}")
         return {
             "status": existing.status,
             "payment_id": existing.payment_id,
@@ -146,6 +150,7 @@ async def trigger_m2m_settlement_for_event(
             "payment_hash": existing.payment_hash,
             "preimage": existing.preimage,
             "evidence_package": evidence_package,
+            "approval_id": existing.approval_id,
             "is_duplicate_prevented": True,
         }
 

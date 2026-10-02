@@ -729,6 +729,14 @@ class MachineMoneyService:
             )
         )
 
+        # Deterministic Idempotency Key (FR-12 & Task 6.4)
+        idempotency_key = generate_idempotency_key(
+            site_id="plant-mumbai-01",
+            equipment_id=equipment_id,
+            service_id=service_id,
+            predictive_event_id=evt_id,
+        )
+
         # Stage 4: POLICY_EVALUATED
         max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
         policy_eval = evaluate_lightning_payment_policy(
@@ -765,8 +773,8 @@ class MachineMoneyService:
                     "amount_sats": cost_sats,
                     "status": "PENDING_APPROVAL",
                     "vendor": vendor_name,
+                    "idempotency_key": idempotency_key,
                 },
-
                 evidence_package=evidence_pkg,
                 provider_mode=provider_mode,
                 summary=f"Policy Escalation: {cost_sats} sats exceeds {max_autopay} sat autonomous cap. Held in approval queue for operator review.",
@@ -784,12 +792,6 @@ class MachineMoneyService:
         )
 
         # Stage 5: INVOICE_GENERATED
-        idempotency_key = generate_idempotency_key(
-            site_id="plant-mumbai-01",
-            equipment_id=equipment_id,
-            service_id=service_id,
-            predictive_event_id=evt_id,
-        )
         invoice_req = InvoiceRequest(
             amount_sats=cost_sats,
             memo=f"[AuRAG] {equipment_id} {service_id}",
@@ -880,6 +882,7 @@ class MachineMoneyService:
                     "error_message": "TEMPORARY_CHANNEL_FAILURE: Insufficient outbound liquidity",
                     "retry_guidance": retry_guidance,
                     "bolt11": invoice.payment_request,
+                    "idempotency_key": idempotency_key,
                 },
                 evidence_package=evidence_pkg,
                 provider_mode=provider_mode,
@@ -960,6 +963,7 @@ class MachineMoneyService:
                 "event_id": evt_id,
                 "vendor_name": vendor_name,
                 "paid_at": receipt.settled_at.isoformat(),
+                "idempotency_key": idempotency_key,
             },
             evidence_package=evidence_pkg,
             provider_mode=provider_mode,
