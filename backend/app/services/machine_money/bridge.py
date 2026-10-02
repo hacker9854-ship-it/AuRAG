@@ -33,34 +33,23 @@ def build_operational_evidence_package(
     event_id: Optional[str] = None,
     failure_event_id: Optional[str] = None,
     confidence: float = 0.94,
+    vibration_reading: float = 5.4,
+    vibration_threshold: float = 4.5,
 ) -> Dict[str, Any]:
     """Retrieve operational evidence from Knowledge Graph answering 'Why did the agent spend money?'
     (Section 18 Contract).
     """
-    clean_tag = equipment_tag.replace("A", "").replace("B", "").strip()
-    fe_id = failure_event_id or "FE-001"
-    wo_id = "WO-1002"
-    proc_id = "PROC-001"
+    from backend.app.services.machine_money.grounding import get_grounded_evidence_package
 
-    reason = f"High-confidence bearing degradation pattern detected on {equipment_tag}"
-    evidence_list = [fe_id, wo_id, proc_id]
-
-    cross_layer_justification = (
-        f"Because {equipment_tag} matched failure signature {fe_id} with {confidence:.2f} confidence, "
-        f"{wo_id} shows overdue preventative maintenance, "
-        f"and procedure {proc_id} recommends specialized bearing inspection."
+    return get_grounded_evidence_package(
+        session=session,
+        equipment_tag=equipment_tag,
+        vibration_reading=vibration_reading,
+        vibration_threshold=vibration_threshold,
+        event_id=event_id,
+        failure_event_id=failure_event_id,
+        confidence=confidence,
     )
-
-    return {
-        "reason": reason,
-        "confidence": confidence,
-        "evidence": evidence_list,
-        "equipment": equipment_tag,
-        "matched_failure_event": fe_id,
-        "related_work_order": wo_id,
-        "governing_procedure": proc_id,
-        "cross_layer_justification": cross_layer_justification,
-    }
 
 
 def map_telemetry_to_service(

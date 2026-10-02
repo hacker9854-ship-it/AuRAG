@@ -146,6 +146,7 @@ class JudgeExecutionRequest(BaseModel):
     equipment_id: str = Field(default="P-101A", description="Equipment tag identifier")
     override_cost_sats: Optional[int] = Field(default=None, description="Optional override satoshi amount")
     auto_approve: bool = Field(default=True, description="Whether to auto-pay if under spending cap")
+    confidence: Optional[float] = Field(default=None, description="Diagnostic confidence score (0.0 - 1.0)")
 
 
 class JudgeExecutionResponse(BaseModel):

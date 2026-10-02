@@ -70,6 +70,12 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
 
   const isSuccess = response?.status === "SUCCESS";
   const isEscalated = response?.status === "PENDING_APPROVAL";
+  const evidenceEvent = response?.events?.find((e) => e.stage === "EVIDENCE_MATCHED");
+  const retrievalMethod =
+    (evidenceEvent?.data?.retrieval_method as string) ||
+    (response?.evidence_package?.retrieval_method as string) ||
+    "CONTROLLED_DEMO_FIXTURE";
+  const isHybridRetrieval = retrievalMethod === "HYBRID_RETRIEVAL";
 
   return (
     <div
@@ -130,15 +136,36 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         </div>
 
         <div className="p-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-col gap-1 hover:border-sky-500/40 transition-colors">
-          <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
-            <Database className="w-3 h-3 text-sky-500" />
-            2. Justified By
-          </span>
+          <div className="flex items-center justify-between gap-1">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
+              <Database className="w-3 h-3 text-sky-500" />
+              2. Justified By
+            </span>
+            {response && (
+              <span
+                data-testid="judge-retrieval-method-badge"
+                className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase tracking-wider border ${
+                  isHybridRetrieval
+                    ? "bg-sky-500/15 text-sky-500 dark:text-sky-400 border-sky-500/30"
+                    : "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                }`}
+              >
+                {isHybridRetrieval ? "HYBRID_RETRIEVAL" : "CONTROLLED DEMO FIXTURE"}
+              </span>
+            )}
+          </div>
           <span className="text-xs font-semibold text-foreground">
             GraphRAG Evidence
           </span>
           <span className="text-[10px] text-muted-foreground font-mono">
-            FE-001 &bull; PROC-001 (94%)
+            {(evidenceEvent?.data?.matched_failure_event as string) || "FE-001"} &bull;{" "}
+            {(evidenceEvent?.data?.governing_procedure as string) || "PROC-001"} (
+            {Math.round(
+              ((evidenceEvent?.data?.confidence as number) ??
+                (response?.evidence_package?.confidence as number) ??
+                0.94) * 100
+            )}
+            %)
           </span>
         </div>
 

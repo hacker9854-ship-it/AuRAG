@@ -643,6 +643,7 @@ class MachineMoneyService:
         override_cost_sats: Optional[int] = None,
         auto_approve: bool = True,
         neo4j_session=None,
+        confidence: Optional[float] = None,
     ) -> JudgeExecutionResponse:
         """One-click deterministic end-to-end Judge Mode orchestration.
         Executes real backend services and records measured elapsed timings for each stage.
@@ -676,21 +677,40 @@ class MachineMoneyService:
         )
 
         # Stage 2: EVIDENCE_MATCHED
-        from backend.app.services.machine_money.bridge import build_operational_evidence_package
-        evidence_pkg = build_operational_evidence_package(
+        from backend.app.services.machine_money.grounding import get_grounded_evidence_package
+        evidence_pkg = get_grounded_evidence_package(
             session=neo4j_session,
             equipment_tag=equipment_id,
+            vibration_reading=5.4,
+            vibration_threshold=4.5,
             event_id=evt_id,
             failure_event_id="FE-001",
-            confidence=0.94,
+            confidence=confidence,
         )
+        retrieval_method = evidence_pkg.get("retrieval_method", "CONTROLLED_DEMO_FIXTURE")
+        fe_id = evidence_pkg.get("matched_failure_event", "FE-001")
+        wo_id = evidence_pkg.get("related_work_order", "WO-1002")
+        proc_id = evidence_pkg.get("governing_procedure", "PROC-001")
+        pkg_confidence = evidence_pkg.get("confidence", 0.94)
+
+        if retrieval_method == "HYBRID_RETRIEVAL":
+            stage_message = (
+                f"Hybrid GraphRAG matched failure signature {fe_id} "
+                f"({int(pkg_confidence * 100)}% confidence) citing procedure {proc_id} and historical {wo_id}."
+            )
+        else:
+            stage_message = (
+                f"[CONTROLLED DEMO FIXTURE] Matched failure signature {fe_id} "
+                f"({int(pkg_confidence * 100)}% confidence) citing procedure {proc_id} and historical {wo_id}."
+            )
+
         events.append(
             ExecutionStageEvent(
                 stage=ExecutionStage.EVIDENCE_MATCHED,
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
-                message=f"GraphRAG matched failure signature FE-001 (inner race spalling, 94% confidence) citing procedure PROC-001 and historical WO-1002.",
-                evidence_refs=evidence_pkg.get("evidence", ["FE-001", "WO-1002", "PROC-001"]),
+                message=stage_message,
+                evidence_refs=evidence_pkg.get("evidence", [fe_id, wo_id, proc_id]),
                 data=evidence_pkg,
             )
         )
@@ -748,13 +768,49 @@ class MachineMoneyService:
         )
 
         # Stage 4: POLICY_EVALUATED
+        diag_confidence = evidence_pkg.get("confidence", 0.94)
+
+        # Confidence Gate: confidence < 0.75 triggers PENDING_APPROVAL
+        if diag_confidence < 0.75:
+            events.append(
+                ExecutionStageEvent(
+                    stage=ExecutionStage.POLICY_EVALUATED,
+                    status="PENDING_APPROVAL",
+                    elapsed_ms=get_elapsed_ms(),
+                    message=f"Low diagnostic confidence gate triggered: {int(diag_confidence * 100)}% confidence is below 75% policy threshold. Escalating to human plant operator review.",
+                    evidence_refs=["POL-LIGHTNING-MACHINE-MONEY"],
+                    data={"confidence": diag_confidence, "threshold": 0.75, "reason": "Diagnostic confidence below 0.75 floor"},
+                )
+            )
+            total_elapsed = get_elapsed_ms()
+            return JudgeExecutionResponse(
+                execution_id=execution_id,
+                scenario=scenario,
+                status="PENDING_APPROVAL",
+                total_elapsed_ms=total_elapsed,
+                events=events,
+                payment_record={
+                    "payment_id": f"PAY-{execution_id}",
+                    "amount_sats": cost_sats,
+                    "status": "PENDING_APPROVAL",
+                    "vendor": vendor_name,
+                    "vendor_id": vendor_id,
+                    "vendor_name": vendor_name,
+                    "vendor_pubkey": vendor_pubkey,
+                    "idempotency_key": idempotency_key,
+                },
+                evidence_package=evidence_pkg,
+                provider_mode=provider_mode,
+                summary=f"Confidence Gate Escalation: {int(diag_confidence * 100)}% confidence is below 75% autonomous threshold. Held in approval queue for operator review.",
+            )
+
         max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
         policy_eval = evaluate_lightning_payment_policy(
             db=db,
             amount_sats=cost_sats,
             site_id="plant-mumbai-01",
             vendor_name=vendor_name,
-            confidence=0.94,
+            confidence=diag_confidence,
             autopay_enabled=auto_approve,
             max_cap=max_autopay,
         )
@@ -798,7 +854,7 @@ class MachineMoneyService:
                 stage=ExecutionStage.POLICY_EVALUATED,
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
-                message=f"Spending policy verified: {cost_sats} sats <= {max_autopay} sats cap with 94% confidence. Authorized for autonomous settlement.",
+                message=f"Spending policy verified: {cost_sats} sats <= {max_autopay} sats cap with {int(diag_confidence * 100)}% confidence. Authorized for autonomous settlement.",
                 evidence_refs=["POL-LIGHTNING-MACHINE-MONEY"],
                 data={"amount_sats": cost_sats, "cap_sats": max_autopay, "authorized": True},
             )

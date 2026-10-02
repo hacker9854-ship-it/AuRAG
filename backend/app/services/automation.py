@@ -64,7 +64,7 @@ DEFAULT_POLICIES = [
         "action_type": "PAY_LIGHTNING_INVOICE",
         "target_system": "LIGHTNING",
         "approval_threshold": "AUTONOMOUS",
-        "parameters": {"max_amount_sats": 500, "min_confidence": 0.85, "allowed_vendors": ["*"]},
+        "parameters": {"max_amount_sats": 500, "min_confidence": 0.75, "allowed_vendors": ["*"]},
         "rollback_guidance": "Lightning Rollback: Lightning transactions are mathematically final. Issue refund request or raise dispute ticket in vendor portal.",
     },
 ]
@@ -435,7 +435,7 @@ def evaluate_lightning_payment_policy(
         .first()
     )
     params = json.loads(policy.parameters_json) if (policy and policy.parameters_json) else {}
-    min_confidence = float(params.get("min_confidence", 0.85))
+    min_confidence = float(params.get("min_confidence", 0.75))
     allowed_vendors = params.get("allowed_vendors", ["*"])
 
     if not autopay_enabled:

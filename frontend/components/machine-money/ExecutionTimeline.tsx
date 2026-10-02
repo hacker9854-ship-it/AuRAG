@@ -152,6 +152,20 @@ export function ExecutionTimeline({
                     <span className="font-mono text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border/40">
                       {evt.stage}
                     </span>
+                    {evt.stage === "EVIDENCE_MATCHED" && evt.data?.retrieval_method && (
+                      <span
+                        data-testid="timeline-retrieval-badge"
+                        className={`text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${
+                          evt.data.retrieval_method === "HYBRID_RETRIEVAL"
+                            ? "bg-sky-500/15 text-sky-500 dark:text-sky-400 border-sky-500/30"
+                            : "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30"
+                        }`}
+                      >
+                        {evt.data.retrieval_method === "HYBRID_RETRIEVAL"
+                          ? "HYBRID_RETRIEVAL"
+                          : "CONTROLLED DEMO FIXTURE"}
+                      </span>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -176,6 +190,16 @@ export function ExecutionTimeline({
                 <p className="text-xs text-foreground/90 font-sans leading-relaxed">
                   {evt.message}
                 </p>
+
+                {/* Explicit Truthful Disclosure Notice if present */}
+                {evt.data?.disclosure && (
+                  <p
+                    data-testid="timeline-stage-disclosure"
+                    className="text-[10px] text-muted-foreground/80 font-mono mt-1.5 italic"
+                  >
+                    ℹ {evt.data.disclosure}
+                  </p>
+                )}
 
                 {/* Evidence References Badges */}
                 {evt.evidence_refs && evt.evidence_refs.length > 0 && (

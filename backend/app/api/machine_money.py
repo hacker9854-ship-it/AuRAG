@@ -321,6 +321,7 @@ async def execute_judge_mode(
             override_cost_sats=payload.override_cost_sats,
             auto_approve=payload.auto_approve,
             neo4j_session=neo4j_session,
+            confidence=payload.confidence,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
