@@ -772,6 +772,11 @@ export interface JudgeExecutionResponse {
     event_id?: string;
     vendor_name?: string;
     paid_at?: string;
+    retry_guidance?: string;
+    idempotency_key?: string;
+    error_code?: string;
+    error_message?: string;
+    [key: string]: any;
   } | null;
   evidence_package?: Record<string, any> | null;
   provider_mode: string;
@@ -904,7 +909,7 @@ export interface VendorRFQResponse {
   candidates: VendorQuoteCandidate[];
   selected_vendor: VendorQuoteCandidate;
   selection_rationale: string;
-  scoring_model: Record<string, unknown>;
+  scoring_model: Record<string, any>;
   is_synthetic: boolean;
   synthetic_disclosure: string;
 }

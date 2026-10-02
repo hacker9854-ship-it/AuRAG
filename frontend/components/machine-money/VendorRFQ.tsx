@@ -369,7 +369,7 @@ export function VendorRFQ({
               <span>Explainable Autonomous Selection Rationale</span>
             </span>
             <span className="font-mono text-[10px] text-muted-foreground">
-              Rule: {rfq.scoring_model.rule || rfq.strategy}
+              Rule: {String(rfq.scoring_model?.rule || rfq.strategy)}
             </span>
           </div>
           <p className="text-muted-foreground leading-relaxed text-xs">

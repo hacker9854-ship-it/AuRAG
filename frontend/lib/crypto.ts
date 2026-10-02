@@ -54,7 +54,7 @@ export async function sha256Hex(input: string, isHexBytes: boolean = true): Prom
 
   // Use global crypto.subtle (available in modern browsers & Node 19+)
   if (typeof crypto !== "undefined" && crypto.subtle) {
-    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data as unknown as BufferSource);
     return bytesToHex(hashBuffer);
   }
 
