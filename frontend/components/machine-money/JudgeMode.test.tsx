@@ -207,5 +207,13 @@ describe("Machine Money Phase 2: Judge Mode & Timeline Components", () => {
       expect(screen.getByText("4. Settlement")).toBeInTheDocument();
       expect(screen.getByText("5. Business Impact")).toBeInTheDocument();
     });
+
+    it("provides accessible aria-labels on all control buttons", () => {
+      render(<JudgeMode />);
+      expect(screen.getByLabelText(/Run industrial emergency autonomous settlement scenario/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Run policy escalation scenario/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Run simulated provider failure scenario/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Reset demonstration state/i)).toBeInTheDocument();
+    });
   });
 });

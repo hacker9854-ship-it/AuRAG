@@ -211,5 +211,21 @@ describe("Machine Money Phase 3: Evidence & Proof Drawer", () => {
         expect(screen.getByText("PAY-2026-TEST-001")).toBeInTheDocument();
       });
     });
+
+    it("renders dialog and tablist accessibility attributes", () => {
+      render(
+        <PaymentProofDrawer
+          isOpen={true}
+          onClose={vi.fn()}
+          initialProofPackage={mockProofPackage}
+        />
+      );
+
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toHaveAttribute("aria-modal", "true");
+      expect(dialog).toHaveAttribute("aria-labelledby", "proof-drawer-title");
+      expect(screen.getByRole("tablist", { name: "Proof package categories" })).toBeInTheDocument();
+      expect(screen.getByLabelText("Close payment proof drawer")).toBeInTheDocument();
+    });
   });
 });

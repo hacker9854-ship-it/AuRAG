@@ -60,6 +60,9 @@ export function PaymentProofDrawer({
   return (
     <div
       data-testid="payment-proof-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="proof-drawer-title"
       className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in-0 duration-200 ${className}`}
     >
       <div className="relative w-full max-w-3xl max-h-[90vh] bg-card border border-border shadow-2xl rounded-3xl flex flex-col overflow-hidden text-foreground">
@@ -71,7 +74,7 @@ export function PaymentProofDrawer({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-bold text-base font-heading">
+                <h3 id="proof-drawer-title" className="font-bold text-base font-heading">
                   Payment Proof &amp; Operational Audit Package
                 </h3>
                 <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded border border-border/40">
@@ -88,8 +91,9 @@ export function PaymentProofDrawer({
             <button
               type="button"
               data-testid="proof-drawer-close-button"
+              aria-label="Close payment proof drawer"
               onClick={onClose}
-              className="p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground rounded-full transition-colors"
+              className="p-1.5 hover:bg-muted text-muted-foreground hover:text-foreground rounded-full transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none"
             >
               <X className="w-5 h-5" />
             </button>
@@ -97,12 +101,18 @@ export function PaymentProofDrawer({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center px-3 sm:px-5 border-b border-border/60 bg-muted/10 text-xs font-semibold gap-1 overflow-x-auto">
+        <div
+          role="tablist"
+          aria-label="Proof package categories"
+          className="flex items-center px-3 sm:px-5 border-b border-border/60 bg-muted/10 text-xs font-semibold gap-1 overflow-x-auto"
+        >
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "crypto"}
             data-testid="proof-tab-crypto"
             onClick={() => setActiveTab("crypto")}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none ${
               activeTab === "crypto"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -114,9 +124,11 @@ export function PaymentProofDrawer({
 
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "invoice"}
             data-testid="proof-tab-invoice"
             onClick={() => setActiveTab("invoice")}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none ${
               activeTab === "invoice"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -128,9 +140,11 @@ export function PaymentProofDrawer({
 
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "graph"}
             data-testid="proof-tab-graph"
             onClick={() => setActiveTab("graph")}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none ${
               activeTab === "graph"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"
@@ -142,9 +156,11 @@ export function PaymentProofDrawer({
 
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === "audit"}
             data-testid="proof-tab-audit"
             onClick={() => setActiveTab("audit")}
-            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors ${
+            className={`py-3 px-3.5 border-b-2 flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none ${
               activeTab === "audit"
                 ? "border-primary text-primary"
                 : "border-transparent text-muted-foreground hover:text-foreground"

@@ -186,9 +186,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         <button
           type="button"
           data-testid="run-emergency-button"
+          aria-label="Run industrial emergency autonomous settlement scenario (250 satoshis)"
           onClick={() => handleRunScenario("INDUSTRIAL_EMERGENCY", 250)}
           disabled={isRunning}
-          className="relative group overflow-hidden px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-amber-500/25 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-amber-500/40 hover:ring-amber-500 w-full sm:w-auto"
+          className="relative group overflow-hidden px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-amber-500/25 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-amber-500/40 hover:ring-amber-500 focus-visible:ring-4 focus-visible:ring-amber-400 outline-none w-full sm:w-auto"
         >
           <Play className={`w-4 h-4 fill-current ${isRunning ? "animate-spin" : "group-hover:translate-x-0.5 transition-transform"}`} />
           <span>RUN INDUSTRIAL EMERGENCY</span>
@@ -201,9 +202,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         <button
           type="button"
           data-testid="run-escalation-button"
+          aria-label="Run policy escalation scenario exceeding 500 satoshis limit (1,200 satoshis)"
           onClick={() => handleRunScenario("POLICY_ESCALATION", 1200)}
           disabled={isRunning}
-          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2 disabled:opacity-50 w-full sm:w-auto"
+          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-primary outline-none w-full sm:w-auto"
         >
           <ShieldAlert className="w-4 h-4 text-amber-500" />
           <span>Run Policy Escalation (&gt;500 sats)</span>
@@ -214,9 +216,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         <button
           type="button"
           data-testid="run-provider-failure-button"
+          aria-label="Run simulated provider failure scenario"
           onClick={() => handleRunScenario("PROVIDER_FAILURE", 250)}
           disabled={isRunning}
-          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2 disabled:opacity-50 hover:border-rose-500/40 w-full sm:w-auto"
+          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2 disabled:opacity-50 hover:border-rose-500/40 focus-visible:ring-2 focus-visible:ring-rose-500 outline-none w-full sm:w-auto"
         >
           <AlertOctagon className="w-4 h-4 text-rose-500" />
           <span>Run Provider Failure</span>
@@ -227,9 +230,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         <button
           type="button"
           data-testid="reset-scenario-button"
+          aria-label="Reset demonstration state"
           onClick={handleReset}
           disabled={isRunning}
-          className="px-3.5 py-3 hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-medium rounded-xl border border-transparent hover:border-border transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 w-full sm:w-auto"
+          className="px-3.5 py-3 hover:bg-muted text-muted-foreground hover:text-foreground text-xs font-medium rounded-xl border border-transparent hover:border-border transition-all flex items-center justify-center gap-1.5 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-primary outline-none w-full sm:w-auto"
           title="Reset demonstration state"
         >
           <RotateCcw className="w-3.5 h-3.5" />
