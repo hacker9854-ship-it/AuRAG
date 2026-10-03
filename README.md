@@ -21,7 +21,7 @@
 
 <p align="center">
   <a href="https://boss-battle.devfolio.co"><img src="https://img.shields.io/badge/Bitshala%20BOSS%202026-Machine%20Money%20Track-F7931A?style=for-the-badge&logo=bitcoin&logoColor=white" alt="BOSS 2026 Track"/></a>
-  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Tests-136%2F136%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests 136/136 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Tests-366%2F366%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests 366/366 Passing"/></a>
   <a href="https://au-rag.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-au--rag.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo"/></a>
   <a href="https://aurag-production.up.railway.app/docs"><img src="https://img.shields.io/badge/API-Swagger%20Docs-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="API Docs"/></a>
 </p>
@@ -46,7 +46,7 @@
 > - 🌐 **Live Production App**: [au-rag.vercel.app/machine-money](https://au-rag.vercel.app/machine-money)
 > - 🎬 **3–5 Min Judge Demo Script**: [docs/JUDGE_DEMO_SCRIPT.md](./docs/JUDGE_DEMO_SCRIPT.md)
 > - 📜 **Machine Money Verification Report**: [docs/MACHINE_MONEY_VERIFICATION.md](./docs/MACHINE_MONEY_VERIFICATION.md)
-> - 🧪 **Test Evidence (80 Backend + 56 Frontend = 136 Tests)**: [docs/CURRENT_TEST_SNAPSHOT.md](./docs/CURRENT_TEST_SNAPSHOT.md)
+> - 🧪 **Test Evidence (308 Backend + 58 Frontend = 366 Tests)**: [docs/CURRENT_TEST_SNAPSHOT.md](./docs/CURRENT_TEST_SNAPSHOT.md)
 > - 📋 **Full Implementation Changelog (Phases 0–11)**: [docs/CHANGELOG_MACHINE_MONEY.md](./docs/CHANGELOG_MACHINE_MONEY.md)
 > - ✅ **Hackathon Eligibility & Provenance**: [docs/HACKATHON_ELIGIBILITY.md](./docs/HACKATHON_ELIGIBILITY.md)
 > - 💻 **Interactive Machine Money Console**: `frontend/app/machine-money` (12 Next.js 16 live routes)
@@ -249,7 +249,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 | **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Bitcoin Lightning Network (BOLT11 micro-settlement)** |
 | **Audit Trail** | Paper / ERP records | ❌ None | **✅ Cryptographic preimage + GraphRAG evidence chain** |
 | **Policy Enforcement** | Manual manager approval | ❌ None | **✅ Authoritative backend spending caps with auto-escalation** |
-| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 136 Automated Tests (80 Backend + 56 Frontend)** |
+| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 366 Automated Tests (308 Backend + 58 Frontend)** |
 
 ---
 
@@ -507,7 +507,7 @@ AuRAG/
 ├── agents/                   # LangGraph Multi-Agent Team (RCA, Compliance, Copilot)
 ├── ingestion/                # Multimodal Ingestion (P&ID Drawings, OCR, PDFs)
 ├── telemetry/                # Synthetic SCADA Ingestion & Anomaly Matching
-├── tests/                    # 80 Automated Backend Tests (Pytest)
+├── tests/                    # 308 Automated Backend Tests (Pytest)
 │   ├── test_e2e_machine_money.py   # Full lifecycle E2E tests
 │   ├── test_machine_money_*.py     # Unit, integration, policy, failure tests
 │   └── ...
@@ -517,7 +517,7 @@ AuRAG/
 │   ├── MACHINE_MONEY_VERIFICATION.md  # Phase-by-phase verification
 │   ├── CHANGELOG_MACHINE_MONEY.md     # Full implementation changelog
 │   ├── HACKATHON_ELIGIBILITY.md       # Provenance & eligibility audit
-│   └── CURRENT_TEST_SNAPSHOT.md       # Authoritative 136-test verification snapshot
+│   └── CURRENT_TEST_SNAPSHOT.md       # Authoritative canonical verification snapshot
 ├── PRD2.md                   # Machine Money Product Requirements
 ├── PRD3.md                   # Machine Money Production Hardening PRD
 └── infra/                    # Docker, Terraform, & Deployment Configs
@@ -616,11 +616,11 @@ GET /api/v1/machine-money/budget/status
 
 | Test Suite | Scope | Result | Execution Time |
 |:-----------|:------|:------:|:--------------:|
-| **Backend Pytest** | Unit, Integration, E2E, BOLT11, Policy, Failure-Path, Secret-Scan | **85 / 85 Passed** | ~7s |
-| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics | **56 / 56 Passed** (15 suites) | ~20s |
+| **Backend Pytest** | Unit, Integration, E2E, BOLT11, Policy, Failure-Path, Secret-Scan | **308 / 308 Passed** | ~60s |
+| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics | **58 / 58 Passed** (15 suites) | ~38s |
 | **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 11.1s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
-| **Total Automated Tests** | Combined backend + frontend | **141 / 141 Passed** | ~27s |
+| **Total Automated Tests** | Combined backend + frontend | **366 / 366 Passed** | ~98s |
 
 ### 🛡️ Claim-to-Evidence Verification Matrix
 
@@ -643,7 +643,7 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 
 | Document | Description |
 |:---------|:------------|
-| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 85 Pytest + 56 Vitest = 141 tests passed, build status |
+| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 308 Pytest + 58 Vitest = 366 tests passed, build status |
 | [**CLAIM_EVIDENCE_MATRIX.md**](./docs/CLAIM_EVIDENCE_MATRIX.md) | Master claim-to-evidence verification matrix auditing 13 technical claims with allowed wording |
 | [**JUDGE_DEMO_SCRIPT.md**](./docs/JUDGE_DEMO_SCRIPT.md) | Precise 0:00–5:00 minute-by-minute judge demo script with talking points and screen actions |
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |

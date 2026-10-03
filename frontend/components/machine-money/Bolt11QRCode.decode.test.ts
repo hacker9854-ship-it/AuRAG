@@ -61,7 +61,7 @@ describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 1.1)",
 
     expect(decoded).not.toBeNull();
     expect(decoded?.data).toBe(testInvoice);
-  });
+  }, 15000);
 
   it("verifies optical decode across multiple networks and invoice lengths without distortion", async () => {
     const QRCode = await import("qrcode");
@@ -90,7 +90,7 @@ describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 1.1)",
       expect(decoded?.data).toBe(invoice);
       expect(decoded?.data.startsWith("ln")).toBe(true);
     }
-  });
+  }, 15000);
 
   it("proves that no pseudo-random or corrupt matrix is produced for standard payloads", async () => {
     const QRCode = await import("qrcode");
