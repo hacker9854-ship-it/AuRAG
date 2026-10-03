@@ -40,7 +40,7 @@
 
 ### 🏆 For Bitshala BOSS Battle 2026 Judges (30-Second Executive Summary)
 
-> **AuRAG** is an industrial-grade implementation of **Machine Money**: connecting physical SCADA telemetry, Neo4j GraphRAG root-cause analysis, and autonomous Bitcoin Lightning settlement. When critical machinery fails, AuRAG diagnoses the issue, negotiates quotes with vendor APIs, settles micro-payments in satoshis over Lightning, and binds the cryptographic preimage to the plant maintenance ledger — executing in under 15 seconds (measured in simulated test runtime; real Lightning settlement typically settles in 500ms–2000ms depending on routing hops).
+> **AuRAG** is an **industrial Machine Money workflow**: connecting industrial telemetry replay/simulation, Neo4j GraphRAG root-cause analysis, and autonomous Bitcoin Lightning micro-settlement. When machinery anomalies trigger, AuRAG diagnoses the issue, negotiates quotes across 3 pre-approved synthetic vendor nodes via real HTTP dispatch, settles micro-payments in satoshis over Lightning, and binds cryptographically verifiable payment-state evidence to the maintenance ledger — with measured demo execution time under 15 seconds (measured demo runtime; live Lightning mainnet settlement depends on network routing hops).
 >
 > 📌 **Direct Judge Links**:
 > - 🌐 **Live Production App**: [au-rag.vercel.app/machine-money](https://au-rag.vercel.app/machine-money)
@@ -119,6 +119,7 @@
 - [✨ Key Features](#-key-features)
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🌐 Live Deployment](#-live-deployment)
+- [🔍 What Is Live Today (Public Demo vs. Production)](#what-is-live-today)
 - [🏛️ Deployment Architecture: "What Is Live Today" vs. "Production Target Architecture"](#️-deployment-architecture-what-is-live-today-vs-production-target-architecture)
 - [🔍 Data Provenance & Federation Architecture](#-data-provenance--federation-architecture)
 - [🚀 Quick Reproduction (Judge's 60-Second Test)](#-quick-reproduction-judges-60-second-test)
@@ -146,8 +147,8 @@ In high-consequence industrial facilities (power plants, refineries, chemical ma
 ### How AuRAG Solves It with Machine Money
 AuRAG gives industrial machines **cognitive intelligence and financial sovereignty**:
 - **Sensor Alert ➔ Root Cause in Seconds**: When sensor `VIB-301` breaches 4.8 mm/s (ISO 10816 Zone C), AuRAG's GraphRAG engine traverses Neo4j ontology to identify bearing wear (`FE-001: Bearing inner race spalling`) and matches required replacement parts (`SKF-6205-2RS`).
-- **Autonomous M2M Lightning Settlement**: AuRAG solicits competitive quotes from 3 vendors (Apex Diagnostics, Precision Dynamics, Quantum Reliability), scores them using a transparent mathematical algorithm, pays a BOLT11 Lightning invoice via LNbits within strict zero-trust budget caps, and saves the **cryptographic preimage** as unforgeable audit evidence.
-- **Zero Human Latency**: The complete cycle from telemetry excursion to paid spare-parts dispatch executes in **< 15 seconds** (measured in local simulated runtime / Railway container; real Bitcoin Lightning mainnet settlement depends on network routing latency, typically 500ms–2000ms) with a 7,800,000:1 protection multiple ($1.17M modelled downtime exposure per 250-sat payment).
+- **Autonomous M2M Lightning Settlement**: AuRAG solicits competitive quotes across 3 pre-approved synthetic vendor nodes (Apex Diagnostics, Precision Dynamics, Quantum Reliability), scores them using a transparent mathematical algorithm, pays a BOLT11 Lightning invoice via LNbits within strict zero-trust budget caps, and saves the **cryptographic preimage** as cryptographically verifiable payment-state evidence (`SHA-256(preimage) == payment_hash`).
+- **Zero Human Latency**: The complete cycle from telemetry excursion to paid spare-parts dispatch executes in **< 15 seconds** (measured demo execution time on simulated runtime / Railway container; real Bitcoin Lightning mainnet settlement depends on network routing latency, typically 500ms–2000ms) with a 7,800,000:1 economic protection multiple ($1.17M modelled downtime exposure per 250-sat payment).
 
 ---
 
@@ -189,9 +190,9 @@ Hackathon judges often ask: *"Why Bitcoin Lightning instead of corporate credit 
 | Constraint | Traditional Banking / Cards / ACH | Base-Layer Bitcoin (L1) | **Bitcoin Lightning Network (AuRAG)** |
 | :--- | :--- | :--- | :--- |
 | **Transaction Fees** | Fixed $0.30 + 2.9% fee makes micro-purchases (e.g., 500 sats / $0.30) impossible. | Variable mining fee ($1–$15), prohibitive for micro-txs. | **Fractional satoshi routing fees**; micro-transactions cost fractions of a cent. |
-| **Settlement Speed** | 24–72 hours (ACH / wire) or instant authorization with 3-day hold. | 10–60 minutes (block confirmations). | **Sub-second finality (< 800ms)** (demo execution latency: ~412ms on local simulated runtime / Railway container; real Bitcoin Lightning mainnet settlement depends on network routing latency, typically 500ms–2000ms). |
+| **Settlement Speed** | 24–72 hours (ACH / wire) or instant authorization with 3-day hold. | 10–60 minutes (block confirmations). | **Measured demo execution time (< 800ms)** (demo execution latency: ~412ms on local simulated runtime / Railway container; live Bitcoin Lightning settlement typically settles in 500ms–2000ms depending on network routing hops). |
 | **Machine Agency** | Machines cannot open bank accounts, sign credit agreements, or pass KYC. | Machines can own keys, but latency blocks real-time loops. | **Permissionless API**: Every sensor/agent holds an autonomous Lightning wallet. |
-| **Proof of Settlement** | Chargeback risk; 90-day dispute window creates corporate friction. | On-chain TX hash, but slow. | **Cryptographic Preimage**: Mathematical, unforgeable proof-of-payment (`hash(P) == H`). |
+| **Proof of Settlement** | Chargeback risk; 90-day dispute window creates corporate friction. | On-chain TX hash, but slow. | **Cryptographic Preimage**: Cryptographically verifiable payment-state evidence (`SHA-256(preimage) == payment_hash`). |
 
 ---
 
@@ -245,7 +246,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 | **Ontological Reasoning** | ❌ None | Weak (flat vector search) | **✅ Neo4j Knowledge Graph multi-hop traversal** |
 | **Autonomous Action** | Passive work order draft | Suggests text | **✅ Negotiates vendor quotes & pays via Lightning** |
 | **Multi-Vendor Bidding** | Manual RFQ process | ❌ None | **✅ Automated 3-vendor scoring (cost × latency × SLA)** |
-| **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Sub-second Bitcoin Lightning Network (BOLT11)** |
+| **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Bitcoin Lightning Network (BOLT11 micro-settlement)** |
 | **Audit Trail** | Paper / ERP records | ❌ None | **✅ Cryptographic preimage + GraphRAG evidence chain** |
 | **Policy Enforcement** | Manual manager approval | ❌ None | **✅ Authoritative backend spending caps with auto-escalation** |
 | **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 136 Automated Tests (80 Backend + 56 Frontend)** |
@@ -324,6 +325,33 @@ AuRAG is fully deployed and accessible online:
 
 ---
 
+## What Is Live Today
+
+Per hackathon transparency and truthfulness standards (PRD Section 5.2), the matrix below provides an authoritative, side-by-side demarcation between public demo capabilities and production target architecture:
+
+| Capability | Public Demo | Implementation Architecture |
+|:---|:---|:---|
+| **Frontend** | Live | Next.js 16.2 on Vercel ([au-rag.vercel.app](https://au-rag.vercel.app/machine-money)) with React 19, Tailwind CSS, dark mode, responsive telemetry monitors, and live execution timelines. |
+| **Backend** | Live | FastAPI 0.115 on Railway container ([aurag-production.up.railway.app](https://aurag-production.up.railway.app)) with Redis RQ worker, LangGraph supervisor, and SQLite/Postgres persistence. |
+| **Judge Mode** | Live | Interactive presets for single-click judging: Happy Path Intervene, Policy Escalate (>500 sats), Provider Failure, and Public Dataset Replay. |
+| **Lightning** | Mock / Simulation unless live provider configured | Deterministic `MockLightningProvider` on simulated `regtest`. When live LNbits credentials are provided, switches seamlessly to live payment execution. |
+| **BOLT11** | Standards-valid test invoices | Standards-compliant parsing with cryptographic validation (`SHA-256(preimage) == payment_hash`). |
+| **Vendors** | 3 pre-approved synthetic nodes | Apex Diagnostics, Precision Dynamics, Quantum Reliability via independent HTTP webhook microservices (`services/vendor_*`). |
+| **Graph** | Neo4j when available, resilient fallback otherwise | Live remote Neo4j AuraDB when online; truthful `[GRAPH STATUS: DEGRADED / FALLBACK]` badge and offline fallback traversal otherwise. |
+| **Economics** | Synthetic/modelled scenario | $1.17M modelled downtime exposure vs. 250-sat payment sensitivity model with explicit parameter sandbox. |
+| **RAGAS** | Final acceptance-gated retrieval | RAGAS acceptance gate verified on the final commit across all 8 ground-truth benchmark queries ($\ge 0.70$ threshold). |
+
+### Proof & Performance Wording Standards
+
+- **Mock / Simulation Mode**:
+  > `Simulation integrity verified: SHA-256(preimage) == payment_hash`
+- **Live Lightning Mode**:
+  > `Provider-reported Lightning settlement evidence`
+- **Performance & Latency**:
+  > `Measured demo execution time` (e.g., ~412ms on local simulated runtime / Railway container; does not represent a global Bitcoin network settlement guarantee. Live Bitcoin Lightning mainnet settlement depends on network routing hops, typically 500ms–2000ms).
+
+---
+
 ## 🏛️ Deployment Architecture: "What Is Live Today" vs. "Production Target Architecture"
 
 Per PRD3 architectural honesty standards (Task 4.3), the matrix below provides an honest, side-by-side demarcation between what is live in the current hackathon deployment and the production target enterprise architecture:
@@ -333,9 +361,9 @@ Per PRD3 architectural honesty standards (Task 4.3), the matrix below provides a
 | **Frontend UI** | Next.js 16.2 on Vercel ([au-rag.vercel.app](https://au-rag.vercel.app/machine-money)) with React 19, Tailwind CSS, dark mode, responsive telemetry monitors, and live execution timelines. | Same core Next.js 16 UI with SCADA DCS web-socket tunneling, hardware HSM key management, and multi-tenant plant authentication (OIDC / SAML). |
 | **Backend API** | FastAPI 0.115 on Railway container ([aurag-production.up.railway.app](https://aurag-production.up.railway.app)) with Redis RQ worker, LangGraph supervisor, and SQLite/Postgres persistence. | Distributed microservices on Kubernetes (EKS / GKE) with redundant high-availability workers, message queuing (Kafka), and geo-distributed Postgres. |
 | **Lightning Settlement** | Deterministic `MockLightningProvider` on simulated `regtest`. Invoices, payments, and 32-byte preimages are cryptographically generated and labeled truthfully as `MOCK / SIMULATION`. | Pluggable `LightningProviderInterface` connecting directly to self-hosted LNbits, Core Lightning (CLN), or LND nodes via authenticated REST/gRPC and dedicated routing liquidity. |
-| **Vendor RFQ Network** | Deterministic multi-vendor RFQ engine with 3 pre-approved synthetic vendor bids (Apex Diagnostics, Precision Dynamics, Quantum Reliability) and transparent scoring. | Decentralized external vendor federation using signed webhook protocols with secp256k1 signature validation, dynamic reputation staking, and automated SLA escrow. |
-| **Graph Intelligence** | Neo4j knowledge graph storing industrial equipment topologies (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`) and semantic fault codes (`FE-001`, `PROC-001`). | Clustered Neo4j Enterprise with real-time bidirectional ingestion from SAP PM, Maximo ERP, and live OPC-UA / MQTT industrial historians. |
-| **Execution Latency** | Demo execution latency: `~412ms` (measured on local simulated runtime / Railway container). | Real Lightning mainnet finality typically ranges between 500ms–2000ms depending on channel routing hops and multi-path payments (MPP). |
+| **Vendor RFQ Network** | Deterministic multi-vendor RFQ engine with 3 pre-approved synthetic vendor bids (Apex Diagnostics, Precision Dynamics, Quantum Reliability) and transparent scoring via independent HTTP microservices. | Decentralized external vendor federation using signed webhook protocols with secp256k1 signature validation, dynamic reputation staking, and automated SLA escrow. |
+| **Graph Intelligence** | Neo4j knowledge graph storing industrial equipment topologies (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`) and semantic fault codes (`FE-001`, `PROC-001`) with resilient fallback. | Clustered Neo4j Enterprise with real-time bidirectional ingestion from SAP PM, Maximo ERP, and live OPC-UA / MQTT industrial historians. |
+| **Execution Latency** | Measured demo execution latency: `~412ms` (measured on local simulated runtime / Railway container). | Real Lightning mainnet finality typically ranges between 500ms–2000ms depending on channel routing hops and multi-path payments (MPP). |
 
 ---
 
@@ -626,6 +654,10 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 | [**AuRAG_FINAL_PRD.md**](./AuRAG_FINAL_PRD.md) | Master phased execution plan, live status tracker, and acceptance gates |
 | [**E2E_VERIFICATION_REPORT.md**](./docs/E2E_VERIFICATION_REPORT.md) | End-to-end test verification evidence and execution logs |
 | [**BOSS_MACHINE_MONEY_DEMO.md**](./docs/BOSS_MACHINE_MONEY_DEMO.md) | 3-minute video walkthrough storyboard and recording guide |
+| [**RAGAS_FINAL_VERIFICATION.md**](./docs/RAGAS_FINAL_VERIFICATION.md) | Authoritative RAGAS retrieval quality gate verification across 8 benchmark test queries |
+| [**PUBLIC_DATASET_PROVENANCE.md**](./docs/PUBLIC_DATASET_PROVENANCE.md) | NASA IMS Bearing Run-to-Failure dataset replay architecture and provenance audit |
+| [**VENDOR_FEDERATION.md**](./docs/VENDOR_FEDERATION.md) | 3 pre-approved synthetic vendor HTTP webhook microservices & RFQ dispatch specification |
+| [**TELEMETRY_PROVENANCE_AUDIT.md**](./docs/TELEMETRY_PROVENANCE_AUDIT.md) | Telemetry pipeline provenance audit distinguishing synthetic, public replay, and SCADA |
 | [**MACHINE_MONEY_ACCEPTANCE.md**](./docs/MACHINE_MONEY_ACCEPTANCE.md) | Official acceptance report with cryptographic proofs |
 
 ---
@@ -645,7 +677,7 @@ Contributions are welcome! Please follow these steps:
 
 <details>
 <summary><b>1. Why use Bitcoin Lightning instead of traditional corporate credit cards?</b></summary>
-Credit cards and ACH rails introduce 2–3% processing fees, human batch approvals, and 24–48 hour settlement delays. Bitcoin Lightning enables autonomous AI agents to settle programmatic micro-payments (down to single satoshis) instantly (sub-second) with cryptographic proof-of-payment (preimage). Machines cannot open bank accounts or pass KYC — Lightning gives them permissionless financial sovereignty.
+Credit cards and ACH rails introduce 2–3% processing fees, human batch approvals, and 24–48 hour settlement delays. Bitcoin Lightning enables autonomous AI agents to settle programmatic micro-payments (down to single satoshis) with measured demo execution time under 800ms and cryptographically verifiable payment-state evidence (preimage). Machines cannot open bank accounts or pass KYC — Lightning gives them permissionless financial sovereignty.
 </details>
 
 <details>
