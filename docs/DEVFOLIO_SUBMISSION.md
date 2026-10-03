@@ -57,12 +57,11 @@ When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG tr
 
 ## 5. Verification & Testing Proof
 
-- **34 / 34 Automated Tests Passing (100%):**
-  - Unit tests for provider adapters and BOLT11 parsing.
-  - Neo4j graph schema constraint tests (`Payment` node uniqueness).
-  - M2M protocol and idempotency deduplication tests.
-  - Telemetry trigger to payment bridge tests.
-  - Complete 17-Test End-to-End integration suite.
+- **372 / 372 Automated Tests Passing (100%):**
+  - 308 Pytest backend tests (Machine Money core, BOLT11, RFQ federation, graph resilience, idempotency, failure-paths).
+  - 58 Vitest frontend component tests (React 19, Next.js 16, JudgeMode, VendorRFQ, ProofVerification).
+  - 6 Playwright Browser E2E tests (Desktop & Pixel 7 Mobile responsive flows).
+  - Complete end-to-end integration and failure recovery suites.
 - **Zero Secrets Committed:** Tested against `.gitignore` with `*.key`, `*.pem`, `*.macaroon` protection.
 
 ---
@@ -70,8 +69,8 @@ When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG tr
 ## 6. Project Links & Documentation
 
 - **GitHub Repository:** [https://github.com/hacker9854-ship-it/AuRAG](https://github.com/hacker9854-ship-it/AuRAG)
-- **Official Acceptance Document:** [`docs/MACHINE_MONEY_ACCEPTANCE.md`](./docs/MACHINE_MONEY_ACCEPTANCE.md)
-- **3-Minute Video Demo Script & Storyboard:** [`docs/BOSS_MACHINE_MONEY_DEMO.md`](./docs/BOSS_MACHINE_MONEY_DEMO.md)
-- **System Architecture Specification:** [`docs/ARCHITECTURE_MACHINE_MONEY.md`](./docs/ARCHITECTURE_MACHINE_MONEY.md)
-- **End-to-End Verification Report:** [`docs/E2E_VERIFICATION_REPORT.md`](./docs/E2E_VERIFICATION_REPORT.md)
-- **Change Budget & Architecture Map:** [`docs/MACHINE_MONEY_CHANGE_MAP.md`](./docs/MACHINE_MONEY_CHANGE_MAP.md)
+- **Official Acceptance Document:** [`docs/MACHINE_MONEY_ACCEPTANCE.md`](./MACHINE_MONEY_ACCEPTANCE.md)
+- **3-Minute Video Demo Script & Storyboard:** [`docs/BOSS_MACHINE_MONEY_DEMO.md`](./BOSS_MACHINE_MONEY_DEMO.md)
+- **System Architecture Specification:** [`docs/ARCHITECTURE_MACHINE_MONEY.md`](./ARCHITECTURE_MACHINE_MONEY.md)
+- **End-to-End Verification Report:** [`docs/E2E_VERIFICATION_REPORT.md`](./E2E_VERIFICATION_REPORT.md)
+- **Change Budget & Architecture Map:** [`docs/MACHINE_MONEY_CHANGE_MAP.md`](./MACHINE_MONEY_CHANGE_MAP.md)
