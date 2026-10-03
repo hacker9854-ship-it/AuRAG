@@ -1150,6 +1150,197 @@ export async function getProviderStatus(): Promise<ProviderStatusResponse> {
   return res.json();
 }
 
+// ---------------------------------------------------------------------------
+// Novel Bitcoin Innovation: Nostr Wallet Connect (NIP-47) & Multi-Hop Routing
+// ---------------------------------------------------------------------------
+
+export interface NWCInfoResponse {
+  protocol: string;
+  wallet_pubkey: string;
+  client_pubkey: string;
+  relays: string[];
+  lud16?: string;
+  methods_supported: string[];
+  max_autonomous_spend_sats: number;
+  encryption: string;
+  request_kind: number;
+  response_kind: number;
+  status: string;
+}
+
+export interface NWCPayResponse {
+  status: string;
+  method: string;
+  amount_sats: number;
+  fee_sats: number;
+  preimage: string;
+  payment_hash: string;
+  request_event: {
+    id: string;
+    pubkey: string;
+    created_at: number;
+    kind: number;
+    tags: string[][];
+    content: string;
+    sig: string;
+  };
+  response_event: {
+    id: string;
+    pubkey: string;
+    created_at: number;
+    kind: number;
+    tags: string[][];
+    content: string;
+    sig: string;
+  };
+  relay: string;
+  preimage_verified: boolean;
+  settled_at: string;
+}
+
+export interface RouteHop {
+  hop_index: number;
+  from_node: string;
+  from_alias: string;
+  to_node: string;
+  to_alias: string;
+  channel_id: string;
+  fee_sats: number;
+  cltv_delta: number;
+  outgoing_cltv: number;
+  amount_to_forward_sats: number;
+}
+
+export interface SphinxOnionLayer {
+  layer_index: number;
+  hop_alias: string;
+  ephemeral_key_slice: string;
+  payload_digest: string;
+  payload_summary: {
+    amt_to_forward: number;
+    outgoing_cltv: number;
+    short_channel_id: string;
+  };
+}
+
+export interface SettlementCascadeStep {
+  step: number;
+  phase: "FORWARD_HTLC" | "BACKWARD_SETTLE";
+  from: string;
+  to: string;
+  action: string;
+  cltv_expiry: number;
+  amount_sats: number;
+  evidence: string;
+}
+
+export interface MultiHopRouteResponse {
+  target_vendor_id: string;
+  target_vendor_name: string;
+  amount_sats: number;
+  total_fee_sats: number;
+  total_fee_ppm: number;
+  final_amount_sats: number;
+  path_nodes: Array<{
+    pubkey: string;
+    alias: string;
+    role: string;
+    location: string;
+  }>;
+  hops: RouteHop[];
+  sphinx_onion_packet: {
+    total_packet_size_bytes: number;
+    packet_version: number;
+    ephemeral_key_hex: string;
+    layers: SphinxOnionLayer[];
+  };
+  htlc_settlement_cascade: {
+    payment_hash: string;
+    payment_preimage: string;
+    sha256_invariant_verified: boolean;
+    steps: SettlementCascadeStep[];
+  };
+}
+
+export interface RoutingTopologyResponse {
+  nodes: Array<{
+    pubkey: string;
+    alias: string;
+    role: string;
+    location: string;
+    color: string;
+  }>;
+  channels: Array<{
+    channel_id: string;
+    node1: string;
+    node2: string;
+    capacity_sats: number;
+    base_fee_msat: number;
+    fee_rate_ppm: number;
+    cltv_delta: number;
+  }>;
+  supported_vendors: Array<{
+    id: string;
+    name: string;
+    node_pubkey: string;
+    reputation: string;
+  }>;
+}
+
+export async function getNWCInfo(uri?: string): Promise<NWCInfoResponse> {
+  const url = uri
+    ? `${API_URL}/api/machine-money/nwc/info?uri=${encodeURIComponent(uri)}`
+    : `${API_URL}/api/machine-money/nwc/info`;
+  const res = await fetch(url, { cache: "no-store" });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Failed to fetch NWC info" }));
+    throw new Error(err.detail || "Failed to fetch NWC info");
+  }
+  return res.json();
+}
+
+export async function executeNWCPayment(payload: {
+  amount_sats?: number;
+  bolt11?: string;
+  connection_uri?: string;
+  memo?: string;
+}): Promise<NWCPayResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/nwc/pay`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "NWC Payment failed" }));
+    throw new Error(err.detail || "NWC Payment failed");
+  }
+  return res.json();
+}
+
+export async function getRoutingTopology(): Promise<RoutingTopologyResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/routing/topology`, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to load Lightning network topology");
+  return res.json();
+}
+
+export async function calculateMultiHopRoute(payload: {
+  amount_sats?: number;
+  target_vendor_id?: string;
+  current_block_height?: number;
+}): Promise<MultiHopRouteResponse> {
+  const res = await fetch(`${API_URL}/api/machine-money/routing/calculate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: "Routing calculation failed" }));
+    throw new Error(err.detail || "Routing calculation failed");
+  }
+  return res.json();
+}
+
+
 
 
 

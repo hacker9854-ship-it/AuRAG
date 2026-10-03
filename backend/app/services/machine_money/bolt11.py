@@ -23,6 +23,10 @@ MOCK_NODE_PRIVKEY = 0x424F53534D4F434B4E4F4445505249564154454B455930303030303030
 # 33-byte compressed pubkey: 03c4a92b9e36a34021f8cd3d35767cb3aede75e869e699252da7900136168cef82
 MOCK_NODE_PUBKEY = "03c4a92b9e36a34021f8cd3d35767cb3aede75e869e699252da7900136168cef82"
 
+# In-memory invoice preimage cache for simulation & cryptographic verification
+INVOICE_PREIMAGES: Dict[str, str] = {}
+
+
 
 def _point_add(p1: Optional[Tuple[int, int]], p2: Optional[Tuple[int, int]]) -> Optional[Tuple[int, int]]:
     """Elliptic curve point addition on secp256k1."""
@@ -223,7 +227,10 @@ def encode_bolt11(
     # 3. Tagged Fields
     # Tag 'p' (1): 256-bit SHA256 payment_hash
     if not payment_hash_hex:
-        payment_hash_hex = hashlib.sha256(f"mock-inv-{timestamp}-{amount_sats}".encode()).hexdigest()
+        import secrets
+        preimage_hex = secrets.token_hex(32)
+        payment_hash_hex = hashlib.sha256(bytes.fromhex(preimage_hex)).hexdigest()
+        INVOICE_PREIMAGES[payment_hash_hex] = preimage_hex
     p_bytes = bytes.fromhex(payment_hash_hex)
     if len(p_bytes) != 32:
         p_bytes = hashlib.sha256(p_bytes).digest()

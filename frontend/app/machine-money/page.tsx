@@ -66,6 +66,7 @@ import { PaymentProofDrawer } from "@/components/machine-money/PaymentProofDrawe
 import { VendorRFQ } from "@/components/machine-money/VendorRFQ";
 import { IndustrialEconomics } from "@/components/machine-money/IndustrialEconomics";
 import { SystemReadinessModal } from "@/components/machine-money/SystemReadinessModal";
+import { NovelBitcoinProtocol } from "@/components/machine-money/NovelBitcoinProtocol";
 import type { VendorQuoteCandidate } from "@/lib/api";
 
 export default function MachineMoneyPage() {
@@ -982,80 +983,12 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
 
 
       {/* --------------------------------------------------------------------- */}
-      {/* SECTION 20: NOSTR STRETCH ARCHITECTURE CARD                           */}
+      {/* SECTION 20: NOVEL BITCOIN INNOVATION (NWC NIP-47 & MULTI-HOP ONION)    */}
       {/* --------------------------------------------------------------------- */}
-      <Card className="border-border/80 shadow-xs bg-card/60 backdrop-blur-sm">
-        <CardHeader className="pb-3 border-b">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div>
-              <div className="flex items-center gap-2">
-                <RadioIcon className="size-4 text-purple-400" />
-                <CardTitle className="text-base">Section 20: Nostr Agent &amp; NWC Relay Readiness (Stretch)</CardTitle>
-                <Badge variant="outline" className="text-[10px] text-purple-400 border-purple-400/40">
-                  NIP-47 &bull; NIP-90
-                </Badge>
-              </div>
-              <CardDescription className="text-xs">
-                Forward-compatible peer-to-peer agent coordination and Nostr Wallet Connect (NWC) protocol readiness.
-              </CardDescription>
-            </div>
-            <Badge variant="success" className="text-[10px] self-start sm:self-auto">
-              Relay Ready
-            </Badge>
-          </div>
-        </CardHeader>
-
-        <CardContent className="pt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-          <div className="p-3 rounded-lg bg-muted/30 border space-y-2">
-            <span className="font-semibold text-foreground flex items-center gap-1.5">
-              <CpuIcon className="size-3.5 text-purple-400" />
-              NIP-90 Data Vending Machine
-            </span>
-            <p className="text-muted-foreground text-[11px] leading-relaxed">
-              Industrial telemetry anomalies broadcast as NIP-90 job requests (<code className="text-foreground">kind: 5100</code>).
-              Autonomous maintenance nodes bid on diagnostic and inspection tasks over open relays.
-            </p>
-            <div className="p-2 rounded bg-slate-950 text-slate-200 font-mono text-[10px]">
-              {`{ "kind": 5100, "tags": [["param", "service", "bearing-inspection"], ["bid", "250"]] }`}
-            </div>
-          </div>
-
-          <div className="p-3 rounded-lg bg-muted/30 border space-y-2">
-            <span className="font-semibold text-foreground flex items-center gap-1.5">
-              <WalletIcon className="size-3.5 text-amber-500" />
-              NIP-47 Nostr Wallet Connect (NWC)
-            </span>
-            <p className="text-muted-foreground text-[11px] leading-relaxed">
-              Standardized non-custodial remote wallet interface. AuRAG issues spend authorizations constrained
-              by spending budget policies without exposing node private keys.
-            </p>
-            <div className="p-2 rounded bg-slate-950 text-slate-200 font-mono text-[10px] truncate">
-              nostr+walletconnect://pubkey?relay=wss://relay.damus.io&amp;secret=***
-            </div>
-          </div>
-
-          <div className="p-3 rounded-lg bg-muted/30 border space-y-2">
-            <span className="font-semibold text-foreground flex items-center gap-1.5">
-              <ServerIcon className="size-3.5 text-blue-400" />
-              Connected Nostr Relays
-            </span>
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between p-1.5 rounded bg-muted/50">
-                <span className="font-mono text-[11px]">wss://relay.damus.io</span>
-                <span className="text-[10px] text-emerald-500 font-medium">Connected</span>
-              </div>
-              <div className="flex items-center justify-between p-1.5 rounded bg-muted/50">
-                <span className="font-mono text-[11px]">wss://nos.lol</span>
-                <span className="text-[10px] text-emerald-500 font-medium">Connected</span>
-              </div>
-              <div className="flex items-center justify-between p-1.5 rounded bg-muted/50">
-                <span className="font-mono text-[11px]">wss://relay.snort.social</span>
-                <span className="text-[10px] text-muted-foreground font-medium">Standby</span>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      <NovelBitcoinProtocol
+        initialCapSats={500}
+        activeInterventionSats={executionResult?.amount_sats || 250}
+      />
 
       {/* --------------------------------------------------------------------- */}
       {/* Recent Machine Money Settlement Ledger & Approval Queue Table         */}

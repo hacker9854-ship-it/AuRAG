@@ -8,13 +8,14 @@ load_dotenv()
 from backend.app.services.machine_money.providers.base import LightningProvider
 from backend.app.services.machine_money.providers.mock import MockLightningProvider
 from backend.app.services.machine_money.providers.lnbits import LNbitsProvider
+from backend.app.services.machine_money.providers.nwc import NWCProvider
 
 _cached_provider: Optional[LightningProvider] = None
 
 
 def get_payment_provider(force_refresh: bool = False) -> LightningProvider:
     """Returns the singleton instance of the configured LightningProvider.
-    Respects MACHINE_MONEY_PROVIDER environment variable ('mock' | 'lnbits').
+    Respects MACHINE_MONEY_PROVIDER environment variable ('mock' | 'lnbits' | 'nwc').
     """
     global _cached_provider
     if _cached_provider is not None and not force_refresh:
@@ -24,6 +25,8 @@ def get_payment_provider(force_refresh: bool = False) -> LightningProvider:
 
     if provider_type == "lnbits":
         _cached_provider = LNbitsProvider()
+    elif provider_type in ("nwc", "nostr"):
+        _cached_provider = NWCProvider()
     else:
         # Default resilient fallback is the deterministic Mock provider
         _cached_provider = MockLightningProvider()

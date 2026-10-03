@@ -423,6 +423,84 @@ def get_plant_assumptions_for_tag(equipment_tag: str):
         raise HTTPException(status_code=500, detail=str(exc))
 
 
+# ==============================================================================
+# NOVEL BITCOIN INNOVATION: NIP-47 NOSTR WALLET CONNECT & MULTI-HOP ONION ROUTING
+# ==============================================================================
+
+class NWCPayRequest(BaseModel):
+    bolt11: Optional[str] = None
+    amount_sats: int = Field(default=250, gt=0, le=500, description="Autonomous spend amount capped at 500 sats")
+    connection_uri: Optional[str] = None
+    memo: Optional[str] = "NWC Autonomous Equipment Intervention"
+
+
+class RouteCalculationRequest(BaseModel):
+    amount_sats: int = Field(default=250, gt=0)
+    target_vendor_id: str = Field(default="apex-diagnostics")
+    current_block_height: int = Field(default=890000)
+
+
+@router.get("/nwc/info")
+def get_nwc_info(uri: Optional[str] = None):
+    """Novel Bitcoin Innovation: Inspect active Nostr Wallet Connect (NIP-47) remote wallet configuration."""
+    from backend.app.services.machine_money.nwc import NWCClient
+    try:
+        client = NWCClient(uri)
+        return client.get_info()
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Invalid NWC configuration: {str(exc)}")
+
+
+@router.post("/nwc/pay")
+async def execute_nwc_payment(req: NWCPayRequest, db: Session = Depends(get_db)):
+    """Novel Bitcoin Innovation: Execute autonomous M2M Lightning payment over Nostr Wallet Connect (NIP-47).
+    Emits signed kind: 23194 request event, verifies kind: 23195 response event, and checks preimage invariant.
+    """
+    from backend.app.services.machine_money.nwc import NWCClient
+    from backend.app.services.machine_money.bolt11 import encode_bolt11
+
+    # Cap check
+    if req.amount_sats > 500:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Policy violation: NWC autonomous cap is 500 sats. Quoted {req.amount_sats} sats requires operator review.",
+        )
+
+    try:
+        client = NWCClient(req.connection_uri)
+        bolt11_to_pay = req.bolt11
+        if not bolt11_to_pay:
+            bolt11_to_pay = encode_bolt11(amount_sats=req.amount_sats, description=req.memo or "NWC Autonomous Intervention")
+
+        receipt = await client.pay_invoice(bolt11=bolt11_to_pay, amount_sats=req.amount_sats)
+        return receipt
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"NWC settlement error: {str(exc)}")
+
+
+@router.get("/routing/topology")
+def get_lightning_network_topology():
+    """Novel Bitcoin Innovation: Return multi-hop industrial Lightning Network graph topology."""
+    from backend.app.services.machine_money.routing import MultiHopRouter
+    router = MultiHopRouter()
+    return router.get_topology()
+
+
+@router.post("/routing/calculate")
+def calculate_multi_hop_route(req: RouteCalculationRequest):
+    """Novel Bitcoin Innovation: Calculate 4-hop Lightning HTLC route, Sphinx onion layers, and reverse settlement cascade."""
+    from backend.app.services.machine_money.routing import MultiHopRouter
+    router = MultiHopRouter()
+    return router.compute_route(
+        amount_sats=req.amount_sats,
+        target_vendor_id=req.target_vendor_id,
+        current_block_height=req.current_block_height,
+    )
+
+
+
 
 
 
