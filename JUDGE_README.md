@@ -38,23 +38,27 @@
 
 ---
 
-## 🎬 2. Live Demo — 1-Click Fast Path (60 Seconds)
+## 🎬 2. Live Demo — "One Button, One WOW" (15 Seconds)
+
+> **Complexity in the backend, simplicity on your screen.**  
+> Judges have 3 minutes max. You do NOT need to study mechanical vibration physics or parse complex 6-step logs to verify that AuRAG works.
 
 * 🌐 **Live Web Application**: [**au-rag.vercel.app/machine-money**](https://au-rag.vercel.app/machine-money)
 * 💻 **Local URL** (if running locally): [**http://localhost:3000/machine-money**](http://localhost:3000/machine-money)
 
-### Exactly What to Click:
+### 👉 Exactly What to Click:
 1. Navigate to the **Machine Money Console** (`/machine-money`).
-2. Scroll to the **Judge Mode** panel at the top.
-3. Click the bright Cyan button:  
-   👉 **`RUN REAL DATASET REPLAY (NASA IMS)`** *(250 sats)*
-4. **Watch the live 6-stage autonomous lifecycle complete in ~7 seconds**:
-   * ✅ **ANOMALY DETECTED**: NASA IMS Bearing Test Rig (5.42 mm/s outer race spall excursion).
-   * ✅ **EVIDENCE MATCHED**: 94% confidence match against SOP-001 & WO-1002 in Neo4j.
-   * ✅ **RFQ FEDERATED**: Evaluated 3 illustrative vendor bids; selected *Apex Diagnostics* (250 sats).
-   * ✅ **INVOICE ISSUED**: Standards-compliant BOLT11 invoice generated.
-   * ✅ **LIGHTNING SETTLED**: Real zero-counterparty micro-settlement paid via LNbits node; SHA-256 preimage verified.
-   * ✅ **GRAPH BOUND**: Cryptographically linked into Neo4j: `(Payment)-[:FUNDS]->(WorkOrder)`.
+2. Look at the top **"ONE BUTTON, ONE WOW"** hero panel.
+3. Click the giant Golden button:  
+   👉 **`⚡ EXECUTE 1-CLICK DEMO (NASA IMS ANOMALY ➔ REAL LNBITS PAYMENT)`**
+
+### 🌟 The "One WOW" Result on Your Screen (~200ms):
+Three punchy, indisputable proofs appear immediately:
+1. **🚨 Real Sensor Anomaly**: Authentic NASA IMS Bearing vibration excursion (**5.42 mm/s > 4.5 mm/s** ISO 10816 Zone C alarm) replayed directly from open science accelerometry (Rexnord ZA-2115, REC-042).
+2. **⚡ Real Lightning Settlement**: **250 sats** autonomously routed to the diagnostic node via our live **LNbits Signet node** with zero human latency under our autonomous spending policy cap.
+3. **🔐 Cryptographic Preimage on Screen**: The genuine 32-byte SHA-256 settlement preimage (`eaa9f3...`) is displayed right on screen with a 1-click clipboard copy button and verified proof against the invoice payment hash (`sha256(preimage) == payment_hash`).
+
+*(Optional: For technical judges wanting to inspect the deep GraphRAG reasoning, Neo4j Cypher queries, multi-vendor RFQ scoring, and Sphinx onion routing, inspect the **"Technical Audit & 6-Stage GraphRAG Pipeline"** section directly below the WOW card).*
 
 ---
 
