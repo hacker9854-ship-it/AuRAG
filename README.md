@@ -518,14 +518,13 @@ AuRAG/
 │   ├── test_machine_money_*.py     # Unit, integration, policy, failure tests
 │   └── ...
 ├── docs/                     # Documentation & Verification Evidence
+│   ├── archive/              # Historical PRD specifications (PRD 1–4, AuRAG_FINAL_PRD)
 │   ├── screenshots/          # Production screenshots for README
 │   ├── JUDGE_DEMO_SCRIPT.md  # 3-5 min judge walkthrough
 │   ├── MACHINE_MONEY_VERIFICATION.md  # Phase-by-phase verification
 │   ├── CHANGELOG_MACHINE_MONEY.md     # Full implementation changelog
 │   ├── HACKATHON_ELIGIBILITY.md       # Provenance & eligibility audit
 │   └── CURRENT_TEST_SNAPSHOT.md       # Authoritative canonical verification snapshot
-├── PRD2.md                   # Machine Money Product Requirements
-├── PRD3.md                   # Machine Money Production Hardening PRD
 └── infra/                    # Docker, Terraform, & Deployment Configs
 ```
 
@@ -656,9 +655,7 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |
 | [**CHANGELOG_MACHINE_MONEY.md**](./docs/CHANGELOG_MACHINE_MONEY.md) | Complete implementation changelog covering Phases 0–11 with commit hashes |
 | [**HACKATHON_ELIGIBILITY.md**](./docs/HACKATHON_ELIGIBILITY.md) | Provenance audit, event rules review, and eligibility sign-off |
-| [**PRD2.md**](./PRD2.md) | Machine Money Product Requirements Document (baseline specification) |
-| [**PRD3.md**](./PRD3.md) | Autonomous Machine Money Production Hardening & Truthfulness PRD |
-| [**AuRAG_FINAL_PRD.md**](./AuRAG_FINAL_PRD.md) | Master phased execution plan, live status tracker, and acceptance gates |
+| [**Historical PRD Archive**](./docs/archive/README.md) | Archived development specifications (PRD 1–4, AuRAG_FINAL_PRD) preserved for auditability & provenance |
 | [**E2E_VERIFICATION_REPORT.md**](./docs/E2E_VERIFICATION_REPORT.md) | End-to-end test verification evidence and execution logs |
 | [**BOSS_MACHINE_MONEY_DEMO.md**](./docs/BOSS_MACHINE_MONEY_DEMO.md) | 3-minute video walkthrough storyboard and recording guide |
 | [**RAGAS_FINAL_VERIFICATION.md**](./docs/RAGAS_FINAL_VERIFICATION.md) | Authoritative RAGAS retrieval quality gate verification across 8 benchmark test queries |
