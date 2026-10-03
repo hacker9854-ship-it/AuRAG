@@ -114,7 +114,7 @@ export function VendorRFQ({
             Competitive Maintenance Bidding &amp; Selection
           </h3>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Decentralized maintenance node quotes evaluated against spending policies and SLA constraints.
+            Illustrative multi-vendor bidding simulation (Apex Diagnostics, Precision Dynamics, Quantum Reliability) evaluated against spending policies and SLA constraints.
           </p>
         </div>
 
@@ -124,6 +124,9 @@ export function VendorRFQ({
           </span>
           <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg border border-purple-500/20">
             PRE-APPROVED DEMO VENDOR NODES
+          </span>
+          <span className="text-[9px] font-semibold uppercase text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+            [Illustrative Bidding Simulation]
           </span>
         </div>
       </div>

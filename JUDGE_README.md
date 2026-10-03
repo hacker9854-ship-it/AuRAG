@@ -51,9 +51,9 @@
 4. **Watch the live 6-stage autonomous lifecycle complete in ~7 seconds**:
    * ✅ **ANOMALY DETECTED**: NASA IMS Bearing Test Rig (5.42 mm/s outer race spall excursion).
    * ✅ **EVIDENCE MATCHED**: 94% confidence match against SOP-001 & WO-1002 in Neo4j.
-   * ✅ **RFQ FEDERATED**: Evaluated 3 vendor bids; selected *Apex Diagnostics* (250 sats).
+   * ✅ **RFQ FEDERATED**: Evaluated 3 illustrative vendor bids; selected *Apex Diagnostics* (250 sats).
    * ✅ **INVOICE ISSUED**: Standards-compliant BOLT11 invoice generated.
-   * ✅ **LIGHTNING SETTLED**: Zero-counterparty micro-settlement paid; SHA-256 preimage verified.
+   * ✅ **LIGHTNING SETTLED**: Real zero-counterparty micro-settlement paid via LNbits node; SHA-256 preimage verified.
    * ✅ **GRAPH BOUND**: Cryptographically linked into Neo4j: `(Payment)-[:FUNDS]->(WorkOrder)`.
 
 ---
@@ -83,9 +83,18 @@ Judges from the Bitcoin / Bitshala community will appreciate that this is **not*
 
 ---
 
-## 🔬 4. Empirical Data Credibility (No Synthetic Hand-Waving)
+## 🔬 4. Empirical Data Credibility: Real Data First, Illustrative Models Disclosed
 
-Instead of relying on fictional plant generator numbers, AuRAG's primary hero benchmark runs on the **NASA IMS Bearing Run-to-Failure Dataset** (University of Cincinnati / NASA Ames Prognostics Center of Excellence):
+AuRAG enforces a strict, honest line between **real empirical science** and **illustrative simulation parameters**:
+
+| Layer | Classification | Technical Source & Real-World Grounding |
+|:------|:---------------|:----------------------------------------|
+| **Vibration Waveforms & Accelerometry** | **100% REAL** | **NASA IMS Bearing Run-to-Failure Dataset** (Univ. of Cincinnati / NASA Ames PCoE). 4 Rexnord ZA-2115 bearings, 2,000 RPM, 6,000 lbs radial load, 20 kHz PCB 353B33 accelerometer. Record `REC-042` at 147.6h reaches 5.42 mm/s (ISO 10816 Zone C breach). |
+| **Bitcoin Settlement & Cryptography** | **100% REAL** | **Live Bitcoin Lightning Node (LNbits Signet)**. Generates real BOLT11 payment requests; verifies genuine 32-byte cryptographic SHA-256 preimages (`sha256(preimage) == payment_hash`). |
+| **Operational Knowledge Graph** | **100% REAL** | Real-world ISO 10816-3 vibration severity standards, SKF bearing mechanical catalog specifications, and industrial SOPs in Neo4j. |
+| **Vendor Bidding Candidates** | **[Illustrative Simulation]** | Synthetic vendor nodes (*Apex Diagnostics*, *Precision Dynamics*, *Quantum Reliability*) illustrating decentralized multi-vendor RFQ scoring. |
+| **Plant Macro-Economics** | **[Illustrative Model]** | Parameterized industrial plant model ($1.17M modelled downtime exposure @ $260k/hr) illustrating autonomous agent ROI calculation. |
+
 * **Test Rig**: 4 Rexnord ZA-2115 double-row bearings running at 2,000 RPM under 6,000 lbs radial load.
 * **Sensor**: High-frequency PCB 353B33 accelerometer sampled at 20 kHz.
 * **Empirical Excursion (Record 042 at 147.6h)**: 5.42 mm/s radial vibration breach exceeding ISO 10816 Zone C (4.5 mm/s) threshold with outer race BPFO harmonic spall signature.

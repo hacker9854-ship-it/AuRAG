@@ -117,10 +117,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
             )}
           </div>
           <h2 className="text-xl md:text-2xl font-bold font-heading tracking-tight text-foreground flex items-center gap-2">
-            Industrial Emergency Autonomous Settlement
+            Empirical Anomaly Detection &amp; Autonomous Lightning Settlement
           </h2>
           <p className="text-xs text-muted-foreground max-w-2xl mt-1">
-            Watch AuRAG detect a real-time sensor anomaly on pump <strong className="text-foreground">P-101A</strong>, ground it in GraphRAG evidence, evaluate automated spending policy, and settle a BOLT11 Lightning micro-payment.
+            <span className="font-semibold text-cyan-500">Primary Hero Benchmark:</span> Real empirical vibration telemetry from the <strong className="text-foreground">NASA IMS Bearing Run-to-Failure dataset</strong> (Rexnord ZA-2115, 20 kHz PCB accelerometer) triggers an autonomous GraphRAG evidence check and instant Lightning micro-settlement.
           </p>
         </div>
 
@@ -220,13 +220,14 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         <div className="p-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-col gap-1 col-span-2 sm:col-span-1 hover:border-emerald-500/40 transition-colors">
           <span className="text-[10px] uppercase font-bold text-muted-foreground flex items-center gap-1">
             <DollarSign className="w-3 h-3 text-emerald-500" />
-            5. Business Impact
+            <span>5. Business Impact</span>
+            <span className="text-[9px] font-normal text-amber-500 ml-0.5">[Illustrative]</span>
           </span>
           <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
             $1.17M Modelled Exposure
           </span>
           <span className="text-[10px] text-muted-foreground font-mono">
-            4.5h Synthetic Outage
+            Illustrative Plant Scenario
           </span>
         </div>
       </div>
@@ -355,13 +356,13 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           className="relative group overflow-hidden px-5 py-3.5 bg-gradient-to-r from-cyan-600 via-cyan-500 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-slate-950 font-bold text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-cyan-500/40 hover:ring-cyan-500 focus-visible:ring-4 focus-visible:ring-cyan-400 outline-none w-full sm:w-auto"
         >
           <Database className={`w-4 h-4 fill-current ${isRunning ? "animate-spin" : "group-hover:translate-x-0.5 transition-transform"}`} />
-          <span>RUN REAL DATASET REPLAY (NASA IMS)</span>
+          <span>PRIMARY HERO DEMO: RUN REAL DATASET REPLAY (NASA IMS)</span>
           <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-black/20 text-white font-medium">
             250 sats
           </span>
         </button>
 
-        {/* Primary CTA (Synthetic Baseline) */}
+        {/* Secondary / Illustrative Simulation Trigger */}
         <button
           type="button"
           data-testid="run-emergency-button"
@@ -372,6 +373,9 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         >
           <Play className="w-3.5 h-3.5 fill-current" />
           <span>RUN INDUSTRIAL EMERGENCY</span>
+          <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-muted text-amber-500 uppercase font-semibold">
+            Illustrative
+          </span>
           <span className="text-[10px] font-mono opacity-70">250 sats</span>
         </button>
 

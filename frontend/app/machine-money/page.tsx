@@ -276,6 +276,7 @@ export default function MachineMoneyPage() {
           </div>
           <p className="text-sm text-muted-foreground max-w-3xl">
             Autonomous Lightning micro-settlement protocol for industrial telemetry excursions. Engineered by Niss.
+            Primary evaluation benchmark powered by the <strong>NASA IMS Bearing Run-to-Failure Open Science dataset</strong> (20 kHz empirical accelerometry).
             Governed by deterministic GraphRAG evidence, automated spending policies, and human-in-the-loop oversight.
           </p>
         </div>

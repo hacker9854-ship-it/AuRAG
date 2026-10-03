@@ -812,7 +812,7 @@ class MachineMoneyService:
                 stage=ExecutionStage.QUOTE_RESOLVED,
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
-                message=f"Multi-vendor RFQ resolved ({len(rfq_res.candidates)} bids): Selected '{vendor_name}' ({cost_sats} sats, {selected_cand.sla_hours}h SLA, {int(selected_cand.reliability_score * 100)}% reliability).",
+                message=f"Multi-vendor RFQ resolved ({len(rfq_res.candidates)} illustrative bids): Selected '{vendor_name}' ({cost_sats} sats, {selected_cand.sla_hours}h SLA, {int(selected_cand.reliability_score * 100)}% reliability) [Illustrative Bidding Simulation].",
                 evidence_refs=[quote_id, rfq_res.rfq_id, service_id],
                 data={
                     "quote_id": quote_id,
@@ -1119,7 +1119,7 @@ class MachineMoneyService:
                 stage=ExecutionStage.OUTCOME_RESOLVED,
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
-                message=f"Work order WO-2026-P101 status transition: APPROVED -> FUNDED. Emergency technician dispatched. Estimated plant downtime saved: 4.5 hours.",
+                message=f"Work order WO-2026-P101 status transition: APPROVED -> FUNDED. Emergency technician dispatched. Modelled downtime exposure mitigated: 4.5 hours / $1,170,000 [Illustrative Macro-Economics].",
                 evidence_refs=["WO-2026-P101"],
                 data={"status": "FUNDED", "estimated_downtime_saved_hours": 4.5, "estimated_plant_risk_mitigated_usd": 1170000},
             )

@@ -150,11 +150,11 @@ In high-consequence industrial facilities (power plants, refineries, chemical ma
 2. **Procurement is Paralyzed**: Getting replacement mechanical seals or bearing assemblies requires raising purchase orders, getting multi-department approvals, and waiting on Net-30 credit lines.
 3. **The Result**: Machines stay idle for days, accumulating millions in losses.
 
-### How AuRAG Solves It with Machine Money
-AuRAG gives industrial machines **cognitive intelligence and financial sovereignty**:
-- **Sensor Alert ➔ Root Cause in Seconds**: When sensor `VIB-301` breaches 4.8 mm/s (ISO 10816 Zone C), AuRAG's GraphRAG engine traverses Neo4j ontology to identify bearing wear (`FE-001: Bearing inner race spalling`) and matches required replacement parts (`SKF-6205-2RS`).
-- **Autonomous M2M Lightning Settlement**: AuRAG solicits competitive quotes across 3 pre-approved synthetic vendor nodes (Apex Diagnostics, Precision Dynamics, Quantum Reliability), scores them using a transparent mathematical algorithm, pays a BOLT11 Lightning invoice via LNbits within strict zero-trust budget caps, and saves the **cryptographic preimage** as cryptographically verifiable payment-state evidence (`SHA-256(preimage) == payment_hash`).
-- **Zero Human Latency**: The complete cycle from telemetry excursion to paid spare-parts dispatch executes in **< 15 seconds** (measured demo execution time on simulated runtime / Railway container; real Bitcoin Lightning mainnet settlement depends on network routing latency, typically 500ms–2000ms) with a 7,800,000:1 economic protection multiple ($1.17M modelled downtime exposure per 250-sat payment).
+### How AuRAG Solves It with Real Empirical Data & Machine Money
+AuRAG grounds its primary demonstration on the **NASA IMS Bearing Run-to-Failure Open Science Dataset** (University of Cincinnati / NASA Ames PCoE), pairing genuine physical failure physics with autonomous financial sovereignty:
+- **Empirical Accelerometry ➔ Root Cause in Seconds**: When high-frequency accelerometry from NASA IMS Bearing Test 2 (`NASA-IMS-T2-REC-042` at 147.6h) breaches 5.42 mm/s (exceeding ISO 10816 Zone C 4.5 mm/s threshold with outer race BPFO harmonic spall), AuRAG's GraphRAG engine traverses Neo4j ontology to identify bearing raceway degradation (`FE-001`) and governing repair procedure (`PROC-001`).
+- **Autonomous M2M Lightning Settlement**: AuRAG solicits competitive quotes across decentralized vendor nodes (evaluated via an illustrative multi-objective bidding simulation: Apex Diagnostics, Precision Dynamics, Quantum Reliability), pays a real BOLT11 Lightning invoice via our live LNbits Signet node within strict zero-trust budget caps, and permanently binds the **cryptographic SHA-256 preimage** in Neo4j.
+- **Empirical Physics vs. Illustrative Economics**: While physical sensor readings and Lightning settlement are **100% real**, downstream plant economics ($1.17M modelled downtime exposure @ $260k/hr) are explicitly documented as **illustrative macro-economic simulations** demonstrating autonomous agent ROI calculations.
 
 ---
 
@@ -165,26 +165,26 @@ The diagram below details the exact protocol sequence implemented across `teleme
 ```mermaid
 sequenceDiagram
     autonumber
-    participant SCADA as 📡 SCADA Sensor (VIB-301)
+    participant NASA as 📡 NASA IMS Accelerometer (20 kHz)
     participant Telemetry as ⚙️ Telemetry Engine
     participant GraphRAG as 🧠 Neo4j GraphRAG
     participant Policy as 🛡️ Zero-Trust Policy Gate
     participant M2M as ⚡ Machine Money Service
-    participant LNbits as ⚡ Bitcoin Lightning (LNbits)
+    participant LNbits as ⚡ Bitcoin Lightning (LNbits Node)
     participant Ledger as 📜 Dual-Layer Audit (Neo4j + SQL)
 
-    SCADA->>Telemetry: Vibration excursion (5.4 mm/s > 4.5 threshold)
-    Telemetry->>GraphRAG: Trigger anomaly diagnosis for P-101A
-    GraphRAG->>GraphRAG: Traverse (Equipment)-[:HAS_FAILURE]->(BearingWear)
-    GraphRAG->>M2M: Initiate RFQ for bearing inspection & diagnostic
-    M2M->>M2M: Negotiate vendor quote (250 sats + BOLT11 invoice)
+    NASA->>Telemetry: Empirical vibration excursion (REC-042: 5.42 mm/s > 4.5 mm/s Zone C)
+    Telemetry->>GraphRAG: Trigger anomaly diagnosis for REPLAY-ASSET-01
+    GraphRAG->>GraphRAG: Traverse (Asset)-[:HAS_FAILURE]->(BearingSpalling)
+    GraphRAG->>M2M: Initiate RFQ for bearing overhaul & laser alignment
+    M2M->>M2M: Evaluate vendor bids (Apex Diagnostics: 250 sats [Illustrative])
     M2M->>Policy: Validate spending limits & idempotency key
     Note over Policy: Checks: 250 sats <= 500 sat autonomous cap<br/>Daily spend within budget
     Policy-->>M2M: APPROVED (Zero-Trust Verified)
-    M2M->>LNbits: POST /api/machine-money/payments/execute (Pay BOLT11 Invoice)
-    LNbits-->>M2M: Payment Settled (Preimage: 6a4f29c3d4e8b91a...)
+    M2M->>LNbits: POST /api/v1/payments (Pay BOLT11 Invoice via Live Node)
+    LNbits-->>M2M: Payment Settled (Real Preimage: 94b933006490ce2e...)
     M2M->>Ledger: Commit Work Order + Preimage + TX Hash
-    Ledger-->>SCADA: Work Order #WO-2026-P101 Dispatched & Logged
+    Ledger-->>NASA: Work Order #WO-2026-P101 FUNDED & Dispatched
 ```
 
 ---
@@ -380,8 +380,8 @@ AuRAG is engineered with complete intellectual honesty and cryptographic auditab
 ### 1. Telemetry Data Classification & Provenance Boundaries
 | Data Mode | Description & Provenance | Production Status | Visible UI Badge |
 | :--- | :--- | :--- | :--- |
-| **Canonical Demo** | Mathematically simulated sensor drift (bearing vibration excursion on pump `P-101A` / `VIB-301-BEARING`) based on ISO 10816 standards. | Synthetic simulation for predictable, deterministic judging. | `[SYNTHETIC DEMO]` |
-| **Public Dataset Replay** | Empirical vibration run-to-failure records from the **NASA IMS Bearing Dataset** (University of Cincinnati / NASA Prognostics Center of Excellence). Replayed on explicit asset `REPLAY-ASSET-01` (Record `NASA-IMS-T2-REC-042`). | Non-handwritten, verifiable public condition-monitoring data replay. | `[PUBLIC DATASET / REPLAY]` |
+| **Public Dataset Replay (Primary Hero)** | Empirical vibration run-to-failure records from the **NASA IMS Bearing Dataset** (University of Cincinnati / NASA Ames Prognostics Center of Excellence). 4 Rexnord ZA-2115 bearings, 20 kHz PCB 353B33 accelerometers. Replayed on explicit asset `REPLAY-ASSET-01` (Record `NASA-IMS-T2-REC-042`, 5.42 mm/s outer race spall). | **100% Real Open Science Dataset**; primary benchmark for all evaluations. | `[PUBLIC DATASET / REPLAY]` |
+| **Canonical Demo (Secondary)** | Mathematically simulated sensor drift (bearing vibration excursion on pump `P-101A` / `VIB-301-BEARING`) based on ISO 10816 standards. | Synthetic simulation for predictable, deterministic judging. | `[SYNTHETIC DEMO]` |
 | **Live SCADA** | Real-time industrial plant connection via industrial fieldbus (e.g., OPC-UA / MQTT industrial brokers). | **Not claimed as live SCADA unless explicitly connected and configured.** | `[LIVE SCADA]` *(Disabled by default)* |
 
 > ⚠️ **Provenance Disclosure**: We do **not** claim that pump `P-101A` is an active physical facility or that the demo stream is "live SCADA". AuRAG explicitly isolates empirical public replay (`REPLAY-ASSET-01`) from synthetic demonstration fixtures (`P-101A`). Detailed dataset metadata, field mappings, and license terms are documented in [docs/PUBLIC_DATASET_PROVENANCE.md](./docs/PUBLIC_DATASET_PROVENANCE.md) and [docs/TELEMETRY_PROVENANCE_AUDIT.md](./docs/TELEMETRY_PROVENANCE_AUDIT.md).
@@ -391,11 +391,11 @@ Rather than relying on local hardcoded dictionaries, AuRAG federates multi-vendo
 
 | Demo Vendor Node | Port / Env Var | Endpoints | Classification |
 | :--- | :--- | :--- | :--- |
-| **Apex Diagnostics** | `8101` (`VENDOR_APEX_URL`) | `GET /health`, `POST /quote` | `DEMO VENDOR NODE` / `PRE-APPROVED DEMO VENDOR` |
-| **Precision Dynamics** | `8102` (`VENDOR_PRECISION_URL`) | `GET /health`, `POST /quote` | `DEMO VENDOR NODE` / `PRE-APPROVED DEMO VENDOR` |
-| **Quantum Reliability** | `8103` (`VENDOR_QUANTUM_URL`) | `GET /health`, `POST /quote` | `DEMO VENDOR NODE` / `PRE-APPROVED DEMO VENDOR` |
+| **Apex Diagnostics** | `8101` (`VENDOR_APEX_URL`) | `GET /health`, `POST /quote` | `ILLUSTRATIVE DEMO VENDOR NODE` (Multi-Objective Bidding Simulation) |
+| **Precision Dynamics** | `8102` (`VENDOR_PRECISION_URL`) | `GET /health`, `POST /quote` | `ILLUSTRATIVE DEMO VENDOR NODE` (Multi-Objective Bidding Simulation) |
+| **Quantum Reliability** | `8103` (`VENDOR_QUANTUM_URL`) | `GET /health`, `POST /quote` | `ILLUSTRATIVE DEMO VENDOR NODE` (Multi-Objective Bidding Simulation) |
 
-> ℹ️ **Vendor Disclosure**: Vendor nodes in this hackathon demo are independent HTTP webhook microservices (`services/vendor_*`), **not real industrial contractors or live industrial suppliers**. Every candidate bid returns dynamic pricing, SLAs, and registered BOLT11 payment requests, establishing genuine HTTP request/response federation. See [docs/VENDOR_FEDERATION.md](./docs/VENDOR_FEDERATION.md).
+> ℹ️ **Vendor Disclosure**: Vendor nodes in this hackathon demo are independent HTTP webhook microservices (`services/vendor_*`), **illustrating decentralized agent RFQ negotiation, not real industrial contractors or live industrial suppliers**. Every candidate bid returns dynamic pricing, SLAs, and registered BOLT11 payment requests, establishing genuine HTTP request/response federation. See [docs/VENDOR_FEDERATION.md](./docs/VENDOR_FEDERATION.md).
 
 ---
 
