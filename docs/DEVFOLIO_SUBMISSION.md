@@ -43,7 +43,7 @@ When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG tr
   - `LNbitsProvider` / `CLN`: Server-side remote wallet adapters moving real satoshis across Lightning channels on `regtest`, `signet`, or `mainnet`.
   - Deterministic idempotency key hashing (`sha256(site:equipment:service:event)`) guaranteeing zero double-spends.
 - **Operator Console:** Next.js 16 (App Router), React 19, Tailwind CSS v4, Lucide icons, and dedicated `/machine-money` workspace with interactive SVG BOLT11 QR matrix.
-- **Nostr Stretch Readiness:** NIP-47 (Nostr Wallet Connect) remote signer format and NIP-90 (Data Vending Machine `kind: 5100`) telemetry job broadcasting over relays.
+- **Nostr Stretch Readiness (Experimental):** NIP-47-inspired Nostr Wallet Connect simulation (local loopback, HMAC-SHA256 signatures) and NIP-90 (Data Vending Machine `kind: 5100`) telemetry job broadcasting concept.
 
 ---
 
@@ -58,8 +58,8 @@ When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG tr
 ## 5. Verification & Testing Proof
 
 - **377 Automated Tests Passing (100%):**
-  - 316 Pytest backend tests (Machine Money core, Nostr NWC NIP-47, BOLT11, RFQ federation, graph resilience, idempotency, failure-paths).
-  - 61 Vitest frontend component tests (React 19, Next.js 16, JudgeMode, VendorRFQ, ProofVerification, NWC UI).
+  - 316 Pytest backend tests (Machine Money core, NIP-47-inspired NWC simulation, BOLT11, RFQ federation, graph resilience, idempotency, failure-paths).
+  - 61 Vitest frontend component tests (React 19, Next.js 16, JudgeMode, VendorRFQ, ProofVerification, NWC simulation UI).
   - 6 Playwright Browser E2E tests (Desktop & Pixel 7 Mobile responsive flows).
   - Complete end-to-end integration and failure recovery suites.
 - **Zero Secrets Committed:** Tested against `.gitignore` with `*.key`, `*.pem`, `*.macaroon` protection.

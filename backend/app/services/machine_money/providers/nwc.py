@@ -1,5 +1,8 @@
-"""NIP-47 Nostr Wallet Connect (NWC) Provider implementation for AuRAG.
-Implements the abstract LightningProvider protocol using Nostr relays and NIP-47 events.
+"""NIP-47-inspired NWC Provider (experimental simulation) for AuRAG.
+
+Implements the abstract LightningProvider interface using NIP-47-compatible
+event structures in local loopback mode. This is a stretch-goal simulation;
+primary production settlement uses LNbits BOLT11.
 """
 
 import hashlib
@@ -19,7 +22,7 @@ from backend.app.services.machine_money.schemas import (
 
 
 class NWCProvider(LightningProvider):
-    """Nostr Wallet Connect payment provider adhering to NIP-47 specifications."""
+    """NIP-47-inspired experimental simulation provider (local loopback, no live relay)."""
     name = "nwc"
 
     def __init__(self, uri_or_config: Optional[str] = None):
@@ -50,7 +53,7 @@ class NWCProvider(LightningProvider):
     async def create_invoice(self, request: InvoiceRequest) -> BOLT11Invoice:
         """Create a verifiable BOLT11 invoice for the requested payment amount."""
         payment_hash = hashlib.sha256(f"NWC-INV-{request.amount_sats}-{time.time()}".encode()).hexdigest()
-        bolt11 = encode_bolt11(amount_sats=request.amount_sats, description=request.memo)
+        bolt11 = encode_bolt11(amount_sats=request.amount_sats, description=request.memo, payment_hash_hex=payment_hash)
         return BOLT11Invoice(
             bolt11=bolt11,
             payment_request=bolt11,

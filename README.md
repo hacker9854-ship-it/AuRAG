@@ -272,7 +272,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🔄 **Deterministic Idempotency Protection** — SHA-256 idempotency cache rejecting duplicate physical anomaly triggers and network retries.
 - 📦 **Payment Proof Drawer & Evidence Pack** — Interactive sliding drawer for inspecting raw JSON, hex preimages, BOLT-11 invoices, GraphRAG failure codes (`FE-001`), and downloadable audit reports.
 - 🖥️ **Industrial Operations Cockpit** — 12 interactive Next.js 16 routes featuring dark mode, responsive layout (1080p → mobile), live execution timeline, and system readiness diagnostics.
-- 🧪 **Comprehensive Test Coverage** — 316 backend Pytest tests + 61 frontend Vitest tests (377 total) covering E2E lifecycle, Nostr NWC (NIP-47), multi-hop routing, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
+- 🧪 **Comprehensive Test Coverage** — 316 backend Pytest tests + 61 frontend Vitest tests (377 total) covering E2E lifecycle, NIP-47-inspired NWC simulation, multi-hop routing, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
 
 ---
 
@@ -621,8 +621,8 @@ GET /api/v1/machine-money/budget/status
 
 | Test Suite | Scope | Result | Execution Time |
 |:-----------|:------|:------:|:--------------:|
-| **Backend Pytest** | Unit, Integration, E2E, BOLT11, NWC NIP-47, Policy, Failure-Path, Secret-Scan | **316 / 316 Passed** | ~60s |
-| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics, NWC | **61 / 61 Passed** (16 suites) | ~40s |
+| **Backend Pytest** | Unit, Integration, E2E, BOLT11, NWC NIP-47 simulation, Policy, Failure-Path, Secret-Scan | **316 / 316 Passed** | ~60s |
+| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics, NWC simulation | **61 / 61 Passed** (16 suites) | ~40s |
 | **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 11.1s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
 | **Total Automated Tests** | Combined backend + frontend | **377 / 377 Passed** | ~100s |

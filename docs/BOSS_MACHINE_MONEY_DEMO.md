@@ -104,9 +104,9 @@
 
 ### Scene 10: Dual-Layer Audit & Conclusion (3:30 – 3:45)
 - **On Screen:** Settlement Ledger Table & Nostr Relay Card (Section 20).
-- **Visual Focus:** Ledger row showing payment ID, timestamp, and NIP-47 / NIP-90 relay readiness status.
+- **Visual Focus:** Ledger row showing payment ID, timestamp, and NIP-47 simulation / NIP-90 stretch-goal readiness status.
 - **Speaker Narration:**
-  > *"Every payment is dual-persisted across PostgreSQL and Neo4j with deterministic SHA-256 idempotency preventing any double-spend, and our Nostr NWC protocol adapter ensures forward compatibility with peer-to-peer data vending machines.*  
+  > *"Every payment is dual-persisted across PostgreSQL and Neo4j with deterministic SHA-256 idempotency preventing any double-spend, and our experimental Nostr NWC protocol simulation demonstrates forward compatibility with peer-to-peer data vending machines.*  
   > *AuRAG proves that Machine Money on Bitcoin Lightning is not a speculative gimmick—it is the future of autonomous, resilient industrial infrastructure. Thank you!"*
 
 ---

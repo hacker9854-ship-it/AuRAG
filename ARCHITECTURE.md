@@ -11,7 +11,7 @@
 
 AuRAG is an autonomous cyber-physical machine money protocol designed for industrial operations (refineries, chemical processing, automated manufacturing plants). It addresses a multi-billion dollar industrial inefficiency: **unplanned asset downtime costs $22,000 per minute**, yet maintenance procurement and diagnostic dispatch historically require hours or days of human bureaucratic approval.
 
-AuRAG transforms physical plant machinery into **sovereign economic actors** equipped with their own Bitcoin Lightning Network wallets (BOLT-11 / Nostr NIP-47 NWC). Crucially, an autonomous asset cannot make blind disbursements. AuRAG integrates a hybrid **Industrial GraphRAG Engine** as the machine's deterministic cryptographic justification layer—validating physical failure modes, operating procedures (SOPs), warranty constraints, and ISO standards before releasing satoshis.
+AuRAG transforms physical plant machinery into **sovereign economic actors** equipped with their own Bitcoin Lightning Network wallets (BOLT-11 via LNbits). An experimental NIP-47-inspired Nostr Wallet Connect simulation is included as a stretch goal. Crucially, an autonomous asset cannot make blind disbursements. AuRAG integrates a hybrid **Industrial GraphRAG Engine** as the machine's deterministic cryptographic justification layer—validating physical failure modes, operating procedures (SOPs), warranty constraints, and ISO standards before releasing satoshis.
 
 ```mermaid
 flowchart TD
@@ -171,7 +171,7 @@ sequenceDiagram
 ```
 
 ### 5.1 Bitcoin Innovations
-1. **Nostr Wallet Connect (NIP-47):** Native sovereign client that interacts over Nostr relays with NIP-04 ECDH encryption. Enables air-gapped machine-to-machine wallet operations with configurable daily velocity budgets.
+1. **NIP-47-Inspired Nostr Wallet Connect (Experimental Stretch Goal):** Demonstrates NIP-47-compatible event structures (kind 23194/23195) with NIP-04 ECDH encryption in local loopback simulation. Signatures use HMAC-SHA256 deterministic fallback (not production BIP-340 Schnorr). No live relay transport.
 2. **Multi-Hop Sphinx Onion Routing Simulation:** Models 4-hop Lightning Network topologies (`Machine ➔ LSP Core ➔ Routing Hub ➔ Vendor`), simulating channel capacity, base fees, PPM fee rates, and CLTV expiry deltas.
 3. **Zero-Trust Spending Policy Escrow:** Hard backend ceiling at 500 sats. Unilateral client attempts to bypass spending limits via API calls are rejected with HTTP 403.
 4. **Cryptographic Proof Packages:** Every completed transaction yields an immutable cryptographic proof containing the BOLT11 invoice, payment hash, SHA-256 preimage verification, and the operational GraphRAG evidence trail.
@@ -204,11 +204,11 @@ AuRAG solves this by defaulting to an **autonomous standalone local engine**:
 * **Decision:** Enforced closed-world entity matching against pre-seeded plant assets. Unmatched mentions are logged and dropped, never hallucinated into the core ontology.
 * **Consequences:** Guarantees ontological integrity of the knowledge graph and prevents phantom equipment from entering maintenance workflows.
 
-### ADR-003: Nostr NIP-47 (NWC) for Autonomous M2M Rails
-* **Status:** Accepted
+### ADR-003: NIP-47-Inspired NWC Simulation (Experimental Stretch Goal)
+* **Status:** Experimental
 * **Context:** Traditional webhooks or custodial API keys tie machines to centralized hosted services.
-* **Decision:** Implemented native Nostr Wallet Connect (NIP-47) with NIP-04 encrypted RPC over decentralized relays.
-* **Consequences:** Machines can hold sovereign keys, delegate permissions via connection strings, and enforce budget allowances natively on the Bitcoin protocol.
+* **Decision:** Implemented NIP-47-inspired event structures (kind 23194/23195) with NIP-04 ECDH encryption as a structural demonstration. Signatures use HMAC-SHA256 fallback (not real BIP-340 Schnorr). No live Nostr relay WebSocket transport.
+* **Consequences:** Demonstrates the M2M sovereign wallet concept directionally. Primary production settlement remains BOLT11 via LNbits.
 
 ### ADR-004: In-Memory Resilient Session Fallback
 * **Status:** Accepted

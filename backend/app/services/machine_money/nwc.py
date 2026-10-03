@@ -1,5 +1,12 @@
-"""Nostr Wallet Connect (NIP-47) Implementation for AuRAG Machine Money.
-Conforms strictly to Nostr NIP-47 specifications:
+"""NIP-47-inspired Nostr Wallet Connect deterministic simulation for AuRAG Machine Money.
+
+Implements NIP-47-compatible data structures and event lifecycle as an
+experimental stretch goal. Key limitations vs. production NIP-47:
+- Schnorr signatures use HMAC-SHA256 deterministic fallback, NOT real BIP-340.
+- No live Nostr relay WebSocket transport (loopback simulation only).
+- Budget caps and pay_invoice work structurally but bypass real relay broadcast.
+
+Wire-format compliance:
 - URI format: nostr+walletconnect://<wallet_pubkey>?relay=<relay_url>&secret=<client_secret_hex>&lud16=<lud16>
 - Request Event: kind 23194 (NIP-04 encrypted JSON payload)
 - Response Event: kind 23195 (NIP-04 encrypted JSON response)
@@ -148,9 +155,14 @@ def nip04_decrypt(receiver_secret_hex: str, sender_pubkey_hex: str, payload: str
 
 
 def _schnorr_sign_digest(digest_bytes: bytes, privkey_hex: str) -> str:
-    """Compute 64-byte deterministic Schnorr signature over 32-byte digest."""
-    # Deterministic fallback signature based on HMAC-SHA256 for reproducible test simulation
-    # (Matches Nostr BIP-340 wire structure: 64-byte hex string)
+    """Produce a 64-byte deterministic signature over a 32-byte digest.
+
+    ⚠️  SIMULATION ONLY — NOT real BIP-340 Schnorr.
+    Uses HMAC-SHA256 to produce a deterministic 64-byte value that matches
+    the Nostr event wire format (r‖s, 128 hex chars) but will NOT verify
+    against any real BIP-340 validator.  Suitable for offline loopback
+    testing and structural event-lifecycle demonstration only.
+    """
     priv_bytes = bytes.fromhex(privkey_hex)
     r = hmac.new(priv_bytes, digest_bytes, hashlib.sha256).digest()
     s = hmac.new(priv_bytes, r + digest_bytes, hashlib.sha256).digest()
@@ -225,8 +237,11 @@ def create_nip47_response_event(
 
 
 class NWCClient:
-    """NIP-47 Nostr Wallet Connect client orchestrator.
-    Executes remote payments over configured Nostr relays with graceful deterministic simulation.
+    """NIP-47-inspired deterministic simulation client.
+
+    Demonstrates the NIP-47 event lifecycle (kind 23194 → 23195) with
+    NIP-04 ECDH encryption in a local loopback. Does NOT connect to
+    live Nostr relays.  Primary settlement path is BOLT11 + LNbits.
     """
 
     def __init__(self, uri_or_config: Optional[str] = None):

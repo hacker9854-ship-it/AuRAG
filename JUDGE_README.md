@@ -11,7 +11,7 @@
 **AuRAG is an Autonomous Industrial Machine Money Protocol.**
 
 * **The Problem**: When a refinery or manufacturing plant bearing degrades, traditional procurement takes **hours or days** of human bureaucracy. Unplanned downtime costs industry **$22,000 per minute**.
-* **The Solution**: We give the industrial machine its **own sovereign Bitcoin Lightning wallet** (BOLT-11 / Nostr NIP-47 NWC).
+* **The Solution**: We give the industrial machine its **own sovereign Bitcoin Lightning wallet** (BOLT-11 via LNbits).
 * **The "Why GraphRAG?" Breakthrough**: An autonomous machine holding private keys **cannot make blind payments**. GraphRAG is NOT a search box — it is the machine's *deterministic cryptographic justification engine* (validating ISO 10816 standards, warranty contracts, and SOPs) before releasing satoshis.
 * **The Result**: Sensor Anomaly Detected ➔ Graph-Proven Repair Justification ➔ Autonomous Vendor RFQ ➔ Instant Lightning Settlement in milliseconds.
 
@@ -25,7 +25,7 @@
 [Autonomous RFQ Federation (3 Diagnostic Vendors)]
                │
                ▼ (Optimal Quote: 250 sats)
-[Sovereign Lightning Settlement (NIP-47 NWC / BOLT11)]
+[Sovereign Lightning Settlement (BOLT11 / LNbits)]
                │
                ▼ (Preimage eaa9f3... bound in Neo4j)
 [Neo4j Operational Graph: (Payment)-[:FUNDS]->(WorkOrder)]
@@ -66,10 +66,10 @@ Three punchy, indisputable proofs appear immediately:
 
 Judges from the Bitcoin / Bitshala community will appreciate that this is **not** a basic LNbits API wrapper:
 
-1. **Native Nostr NIP-47 (Nostr Wallet Connect) Engine**:
-   * Sovereign client implemented with NIP-04 ECDH encrypted RPC requests over Nostr relays.
-   * Autonomous command execution (`pay_invoice`, `get_balance`, `get_info`) with enforce-able daily budget caps.
-   * Test: `tests/test_nwc_nip47.py` (passes 100%).
+1. **NIP-47-Inspired Nostr Wallet Connect Simulation (Experimental Stretch Goal)**:
+   * Demonstrates NIP-47-compatible event structures (kind 23194/23195) with NIP-04 ECDH encryption in local loopback mode.
+   * Signatures use HMAC-SHA256 deterministic fallback (not production BIP-340 Schnorr). Clearly marked as experimental.
+   * Test: `tests/test_nwc_nip47.py` (passes 100% — validates event structure and encryption, not live relay broadcast).
 2. **Multi-Hop Lightning HTLC Routing Simulation**:
    * Deterministic 4-hop Sphinx onion routing engine (`Machine Node ➔ LSP Core ➔ Routing Hub ➔ Vendor Node`).
    * Models real channel capacity, base fee, PPM fee rates, and CLTV expiry deltas.
