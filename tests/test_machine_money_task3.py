@@ -10,7 +10,10 @@ client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def setup_database():
-    """Ensure tables exist before tests run."""
+    """Ensure tables exist before tests run and mock provider is active."""
+    import os
+    os.environ["MACHINE_MONEY_PROVIDER"] = "mock"
+    os.environ["MACHINE_MONEY_NETWORK"] = "regtest"
     init_db()
 
 

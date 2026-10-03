@@ -19,7 +19,7 @@ def get_payment_provider(force_refresh: bool = False) -> LightningProvider:
     Respects MACHINE_MONEY_PROVIDER environment variable ('mock' | 'lnbits' | 'nwc').
     """
     global _cached_provider
-    provider_type = os.environ.get("MACHINE_MONEY_PROVIDER", "lnbits").strip().lower()
+    provider_type = os.environ.get("MACHINE_MONEY_PROVIDER", "mock").strip().lower()
 
     if _cached_provider is not None and not force_refresh:
         if getattr(_cached_provider, "name", "") == provider_type:

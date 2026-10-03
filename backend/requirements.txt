@@ -6,3 +6,4 @@ uvicorn[standard]
 mem0ai==2.0.12
 pyjwt>=2.8.0
 cryptography>=42.0.0
+coincurve>=20.0.0

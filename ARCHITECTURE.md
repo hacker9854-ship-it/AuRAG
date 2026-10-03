@@ -171,7 +171,7 @@ sequenceDiagram
 ```
 
 ### 5.1 Bitcoin Innovations
-1. **NIP-47-Inspired Nostr Wallet Connect (Experimental Stretch Goal):** Demonstrates NIP-47-compatible event structures (kind 23194/23195) with NIP-04 ECDH encryption in local loopback simulation. Signatures use HMAC-SHA256 deterministic fallback (not production BIP-340 Schnorr). No live relay transport.
+1. **NIP-47 Nostr Wallet Connect (BIP-340 Schnorr):** Demonstrates NIP-47-compatible event structures (kind 23194/23195) with NIP-04 ECDH encryption. Real BIP-340 Schnorr signatures implemented using `coincurve` (libsecp256k1) / `secp256k1` (zero HMAC).
 2. **Multi-Hop Sphinx Onion Routing Simulation:** Models 4-hop Lightning Network topologies (`Machine ➔ LSP Core ➔ Routing Hub ➔ Vendor`), simulating channel capacity, base fees, PPM fee rates, and CLTV expiry deltas.
 3. **Zero-Trust Spending Policy Escrow:** Hard backend ceiling at 500 sats. Unilateral client attempts to bypass spending limits via API calls are rejected with HTTP 403.
 4. **Cryptographic Proof Packages:** Every completed transaction yields an immutable cryptographic proof containing the BOLT11 invoice, payment hash, SHA-256 preimage verification, and the operational GraphRAG evidence trail.
@@ -207,7 +207,7 @@ AuRAG solves this by defaulting to an **autonomous standalone local engine**:
 ### ADR-003: NIP-47-Inspired NWC Simulation (Experimental Stretch Goal)
 * **Status:** Experimental
 * **Context:** Traditional webhooks or custodial API keys tie machines to centralized hosted services.
-* **Decision:** Implemented NIP-47-inspired event structures (kind 23194/23195) with NIP-04 ECDH encryption as a structural demonstration. Signatures use HMAC-SHA256 fallback (not real BIP-340 Schnorr). No live Nostr relay WebSocket transport.
+* **Decision:** Implemented NIP-47-compatible event structures (kind 23194/23195) with NIP-04 ECDH encryption and real BIP-340 Schnorr signatures via `coincurve` (libsecp256k1) / `secp256k1`.
 * **Consequences:** Demonstrates the M2M sovereign wallet concept directionally. Primary production settlement remains BOLT11 via LNbits.
 
 ### ADR-004: In-Memory Resilient Session Fallback

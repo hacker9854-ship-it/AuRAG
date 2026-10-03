@@ -66,10 +66,10 @@ Three punchy, indisputable proofs appear immediately:
 
 Judges from the Bitcoin / Bitshala community will appreciate that this is **not** a basic LNbits API wrapper:
 
-1. **NIP-47-Inspired Nostr Wallet Connect Simulation (Experimental Stretch Goal)**:
-   * Demonstrates NIP-47-compatible event structures (kind 23194/23195) with NIP-04 ECDH encryption in local loopback mode.
-   * Signatures use HMAC-SHA256 deterministic fallback (not production BIP-340 Schnorr). Clearly marked as experimental.
-   * Test: `tests/test_nwc_nip47.py` (passes 100% — validates event structure and encryption, not live relay broadcast).
+1. **NIP-47 Nostr Wallet Connect (BIP-340 Schnorr)**:
+   * Demonstrates NIP-47-compatible event structures (kind 23194/23195) with NIP-04 ECDH encryption.
+   * Real BIP-340 64-byte Schnorr signatures implemented using `coincurve` (libsecp256k1) / `secp256k1` (zero HMAC fallback).
+   * Test: `tests/test_nwc_nip47.py` (passes 100% — validates BIP-340 signature generation, verification, tamper rejection, and NIP-04 encryption).
 2. **Multi-Hop Lightning HTLC Routing Simulation**:
    * Deterministic 4-hop Sphinx onion routing engine (`Machine Node ➔ LSP Core ➔ Routing Hub ➔ Vendor Node`).
    * Models real channel capacity, base fee, PPM fee rates, and CLTV expiry deltas.

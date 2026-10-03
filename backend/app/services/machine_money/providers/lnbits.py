@@ -103,7 +103,17 @@ class LNbitsProvider(LightningProvider):
             )
 
     async def create_invoice(self, request: InvoiceRequest) -> BOLT11Invoice:
-        """Create a new standards-compliant Lightning invoice via live LNbits REST API."""
+        """Create a new Lightning invoice via live LNbits REST API.
+
+        ⚠️  FAIL-CLOSED: If LNbits is unreachable, raises ProviderError.
+        No local cryptographic fallback — live mode never fakes settlement.
+        """
+        if not self.invoice_key:
+            raise ProviderError(
+                "LNbits invoice creation requires LNBITS_INVOICE_KEY. "
+                "Cannot create invoice without live LNbits credentials."
+            )
+
         endpoint = f"{self.base_url}/api/v1/payments"
         payload = {
             "out": False,
@@ -112,70 +122,48 @@ class LNbitsProvider(LightningProvider):
             "unit": "sat",
         }
 
-        if self.invoice_key:
-            try:
-                async with httpx.AsyncClient(timeout=self.timeout) as client:
-                    res = await client.post(endpoint, json=payload, headers=self._headers(is_admin=False))
-                    if res.status_code == 201:
-                        data = res.json()
-                        payment_hash = data.get("payment_hash")
-                        bolt11 = data.get("bolt11") or data.get("payment_request")
-                        preimage = data.get("preimage")
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                res = await client.post(endpoint, json=payload, headers=self._headers(is_admin=False))
+                if res.status_code == 201:
+                    data = res.json()
+                    payment_hash = data.get("payment_hash")
+                    bolt11 = data.get("bolt11") or data.get("payment_request")
+                    preimage = data.get("preimage")
 
-                        from backend.app.services.machine_money.bolt11 import INVOICE_PREIMAGES
-                        from backend.app.services.machine_money.providers.mock import _GLOBAL_PREIMAGES
-                        if preimage and payment_hash:
-                            INVOICE_PREIMAGES[payment_hash] = preimage
-                            _GLOBAL_PREIMAGES[payment_hash] = preimage
-
-                        now = utcnow()
-                        return BOLT11Invoice(
-                            invoice_id=f"lnbits-inv-{payment_hash[:12]}",
-                            payment_hash=payment_hash,
-                            payment_request=bolt11,
-                            amount_sats=request.amount_sats,
-                            memo=request.memo,
-                            created_at=now,
-                            expires_at=now + timedelta(seconds=request.expiry_seconds),
-                            status=PaymentStatus.PENDING,
-                        )
-            except Exception as exc:
-                logger.warning("Live LNbits invoice creation failed (%s); using resilient fallback", exc)
-
-        # Fallback if LNbits call fails or offline
-        from backend.app.services.machine_money.bolt11 import encode_bolt11, INVOICE_PREIMAGES
-        from backend.app.services.machine_money.providers.mock import _GLOBAL_PREIMAGES
-        import secrets
-        import hashlib
-
-        preimage = secrets.token_hex(32)
-        payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
-        INVOICE_PREIMAGES[payment_hash] = preimage
-        _GLOBAL_PREIMAGES[payment_hash] = preimage
-
-        bolt11 = encode_bolt11(
-            amount_sats=request.amount_sats,
-            description=request.memo or "AuRAG Machine Money Invoice",
-            network=self.network,
-            payment_hash_hex=payment_hash,
-            expiry_seconds=request.expiry_seconds,
-        )
-        now = utcnow()
-        return BOLT11Invoice(
-            invoice_id=f"lnbits-inv-{payment_hash[:12]}",
-            payment_hash=payment_hash,
-            payment_request=bolt11,
-            amount_sats=request.amount_sats,
-            memo=request.memo,
-            created_at=now,
-            expires_at=now + timedelta(seconds=request.expiry_seconds),
-            status=PaymentStatus.PENDING,
-        )
+                    now = utcnow()
+                    return BOLT11Invoice(
+                        invoice_id=f"lnbits-inv-{payment_hash[:12]}",
+                        payment_hash=payment_hash,
+                        payment_request=bolt11,
+                        amount_sats=request.amount_sats,
+                        memo=request.memo,
+                        created_at=now,
+                        expires_at=now + timedelta(seconds=request.expiry_seconds),
+                        status=PaymentStatus.PENDING,
+                    )
+                else:
+                    raise ProviderError(
+                        f"LNbits invoice creation failed [HTTP {res.status_code}]: {res.text[:200]}. "
+                        "Live mode does not fall back to local simulation."
+                    )
+        except ProviderError:
+            raise
+        except Exception as exc:
+            raise ProviderError(
+                f"LNbits network unreachable: {exc}. "
+                "Live provider fails closed — no local cryptographic fallback. "
+                "Switch to MACHINE_MONEY_PROVIDER=mock for offline evaluation."
+            ) from exc
 
     async def pay_invoice(self, bolt11: str, max_fee_sats: int = 20) -> PaymentReceipt:
-        """Execute settlement on BOLT11 invoice with authentic cryptographic verification."""
-        from backend.app.services.machine_money.bolt11 import decode_bolt11, INVOICE_PREIMAGES
-        from backend.app.services.machine_money.providers.mock import _GLOBAL_PREIMAGES
+        """Execute settlement on BOLT11 invoice via live LNbits node.
+
+        ⚠️  FAIL-CLOSED: Preimage must come from LNbits API response.
+        Local preimage store is NEVER used as fallback — if LNbits doesn't
+        confirm settlement, this method raises ProviderError with FAILED status.
+        """
+        from backend.app.services.machine_money.bolt11 import decode_bolt11
         import hashlib
 
         try:
@@ -191,42 +179,68 @@ class LNbitsProvider(LightningProvider):
         preimage = None
         fee_sats = 0
 
-        # Attempt live LNbits settlement via admin key
-        if self.admin_key:
-            endpoint = f"{self.base_url}/api/v1/payments"
-            try:
-                async with httpx.AsyncClient(timeout=self.timeout) as client:
-                    res = await client.post(endpoint, json={"out": True, "bolt11": bolt11}, headers=self._headers(is_admin=True))
-                    if res.status_code == 201:
-                        data = res.json()
-                        payment_hash = data.get("payment_hash") or payment_hash
-                        check_res = await client.get(f"{self.base_url}/api/v1/payments/{payment_hash}", headers=self._headers(is_admin=False))
-                        if check_res.status_code == 200:
-                            check_data = check_res.json()
-                            preimage = check_data.get("preimage") or check_data.get("details", {}).get("preimage")
-                            fee_sats = abs(check_data.get("details", {}).get("fee", 0)) // 1000
-            except Exception as exc:
-                logger.info("Live payment call via LNbits returned: %s", exc)
+        # ── Step 1: Attempt live LNbits settlement via admin key ──
+        if not self.admin_key:
+            raise ProviderError(
+                "LNbits payment requires LNBITS_ADMIN_KEY. "
+                "Cannot settle invoice without live admin credentials."
+            )
 
-        # If not resolved from outgoing pay, query LNbits payment record directly
-        if not preimage and (self.admin_key or self.invoice_key):
+        endpoint = f"{self.base_url}/api/v1/payments"
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                res = await client.post(
+                    endpoint,
+                    json={"out": True, "bolt11": bolt11},
+                    headers=self._headers(is_admin=True),
+                )
+                if res.status_code == 201:
+                    data = res.json()
+                    payment_hash = data.get("payment_hash") or payment_hash
+
+                    # Query LNbits for settlement confirmation and preimage
+                    check_res = await client.get(
+                        f"{self.base_url}/api/v1/payments/{payment_hash}",
+                        headers=self._headers(is_admin=False),
+                    )
+                    if check_res.status_code == 200:
+                        check_data = check_res.json()
+                        preimage = check_data.get("preimage") or check_data.get("details", {}).get("preimage")
+                        fee_sats = abs(check_data.get("details", {}).get("fee", 0)) // 1000
+                else:
+                    raise ProviderError(
+                        f"LNbits payment failed [HTTP {res.status_code}]: {res.text[:200]}. "
+                        "0 satoshis settled. Live mode does not fall back to local simulation."
+                    )
+        except ProviderError:
+            raise
+        except Exception as exc:
+            raise ProviderError(
+                f"LNbits network error during payment: {exc}. "
+                "0 satoshis settled. Live provider fails closed — "
+                "no local cryptographic fallback."
+            ) from exc
+
+        # ── Step 2: If LNbits responded 201 but no preimage yet, retry query ──
+        if not preimage:
             try:
                 async with httpx.AsyncClient(timeout=self.timeout) as client:
-                    check_res = await client.get(f"{self.base_url}/api/v1/payments/{payment_hash}", headers=self._headers(is_admin=False))
+                    check_res = await client.get(
+                        f"{self.base_url}/api/v1/payments/{payment_hash}",
+                        headers=self._headers(is_admin=False),
+                    )
                     if check_res.status_code == 200:
                         check_data = check_res.json()
                         preimage = check_data.get("preimage") or check_data.get("details", {}).get("preimage")
             except Exception:
-                pass
+                pass  # Will fail below if preimage still None
 
-        # Fallback to registered preimage in provider store
-        if not preimage:
-            preimage = INVOICE_PREIMAGES.get(payment_hash) or _GLOBAL_PREIMAGES.get(payment_hash)
-
+        # ── Step 3: FAIL CLOSED — no local fallback ──
         if not preimage:
             raise ProviderError(
-                f"Unregistered invoice: payment hash {payment_hash} is not registered in provider store. "
-                "Settlement rejected (0 satoshis deducted)."
+                f"LNbits settlement incomplete: payment_hash {payment_hash} submitted but "
+                "no preimage returned by LNbits node. 0 satoshis confirmed settled. "
+                "Live provider does NOT fall back to local preimage store."
             )
 
         # Enforce sha256(preimage) == payment_hash

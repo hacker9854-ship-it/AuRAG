@@ -11,6 +11,9 @@ from backend.app.services.machine_money.nwc import (
     nip04_decrypt,
     create_nip47_request_event,
     create_nip47_response_event,
+    schnorr_sign,
+    schnorr_verify,
+    verify_nip47_event,
     NWCClient,
 )
 from backend.app.services.machine_money.bolt11 import encode_bolt11
@@ -69,6 +72,8 @@ def test_nip47_request_and_response_events():
     assert req["pubkey"] == pub_client
     assert len(req["sig"]) == 128
     assert req["tags"][0] == ["p", pub_wallet]
+    # Cryptographic BIP-340 verification
+    assert verify_nip47_event(req) is True
 
     res = create_nip47_response_event(
         wallet_secret_hex=priv_wallet,
@@ -83,6 +88,36 @@ def test_nip47_request_and_response_events():
     assert len(res["sig"]) == 128
     assert ["p", pub_client] in res["tags"]
     assert ["e", req["id"]] in res["tags"]
+    # Cryptographic BIP-340 verification
+    assert verify_nip47_event(res) is True
+
+
+def test_bip340_schnorr_signatures():
+    """Verify real BIP-340 Schnorr signatures: signing, verification, and rejection gates."""
+    import hashlib
+
+    priv_hex, pub_hex = generate_nwc_keypair()
+    message = b"AuRAG Machine Money BIP-340 Signature Verification"
+    digest = hashlib.sha256(message).digest()
+
+    # 1. Sign
+    sig_hex = schnorr_sign(digest, priv_hex)
+    assert len(sig_hex) == 128  # 64 bytes = 128 hex chars
+
+    # 2. Verify valid signature
+    assert schnorr_verify(sig_hex, digest, pub_hex) is True
+
+    # 3. Reject tampered digest
+    tampered_digest = hashlib.sha256(b"Tampered message content").digest()
+    assert schnorr_verify(sig_hex, tampered_digest, pub_hex) is False
+
+    # 4. Reject wrong public key
+    _, wrong_pub_hex = generate_nwc_keypair()
+    assert schnorr_verify(sig_hex, digest, wrong_pub_hex) is False
+
+    # 5. Reject corrupted signature bytes
+    corrupted_sig = sig_hex[:126] + ("00" if sig_hex[-2:] != "00" else "ff")
+    assert schnorr_verify(corrupted_sig, digest, pub_hex) is False
 
 
 import asyncio

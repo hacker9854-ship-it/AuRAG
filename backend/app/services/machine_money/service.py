@@ -58,8 +58,18 @@ logger = logging.getLogger(__name__)
 class MachineMoneyService:
     """Orchestrates machine-to-machine Bitcoin Lightning settlements with strict policy controls."""
 
-    def __init__(self):
-        self.provider = get_payment_provider()
+    def __init__(self, provider=None):
+        self._provider = provider
+
+    @property
+    def provider(self):
+        if self._provider is not None:
+            return self._provider
+        return get_payment_provider()
+
+    @provider.setter
+    def provider(self, val):
+        self._provider = val
 
     async def get_health(self) -> ProviderHealth:
         """Query health and readiness of the underlying Lightning settlement rail and graph persistence."""
