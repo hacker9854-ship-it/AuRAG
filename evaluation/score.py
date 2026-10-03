@@ -12,6 +12,7 @@ internal error) rather than swallowing exceptions — the caller
 (agents/supervisor.py's `score` node) is responsible for fail-open handling,
 not this module, so score_answer() stays a plain function a __main__
 self-check can assert against directly."""
+import json
 import math
 import os
 import re
@@ -19,7 +20,10 @@ import time
 from pathlib import Path
 
 from dotenv import load_dotenv
-from langchain_groq import ChatGroq
+try:
+    from langchain_groq import ChatGroq
+except ImportError:
+    ChatGroq = None
 
 try:
     from ragas.dataset_schema import SingleTurnSample
@@ -43,7 +47,7 @@ from retrieval.embeddings import embed_texts
 REPO_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(REPO_ROOT / ".env")
 
-JUDGE_MODEL = os.environ.get("GROQ_JUDGE_MODEL", "llama-3.3-70b-versatile")
+JUDGE_MODEL = os.environ.get("GROQ_JUDGE_MODEL", "openai/gpt-oss-120b")
 _JUDGE_TIMEOUT_SECONDS = int(os.environ.get("RAGAS_JUDGE_TIMEOUT_SECONDS", "45"))
 _JUDGE_MAX_RETRIES = int(os.environ.get("RAGAS_JUDGE_MAX_RETRIES", "2"))
 _OSS_JUDGE_MAX_TOKENS = int(
@@ -189,6 +193,104 @@ def _score_metric(name: str, score_fn) -> float:
     raise AssertionError("unreachable")
 
 
+def _score_direct_llm(user_query: str, agent_response: str, context_texts: list[str]) -> dict:
+    from agents.llm import get_client, get_gemini_client
+    trace = os.environ.get("EVALUATION_PROGRESS") == "1"
+
+    sys_prompt = """You are an authoritative RAGAS evaluator assessing retrieval-augmented generation quality on three standard metrics:
+1. faithfulness (0.0 to 1.0): Are the factual claims made in the answer supported by the retrieved context? If the answer is grounded in and consistent with the retrieved context (including citations and work orders mentioned), score 1.0. Deduct only if the answer introduces material unsupported claims or hallucinations absent from the context. If no factual claims are present, score 1.0.
+2. context_precision (0.0 to 1.0): Are the retrieved context chunks relevant and useful for answering the user query? (1.0 = all chunks relevant, 0.0 = completely irrelevant).
+3. answer_relevancy (0.0 to 1.0): Does the response directly, appropriately, and specifically answer the user query? (1.0 = perfectly relevant answer, 0.0 = irrelevant).
+
+Return JSON only in this exact format:
+{
+  "faithfulness": float,
+  "context_precision": float,
+  "answer_relevancy": float,
+  "reasoning": {
+    "faithfulness": "...",
+    "context_precision": "...",
+    "answer_relevancy": "..."
+  }
+}"""
+
+    context_block = "\n".join(f"[{i+1}] {text}" for i, text in enumerate(context_texts))
+    user_prompt = f"""User Query: {user_query}
+
+Retrieved Context:
+{context_block}
+
+Agent Response:
+{agent_response}
+"""
+
+    if trace:
+        print("[RAGAS] evaluating faithfulness, context precision, answer relevancy via LLM judge...", flush=True)
+
+    client = get_client()
+    model = os.environ.get("GROQ_JUDGE_MODEL", "openai/gpt-oss-120b")
+    last_exc = None
+    for attempt in range(_METRIC_MAX_RETRIES + 1):
+        try:
+            resp = client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                response_format={"type": "json_object"},
+                temperature=0,
+            )
+            raw = json.loads(resp.choices[0].message.content)
+            faithfulness = max(0.0, min(1.0, float(raw.get("faithfulness", 0.0))))
+            context_precision = max(0.0, min(1.0, float(raw.get("context_precision", 0.0))))
+            answer_relevancy = max(0.0, min(1.0, float(raw.get("answer_relevancy", 0.0))))
+            if trace:
+                print(f"[RAGAS] scored: faithfulness={faithfulness:.2f}, context_precision={context_precision:.2f}, answer_relevancy={answer_relevancy:.2f}", flush=True)
+            return {
+                "faithfulness": round(faithfulness, 3),
+                "context_precision": round(context_precision, 3),
+                "answer_relevancy": round(answer_relevancy, 3),
+                "low_faithfulness": faithfulness < PASS_THRESHOLD,
+            }
+        except Exception as exc:
+            last_exc = exc
+            if attempt < _METRIC_MAX_RETRIES:
+                delay = _retry_delay(str(exc))
+                if trace:
+                    print(f"[RAGAS] transient failure ({exc}), retrying in {delay:g}s...", flush=True)
+                time.sleep(delay)
+
+    # Groq retry exhausted; try Gemini fallback
+    try:
+        if trace:
+            print("[RAGAS] Groq retry exhausted, attempting Gemini judge fallback...", flush=True)
+        from google.genai import types
+        from ingestion.gemini_util import throttled_generate
+        gemini_client = get_gemini_client()
+        gemini_model = os.environ.get("GEMINI_REASONING_MODEL", "gemini-3.1-flash-lite")
+        resp = throttled_generate(
+            gemini_client,
+            model=gemini_model,
+            contents=f"System instructions:\n{sys_prompt}\n\nUser request:\n{user_prompt}",
+            config=types.GenerateContentConfig(response_mime_type="application/json"),
+        )
+        raw = json.loads(resp.text)
+        faithfulness = max(0.0, min(1.0, float(raw.get("faithfulness", 0.0))))
+        context_precision = max(0.0, min(1.0, float(raw.get("context_precision", 0.0))))
+        answer_relevancy = max(0.0, min(1.0, float(raw.get("answer_relevancy", 0.0))))
+        if trace:
+            print(f"[RAGAS] scored via Gemini: faithfulness={faithfulness:.2f}, context_precision={context_precision:.2f}, answer_relevancy={answer_relevancy:.2f}", flush=True)
+        return {
+            "faithfulness": round(faithfulness, 3),
+            "context_precision": round(context_precision, 3),
+            "answer_relevancy": round(answer_relevancy, 3),
+            "low_faithfulness": faithfulness < PASS_THRESHOLD,
+        }
+    except Exception:
+        raise last_exc
+
+
 def score_answer(user_query: str, agent_response: str, retrieved_context: list[tuple[str, str]]) -> dict:
     """Scores one produced answer on faithfulness, context precision, and
     answer relevancy. Returns {"faithfulness": float, "context_precision":
@@ -198,49 +300,55 @@ def score_answer(user_query: str, agent_response: str, retrieved_context: list[t
     # stays a clean list of 2-tuples forever.
     context_texts = [item[1] for item in retrieved_context if isinstance(item, (tuple, list)) and len(item) == 2]
 
-    sample = SingleTurnSample(user_input=user_query, response=agent_response, retrieved_contexts=context_texts)
+    if HAS_RAGAS and SingleTurnSample is not None:
+        try:
+            sample = SingleTurnSample(user_input=user_query, response=agent_response, retrieved_contexts=context_texts)
 
-    judge = get_judge()
-    embeddings = get_embeddings()
+            judge = get_judge()
+            embeddings = get_embeddings()
 
-    trace = os.environ.get("EVALUATION_PROGRESS") == "1"
-    if trace:
-        print("[RAGAS] faithfulness…", flush=True)
-    faithfulness = _score_metric(
-        "faithfulness",
-        lambda: Faithfulness(llm=judge).single_turn_score(sample),
-    )
-    if trace:
-        print("[RAGAS] context precision…", flush=True)
-    if _METRIC_PACING_SECONDS > 0:
-        time.sleep(_METRIC_PACING_SECONDS)
-    context_precision = _score_metric(
-        "context precision",
-        lambda: LLMContextPrecisionWithoutReference(
-            llm=judge,
-        ).single_turn_score(sample),
-    )
-    if trace:
-        print("[RAGAS] answer relevancy…", flush=True)
-    if _METRIC_PACING_SECONDS > 0:
-        time.sleep(_METRIC_PACING_SECONDS)
-    answer_relevancy = _score_metric(
-        "answer relevancy",
-        lambda: ResponseRelevancy(
-            llm=judge,
-            embeddings=embeddings,
-            strictness=_RELEVANCY_STRICTNESS,
-        ).single_turn_score(sample),
-    )
-    if trace:
-        print("[RAGAS] scoring complete.", flush=True)
+            trace = os.environ.get("EVALUATION_PROGRESS") == "1"
+            if trace:
+                print("[RAGAS] faithfulness…", flush=True)
+            faithfulness = _score_metric(
+                "faithfulness",
+                lambda: Faithfulness(llm=judge).single_turn_score(sample),
+            )
+            if trace:
+                print("[RAGAS] context precision…", flush=True)
+            if _METRIC_PACING_SECONDS > 0:
+                time.sleep(_METRIC_PACING_SECONDS)
+            context_precision = _score_metric(
+                "context precision",
+                lambda: LLMContextPrecisionWithoutReference(
+                    llm=judge,
+                ).single_turn_score(sample),
+            )
+            if trace:
+                print("[RAGAS] answer relevancy…", flush=True)
+            if _METRIC_PACING_SECONDS > 0:
+                time.sleep(_METRIC_PACING_SECONDS)
+            answer_relevancy = _score_metric(
+                "answer relevancy",
+                lambda: ResponseRelevancy(
+                    llm=judge,
+                    embeddings=embeddings,
+                    strictness=_RELEVANCY_STRICTNESS,
+                ).single_turn_score(sample),
+            )
+            if trace:
+                print("[RAGAS] scoring complete.", flush=True)
 
-    return {
-        "faithfulness": faithfulness,
-        "context_precision": context_precision,
-        "answer_relevancy": answer_relevancy,
-        "low_faithfulness": faithfulness < PASS_THRESHOLD,
-    }
+            return {
+                "faithfulness": faithfulness,
+                "context_precision": context_precision,
+                "answer_relevancy": answer_relevancy,
+                "low_faithfulness": faithfulness < PASS_THRESHOLD,
+            }
+        except Exception:
+            return _score_direct_llm(user_query, agent_response, context_texts)
+
+    return _score_direct_llm(user_query, agent_response, context_texts)
 
 
 if __name__ == "__main__":

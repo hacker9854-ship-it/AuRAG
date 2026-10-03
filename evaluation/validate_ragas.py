@@ -173,61 +173,75 @@ def main() -> None:
         f"threshold {PASS_THRESHOLD:.2f}.",
         flush=True,
     )
-    driver, db = get_driver(), get_database()
+    session_gen = None
+    driver = None
+    try:
+        from backend.app.core.neo4j import get_session
+        session_gen = get_session()
+        session = next(session_gen)
+    except Exception:
+        driver, db = get_driver(), get_database()
+        session = driver.session(database=db) if db else driver.session()
+
     totals = {metric: [] for metric in _METRICS}
     failures: list[str] = []
     scored_count = 0
 
     try:
-        with driver.session(database=db) as session:
-            for ordinal, (agent_name, qid, case) in enumerate(selected_cases, start=1):
-                case_name = f"{agent_name}/{qid}"
-                print(
-                    f"[RUNNING {ordinal}/{expected_total}] {case_name}: "
-                    f"{case['query']}",
-                    flush=True,
+        for ordinal, (agent_name, qid, case) in enumerate(selected_cases, start=1):
+            case_name = f"{agent_name}/{qid}"
+            print(
+                f"[RUNNING {ordinal}/{expected_total}] {case_name}: "
+                f"{case['query']}",
+                flush=True,
+            )
+            try:
+                result = run_case_with_retries(session, case["query"])
+            except Exception as exc:
+                message = f"{case_name}: answer or scoring crashed: {exc}"
+                failures.append(message)
+                print(f"[FAILED] {message}", flush=True)
+                continue
+
+            status = result.get("ragas_status")
+            if status != "scored":
+                message = (
+                    f"{case_name}: RAGAS status was {status!r}, "
+                    "expected 'scored'"
                 )
-                try:
-                    result = run_case_with_retries(session, case["query"])
-                except Exception as exc:
-                    message = f"{case_name}: answer or scoring crashed: {exc}"
+                failures.append(message)
+                print(f"[FAILED] {message}", flush=True)
+                continue
+
+            scores = result.get("ragas_scores") or {}
+            score_failures = validate_scores(scores)
+            if score_failures:
+                for failure in score_failures:
+                    message = f"{case_name}: {failure}"
                     failures.append(message)
                     print(f"[FAILED] {message}", flush=True)
-                    continue
+                continue
 
-                status = result.get("ragas_status")
-                if status != "scored":
-                    message = (
-                        f"{case_name}: RAGAS status was {status!r}, "
-                        "expected 'scored'"
-                    )
-                    failures.append(message)
-                    print(f"[FAILED] {message}", flush=True)
-                    continue
-
-                scores = result.get("ragas_scores") or {}
-                score_failures = validate_scores(scores)
-                if score_failures:
-                    for failure in score_failures:
-                        message = f"{case_name}: {failure}"
-                        failures.append(message)
-                        print(f"[FAILED] {message}", flush=True)
-                    continue
-
-                scored_count += 1
-                for metric in _METRICS:
-                    totals[metric].append(float(scores[metric]))
-                classified = {
-                    metric: classify(float(scores[metric]))
-                    for metric in _METRICS
-                }
-                rendered = ", ".join(
-                    f"{metric}={scores[metric]:.2f}({classified[metric]})"
-                    for metric in _METRICS
-                )
-                print(f"[PASSED] {case_name}: {rendered}", flush=True)
+            scored_count += 1
+            for metric in _METRICS:
+                totals[metric].append(float(scores[metric]))
+            classified = {
+                metric: classify(float(scores[metric]))
+                for metric in _METRICS
+            }
+            rendered = ", ".join(
+                f"{metric}={scores[metric]:.2f}({classified[metric]})"
+                for metric in _METRICS
+            )
+            print(f"[PASSED] {case_name}: {rendered}", flush=True)
     finally:
-        driver.close()
+        if session_gen is not None:
+            try:
+                session.close()
+            except Exception:
+                pass
+        elif driver is not None:
+            driver.close()
 
     print("\nRAGAS acceptance summary:", flush=True)
     print(f"  fully passing cases: {scored_count}/{expected_total}", flush=True)

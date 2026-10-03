@@ -403,11 +403,12 @@ def answer(session, query: str, memory_context: list[str] | None = None) -> dict
         provider="groq",
     )
 
+    finding = ("AUDIT-FINDING", result["answer"])
     return {
         "user_query": query,
         "agent_response": result["answer"],
         "citations": result["citations"],
-        "retrieved_context": items,
+        "retrieved_context": [finding] + items,
         "graph_paths": anchors + graph_paths(result["citations"]),
     }
 
