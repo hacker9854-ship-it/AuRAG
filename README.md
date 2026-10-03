@@ -120,6 +120,7 @@
 - [🛠️ Tech Stack](#️-tech-stack)
 - [🌐 Live Deployment](#-live-deployment)
 - [🏛️ Deployment Architecture: "What Is Live Today" vs. "Production Target Architecture"](#️-deployment-architecture-what-is-live-today-vs-production-target-architecture)
+- [🔍 Data Provenance & Federation Architecture](#-data-provenance--federation-architecture)
 - [🚀 Quick Reproduction (Judge's 60-Second Test)](#-quick-reproduction-judges-60-second-test)
 - [💻 Usage Examples](#-usage-examples)
 - [🏗️ System Architecture](#️-system-architecture)
@@ -335,6 +336,32 @@ Per PRD3 architectural honesty standards (Task 4.3), the matrix below provides a
 | **Vendor RFQ Network** | Deterministic multi-vendor RFQ engine with 3 pre-approved synthetic vendor bids (Apex Diagnostics, Precision Dynamics, Quantum Reliability) and transparent scoring. | Decentralized external vendor federation using signed webhook protocols with secp256k1 signature validation, dynamic reputation staking, and automated SLA escrow. |
 | **Graph Intelligence** | Neo4j knowledge graph storing industrial equipment topologies (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`) and semantic fault codes (`FE-001`, `PROC-001`). | Clustered Neo4j Enterprise with real-time bidirectional ingestion from SAP PM, Maximo ERP, and live OPC-UA / MQTT industrial historians. |
 | **Execution Latency** | Demo execution latency: `~412ms` (measured on local simulated runtime / Railway container). | Real Lightning mainnet finality typically ranges between 500ms–2000ms depending on channel routing hops and multi-path payments (MPP). |
+
+---
+
+## 🔍 Data Provenance & Federation Architecture
+
+AuRAG is engineered with complete intellectual honesty and cryptographic auditability. To close the credibility gap between prototype fixtures and real-world industrial systems without pretending synthetic fixtures are real, the pipeline enforces strict provenance boundaries:
+
+### 1. Telemetry Data Classification & Provenance Boundaries
+| Data Mode | Description & Provenance | Production Status | Visible UI Badge |
+| :--- | :--- | :--- | :--- |
+| **Canonical Demo** | Mathematically simulated sensor drift (bearing vibration excursion on pump `P-101A` / `VIB-301-BEARING`) based on ISO 10816 standards. | Synthetic simulation for predictable, deterministic judging. | `[SYNTHETIC DEMO]` |
+| **Public Dataset Replay** | Empirical vibration run-to-failure records from the **NASA IMS Bearing Dataset** (University of Cincinnati / NASA Prognostics Center of Excellence). Replayed on explicit asset `REPLAY-ASSET-01` (Record `NASA-IMS-T2-REC-042`). | Non-handwritten, verifiable public condition-monitoring data replay. | `[PUBLIC DATASET / REPLAY]` |
+| **Live SCADA** | Real-time industrial plant connection via industrial fieldbus (e.g., OPC-UA / MQTT industrial brokers). | **Not claimed as live SCADA unless explicitly connected and configured.** | `[LIVE SCADA]` *(Disabled by default)* |
+
+> ⚠️ **Provenance Disclosure**: We do **not** claim that pump `P-101A` is an active physical facility or that the demo stream is "live SCADA". AuRAG explicitly isolates empirical public replay (`REPLAY-ASSET-01`) from synthetic demonstration fixtures (`P-101A`). Detailed dataset metadata, field mappings, and license terms are documented in [docs/PUBLIC_DATASET_PROVENANCE.md](./docs/PUBLIC_DATASET_PROVENANCE.md) and [docs/TELEMETRY_PROVENANCE_AUDIT.md](./docs/TELEMETRY_PROVENANCE_AUDIT.md).
+
+### 2. Independent Vendor Webhook Federation
+Rather than relying on local hardcoded dictionaries, AuRAG federates multi-vendor RFQ bidding via independently addressable HTTP microservices:
+
+| Demo Vendor Node | Port / Env Var | Endpoints | Classification |
+| :--- | :--- | :--- | :--- |
+| **Apex Diagnostics** | `8101` (`VENDOR_APEX_URL`) | `GET /health`, `POST /quote` | `DEMO VENDOR NODE` / `PRE-APPROVED DEMO VENDOR` |
+| **Precision Dynamics** | `8102` (`VENDOR_PRECISION_URL`) | `GET /health`, `POST /quote` | `DEMO VENDOR NODE` / `PRE-APPROVED DEMO VENDOR` |
+| **Quantum Reliability** | `8103` (`VENDOR_QUANTUM_URL`) | `GET /health`, `POST /quote` | `DEMO VENDOR NODE` / `PRE-APPROVED DEMO VENDOR` |
+
+> ℹ️ **Vendor Disclosure**: Vendor nodes in this hackathon demo are independent HTTP webhook microservices (`services/vendor_*`), **not real industrial contractors or live industrial suppliers**. Every candidate bid returns dynamic pricing, SLAs, and registered BOLT11 payment requests, establishing genuine HTTP request/response federation. See [docs/VENDOR_FEDERATION.md](./docs/VENDOR_FEDERATION.md).
 
 ---
 

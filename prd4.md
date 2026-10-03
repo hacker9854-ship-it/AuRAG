@@ -304,6 +304,103 @@ fix(machine-money): finalize vendor federation disclosure and binding
 
 ---
 
+# Phase 2A — Public Industrial Data + Independent Vendor Webhooks
+
+## Objective
+Increase the credibility of the Machine Money pipeline WITHOUT pretending synthetic data is real.
+
+The final architecture supports:
+Public/Replayable Industrial Dataset
+        ↓
+Telemetry Normalization
+        ↓
+Anomaly Detection
+        ↓
+Grounded GraphRAG
+        ↓
+Vendor HTTP RFQ Federation
+        ↓
+Policy Gate
+        ↓
+Lightning Payment
+        ↓
+Proof / Audit
+
+## Tasks
+
+### 2A.1 Audit current telemetry pipeline
+Identify and audit current source, synthetic/generated fields, replayable fields, transformation path, and destination event schema.
+Document in `docs/TELEMETRY_PROVENANCE_AUDIT.md`.
+
+### 2A.2 Add a public dataset replay adapter
+Add dataset adapter abstraction under `telemetry/adapters/` (`base.py`, `public_dataset.py`, `synthetic.py`, `opcua.py`).
+Normalize input into telemetry event schema with provenance metadata (`data_source_type`, `dataset_name`, `dataset_record_id`, `source_reference`, `replay_mode`).
+UI labels must distinguish `PUBLIC DATASET / REPLAY`, `SYNTHETIC DEMO`, and `LIVE SCADA`.
+
+### 2A.3 Choose a suitable public dataset
+Integrate NASA IMS Bearing Run-to-Failure dataset (Test 2, Bearing 1 outer race failure) with a small representative progression fixture (`telemetry/fixtures/nasa_ims_bearing_sample.json`).
+Document in `docs/PUBLIC_DATASET_PROVENANCE.md`.
+
+### 2A.4 Map public data to the canonical demo
+Maintain canonical synthetic demo (`P-101A`) while routing public replay through `REPLAY-ASSET-01`.
+
+### 2A.5 Public-dataset evidence through GraphRAG
+Retrieved evidence for replayed events must expose provenance (`source_type: PUBLIC_DATASET`, `dataset`, `record_id`, `score`). Fallback labeled `CONTROLLED DEMO FIXTURE`.
+
+### 2A.6 Create independent mock vendor webhook services
+Independently addressable vendor microservices under `services/vendor_apex/`, `services/vendor_precision/`, and `services/vendor_quantum/` exposing `POST /quote` and `GET /health` with dynamic pricing, SLA, and BOLT11 invoices.
+
+### 2A.7 Real HTTP RFQ dispatch
+RFQ engine discovers configured vendor nodes via environment URLs (`VENDOR_APEX_URL`, etc.), dispatches real HTTP POST `/quote`, validates response schema, handles timeouts/HTTP 500s, runs scoring, and binds vendor node → rfq_id → quote_id → invoice → payment_id.
+
+### 2A.8 Vendor disclosure
+Vendor UI cards state `DEMO VENDOR NODE` or `PRE-APPROVED DEMO VENDOR`. No false claims of live external marketplaces.
+
+### 2A.9 Optional OPC-UA adapter
+Inspect and implement testbed adapter `telemetry/adapters/opcua.py` with explicit disclosure.
+
+### 2A.10 UI data provenance
+Visible source badges on telemetry and evidence views (`[SYNTHETIC DEMO]`, `[PUBLIC DATASET / REPLAY]`, `[LIVE SCADA]`).
+
+### 2A.11 Automated tests
+Add unit and integration tests:
+- `tests/test_public_dataset_adapter.py`
+- `tests/test_vendor_webhooks.py`
+- `tests/test_e2e_public_data_machine_money.py`
+
+### 2A.12 Documentation
+Create/update:
+- `docs/PUBLIC_DATASET_PROVENANCE.md`
+- `docs/VENDOR_FEDERATION.md`
+- `docs/TELEMETRY_PROVENANCE_AUDIT.md`
+- `README.md` Data Provenance section
+
+### 2A.13 Judge Mode preset
+Add `PUBLIC DATASET REPLAY` preset to Judge Mode without replacing canonical happy path.
+
+### 2A.14 RAGAS regression
+Run `python -m evaluation.validate_ragas` to verify GraphRAG quality with fresh commit.
+
+### 2A.15 Security
+Verify environment configuration, run `python scripts/secret_scan.py` to ensure no credentials or private keys are exposed.
+
+## Acceptance Gate
+- Public dataset adapter exists and provenance documented.
+- Public replay mode works without breaking synthetic mode.
+- UI clearly differentiates source types (`[PUBLIC DATASET / REPLAY]` vs `[SYNTHETIC DEMO]`).
+- Three vendors are independently HTTP-addressable demo services.
+- Real HTTP RFQ dispatch with error handling and quote-to-payment binding.
+- Secret scan passes.
+- RAGAS validation passes.
+- Full test suite passes.
+
+## Commit
+```text
+feat(data): add public industrial replay and vendor federation
+```
+
+---
+
 # Phase 3 — Graph / AuraDB Resilience Verification
 
 ## Goal

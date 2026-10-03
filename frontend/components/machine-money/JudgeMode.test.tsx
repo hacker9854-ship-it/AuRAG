@@ -211,9 +211,75 @@ describe("Machine Money Phase 2: Judge Mode & Timeline Components", () => {
     it("provides accessible aria-labels on all control buttons", () => {
       render(<JudgeMode />);
       expect(screen.getByLabelText(/Run industrial emergency autonomous settlement scenario/i)).toBeInTheDocument();
+      expect(screen.getByLabelText(/Run public dataset replay scenario/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Run policy escalation scenario/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Run simulated provider failure scenario/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Reset demonstration state/i)).toBeInTheDocument();
+    });
+
+    it("executes public dataset replay scenario and displays public provenance badges", async () => {
+      const mockReplayResponse: api.JudgeExecutionResponse = {
+        execution_id: "EXEC-PUB-TEST01",
+        scenario: "PUBLIC_DATASET_REPLAY",
+        status: "SUCCESS",
+        total_elapsed_ms: 195,
+        provider_mode: "MOCK / SIMULATION",
+        summary: "Public dataset replay complete: 250 sats settled for REPLAY-ASSET-01.",
+        events: [
+          {
+            stage: "ANOMALY_DETECTED",
+            status: "SUCCESS",
+            elapsed_ms: 15,
+            message: "[PUBLIC DATASET / REPLAY] Sensor anomaly replayed from NASA IMS Bearing Run-to-Failure (Test 2)",
+            evidence_refs: ["REPLAY-ASSET-01", "NASA-IMS-T2-REC-042"],
+            data: {
+              equipment_id: "REPLAY-ASSET-01",
+              sensor_id: "REPLAY-SENSOR-BEARING-01",
+              vibration_mms: 5.42,
+              threshold_mms: 4.5,
+              data_source_type: "PUBLIC_DATASET",
+              dataset_name: "NASA IMS Bearing Run-to-Failure (Test 2)",
+              dataset_record_id: "NASA-IMS-T2-REC-042",
+              replay_mode: true,
+            },
+            timestamp: "2004-02-18T09:42:39Z",
+          },
+          {
+            stage: "EVIDENCE_MATCHED",
+            status: "SUCCESS",
+            elapsed_ms: 320,
+            message: "Grounded empirical vibration spike from NASA IMS",
+            evidence_refs: ["FE-001", "WO-1002", "PROC-001"],
+            data: {
+              retrieval_method: "PUBLIC_DATASET",
+              matched_failure_event: "FE-001",
+              governing_procedure: "PROC-001",
+              confidence: 0.94,
+            },
+            timestamp: "2004-02-18T09:42:40Z",
+          },
+        ],
+      };
+
+      vi.spyOn(api, "executeJudgeMode").mockResolvedValueOnce(mockReplayResponse);
+
+      render(<JudgeMode />);
+
+      const replayButton = screen.getByTestId("run-public-replay-button");
+      fireEvent.click(replayButton);
+
+      await waitFor(() => {
+        expect(api.executeJudgeMode).toHaveBeenCalledWith({
+          scenario: "PUBLIC_DATASET_REPLAY",
+          equipment_id: "REPLAY-ASSET-01",
+          override_cost_sats: 250,
+          auto_approve: true,
+        });
+        expect(screen.getByTestId("provenance-badge-public")).toBeInTheDocument();
+        expect(screen.getAllByText(/PUBLIC DATASET \/ REPLAY/).length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText("REPLAY-ASSET-01").length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText("NASA-IMS-T2-REC-042").length).toBeGreaterThanOrEqual(1);
+      });
     });
   });
 });

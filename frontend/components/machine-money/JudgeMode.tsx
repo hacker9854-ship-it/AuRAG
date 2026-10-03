@@ -35,7 +35,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
   const [error, setError] = useState<string | null>(null);
 
   const handleRunScenario = async (
-    scenario: "INDUSTRIAL_EMERGENCY" | "POLICY_ESCALATION" | "PROVIDER_FAILURE" = "INDUSTRIAL_EMERGENCY",
+    scenario: "INDUSTRIAL_EMERGENCY" | "POLICY_ESCALATION" | "PROVIDER_FAILURE" | "PUBLIC_DATASET_REPLAY" = "INDUSTRIAL_EMERGENCY",
     costOverride?: number
   ) => {
     setIsRunning(true);
@@ -43,7 +43,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
     try {
       const res = await executeJudgeMode({
         scenario,
-        equipment_id: "P-101A",
+        equipment_id: scenario === "PUBLIC_DATASET_REPLAY" ? "REPLAY-ASSET-01" : "P-101A",
         override_cost_sats: costOverride,
         auto_approve: true,
       });
@@ -71,11 +71,28 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
 
   const isSuccess = response?.status === "SUCCESS";
   const isEscalated = response?.status === "PENDING_APPROVAL";
+  const anomalyEvent = response?.events?.find((e) => e.stage === "ANOMALY_DETECTED");
   const evidenceEvent = response?.events?.find((e) => e.stage === "EVIDENCE_MATCHED");
+  const isPublicReplay =
+    response?.scenario === "PUBLIC_DATASET_REPLAY" ||
+    anomalyEvent?.data?.data_source_type === "PUBLIC_DATASET";
+  const datasetName =
+    (anomalyEvent?.data?.dataset_name as string) ||
+    (isPublicReplay ? "NASA IMS Bearing Run-to-Failure (Test 2)" : null);
+  const datasetRecordId =
+    (anomalyEvent?.data?.dataset_record_id as string) ||
+    (isPublicReplay ? "NASA-IMS-T2-REC-042" : null);
+  const assetId =
+    (anomalyEvent?.data?.equipment_id as string) ||
+    (isPublicReplay ? "REPLAY-ASSET-01" : "P-101A");
+  const replayTimestamp =
+    (anomalyEvent?.data?.record_timestamp as string) ||
+    anomalyEvent?.timestamp ||
+    (isPublicReplay ? "2004-02-18T09:42:39Z" : null);
   const retrievalMethod =
     (evidenceEvent?.data?.retrieval_method as string) ||
     (response?.evidence_package?.retrieval_method as string) ||
-    "CONTROLLED_DEMO_FIXTURE";
+    (isPublicReplay ? "PUBLIC_DATASET" : "CONTROLLED_DEMO_FIXTURE");
   const isHybridRetrieval = retrievalMethod === "HYBRID_RETRIEVAL";
 
   return (
@@ -146,12 +163,14 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
               <span
                 data-testid="judge-retrieval-method-badge"
                 className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold uppercase tracking-wider border ${
-                  isHybridRetrieval
+                  isPublicReplay
+                    ? "bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/30"
+                    : isHybridRetrieval
                     ? "bg-sky-500/15 text-sky-500 dark:text-sky-400 border-sky-500/30"
                     : "bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30"
                 }`}
               >
-                {isHybridRetrieval ? "HYBRID_RETRIEVAL" : "CONTROLLED DEMO FIXTURE"}
+                {isPublicReplay ? "PUBLIC DATASET / REPLAY" : isHybridRetrieval ? "HYBRID_RETRIEVAL" : "CONTROLLED DEMO FIXTURE"}
               </span>
             )}
           </div>
@@ -210,6 +229,64 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         </div>
       </div>
 
+      {/* Data Provenance Bar (Task 2A.10 / 2A.13) */}
+      <div
+        data-testid="data-provenance-bar"
+        className="my-3 px-4 py-2.5 rounded-xl bg-card/70 border border-border/60 flex flex-wrap items-center justify-between gap-3 text-xs"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-bold">
+            Data Source:
+          </span>
+          {isPublicReplay ? (
+            <span
+              data-testid="provenance-badge-public"
+              className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold uppercase tracking-wider bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border border-cyan-500/30 flex items-center gap-1.5"
+            >
+              <Database className="w-3 h-3 text-cyan-500" />
+              [PUBLIC DATASET / REPLAY]
+            </span>
+          ) : (
+            <span
+              data-testid="provenance-badge-synthetic"
+              className="px-2.5 py-0.5 rounded-full font-mono text-[10px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1.5"
+            >
+              <Activity className="w-3 h-3 text-amber-500" />
+              [SYNTHETIC DEMO]
+            </span>
+          )}
+          <span className="text-[10px] font-mono text-muted-foreground/60 hidden sm:inline">
+            (Live SCADA: Not connected)
+          </span>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-[11px] font-mono text-muted-foreground">
+          <span>
+            Asset: <strong className="text-foreground">{assetId}</strong>
+          </span>
+          {isPublicReplay && datasetName && (
+            <>
+              <span className="hidden md:inline">
+                Dataset: <strong className="text-foreground">{datasetName}</strong>
+              </span>
+              <span>
+                Record: <strong className="text-cyan-600 dark:text-cyan-400">{datasetRecordId}</strong>
+              </span>
+              {replayTimestamp && (
+                <span className="hidden lg:inline">
+                  Timestamp: <strong className="text-foreground">{replayTimestamp}</strong>
+                </span>
+              )}
+            </>
+          )}
+          {!isPublicReplay && (
+            <span>
+              Sensor: <strong className="text-foreground">VIB-301-BEARING</strong>
+            </span>
+          )}
+        </div>
+      </div>
+
       {/* Control Buttons Grid */}
       <div className="py-4 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
         {/* Primary CTA */}
@@ -225,6 +302,22 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           <span>RUN INDUSTRIAL EMERGENCY</span>
           <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-black/20 text-white font-medium">
             250 sats
+          </span>
+        </button>
+
+        {/* Public Dataset Replay Preset (Task 2A.4 / 2A.13) */}
+        <button
+          type="button"
+          data-testid="run-public-replay-button"
+          aria-label="Run public dataset replay scenario (NASA IMS Bearing Outer Race Spall)"
+          onClick={() => handleRunScenario("PUBLIC_DATASET_REPLAY", 250)}
+          disabled={isRunning}
+          className="px-4 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-semibold text-xs rounded-xl border border-cyan-500/30 hover:border-cyan-500/60 transition-all flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none w-full sm:w-auto"
+        >
+          <Database className="w-4 h-4 text-cyan-500" />
+          <span>PUBLIC DATASET REPLAY</span>
+          <span className="text-[10px] font-mono bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 px-1.5 py-0.5 rounded">
+            NASA IMS
           </span>
         </button>
 

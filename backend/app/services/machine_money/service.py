@@ -662,17 +662,67 @@ class MachineMoneyService:
         health = await self.get_health()
         provider_mode = "MOCK / SIMULATION" if "mock" in health.provider_name.lower() else "LIVE LIGHTNING"
 
+        # Check scenario type
+        is_public_replay = scenario == "PUBLIC_DATASET_REPLAY"
+        evt_id = f"EVT-PUB-{uuid.uuid4().hex[:6].upper()}" if is_public_replay else f"EVT-VIB-{uuid.uuid4().hex[:6].upper()}"
+
+        if is_public_replay:
+            equipment_id = "REPLAY-ASSET-01"
+            from telemetry.adapters.public_dataset import PublicDatasetReplayAdapter
+            adapter = PublicDatasetReplayAdapter(equipment_id=equipment_id)
+            event_reading = adapter.read_event("NASA-IMS-T2-REC-042")
+            vib_val = event_reading["vibration_mm_s"]
+            temp_val = event_reading["bearing_temp_c"]
+            sensor_id = event_reading["sensor_id"]
+            ds_name = event_reading["provenance"]["dataset_name"]
+            rec_id = event_reading["provenance"]["dataset_record_id"]
+            stage1_msg = (
+                f"[PUBLIC DATASET / REPLAY] Sensor anomaly replayed from {ds_name} "
+                f"(Record {rec_id}) on {equipment_id}: Radial vibration {vib_val} mm/s "
+                f"exceeding ISO 10816 Zone C threshold (4.50 mm/s), Bearing temp {temp_val}°C."
+            )
+            stage1_data = {
+                "equipment_id": equipment_id,
+                "sensor_id": sensor_id,
+                "vibration_mms": vib_val,
+                "threshold_mms": 4.5,
+                "temperature_c": temp_val,
+                "event_id": evt_id,
+                "data_source_type": "PUBLIC_DATASET",
+                "dataset_name": ds_name,
+                "dataset_record_id": rec_id,
+                "replay_mode": True,
+            }
+        else:
+            vib_val = 5.4
+            temp_val = 88.0
+            sensor_id = "VIB-301-BEARING"
+            ds_name = None
+            rec_id = None
+            stage1_msg = (
+                f"Sensor anomaly detected on {equipment_id} ({sensor_id}): "
+                f"Radial vibration 5.4 mm/s exceeding ISO 10816 Zone C threshold (4.5 mm/s), Bearing temp 88°C."
+            )
+            stage1_data = {
+                "equipment_id": equipment_id,
+                "sensor_id": sensor_id,
+                "vibration_mms": 5.4,
+                "threshold_mms": 4.5,
+                "temperature_c": 88,
+                "event_id": evt_id,
+                "data_source_type": "SYNTHETIC_GENERATOR",
+                "replay_mode": False,
+            }
+
         # Stage 1: ANOMALY_DETECTED
-        evt_id = f"EVT-VIB-{uuid.uuid4().hex[:6].upper()}"
-        sensor_id = "VIB-301-BEARING"
         events.append(
             ExecutionStageEvent(
                 stage=ExecutionStage.ANOMALY_DETECTED,
                 status="SUCCESS",
                 elapsed_ms=get_elapsed_ms(),
-                message=f"Sensor anomaly detected on {equipment_id} ({sensor_id}): Radial vibration 5.4 mm/s exceeding ISO 10816 Zone C threshold (4.5 mm/s), Bearing temp 88°C.",
+                message=stage1_msg,
                 evidence_refs=[equipment_id, sensor_id, evt_id],
-                data={"equipment_id": equipment_id, "sensor_id": sensor_id, "vibration_mms": 5.4, "threshold_mms": 4.5, "temperature_c": 88, "event_id": evt_id},
+                data=stage1_data,
             )
         )
 
@@ -681,11 +731,14 @@ class MachineMoneyService:
         evidence_pkg = get_grounded_evidence_package(
             session=neo4j_session,
             equipment_tag=equipment_id,
-            vibration_reading=5.4,
+            vibration_reading=vib_val,
             vibration_threshold=4.5,
             event_id=evt_id,
             failure_event_id="FE-001",
             confidence=confidence,
+            data_source_type="PUBLIC_DATASET" if is_public_replay else "SYNTHETIC_GENERATOR",
+            dataset_name=ds_name,
+            dataset_record_id=rec_id,
         )
         retrieval_method = evidence_pkg.get("retrieval_method", "CONTROLLED_DEMO_FIXTURE")
         fe_id = evidence_pkg.get("matched_failure_event", "FE-001")
@@ -693,7 +746,12 @@ class MachineMoneyService:
         proc_id = evidence_pkg.get("governing_procedure", "PROC-001")
         pkg_confidence = evidence_pkg.get("confidence", 0.94)
 
-        if retrieval_method == "HYBRID_RETRIEVAL":
+        if is_public_replay:
+            stage_message = (
+                f"[PUBLIC DATASET / REPLAY] Grounded empirical vibration spike from {ds_name} "
+                f"(Record {rec_id}) citing procedure {proc_id} and historical {wo_id}."
+            )
+        elif retrieval_method == "HYBRID_RETRIEVAL":
             stage_message = (
                 f"Hybrid GraphRAG matched failure signature {fe_id} "
                 f"({int(pkg_confidence * 100)}% confidence) citing procedure {proc_id} and historical {wo_id}."
@@ -979,6 +1037,43 @@ class MachineMoneyService:
             )
         )
 
+        # Persist settled payment record to SQL ledger
+        if db:
+            payment_meta = {
+                "equipment_id": equipment_id,
+                "event_id": evt_id,
+                "work_order_id": "WO-2026-P101",
+                "failure_event_id": "FE-001",
+                "vendor_id": vendor_id,
+                "vendor_name": vendor_name,
+                "vendor_pubkey": vendor_pubkey,
+                "preimage": receipt.preimage,
+                "payment_hash": receipt.payment_hash,
+                "bolt11": invoice.payment_request,
+                "evidence_package": evidence_pkg,
+                "data_source_type": "PUBLIC_DATASET" if is_public_replay else "SYNTHETIC_GENERATOR",
+                "dataset_name": ds_name,
+                "dataset_record_id": rec_id,
+                "replay_mode": is_public_replay,
+            }
+            rec = PaymentRecord(
+                payment_id=f"PAY-{execution_id}",
+                predictive_event_id=evt_id,
+                work_order_id="WO-2026-P101",
+                amount_sats=cost_sats,
+                status="PAID",
+                provider=health.provider_name,
+                network=health.network,
+                invoice=invoice.payment_request,
+                payment_hash=receipt.payment_hash,
+                preimage=receipt.preimage,
+                idempotency_key=idempotency_key,
+                paid_at=receipt.settled_at,
+                metadata_json=json.dumps(payment_meta),
+            )
+            db.add(rec)
+            db.commit()
+
         # Stage 8: GRAPH_LINKED
         if neo4j_session:
             try:
@@ -1041,7 +1136,11 @@ class MachineMoneyService:
             },
             evidence_package=evidence_pkg,
             provider_mode=provider_mode,
-            summary=f"Autonomous Settlement Complete: {cost_sats} sats paid to '{vendor_name}' for {equipment_id} emergency bearing service in {total_elapsed}ms.",
+            summary=(
+                f"[PUBLIC DATASET / REPLAY] Autonomous Settlement Complete: {cost_sats} sats paid to '{vendor_name}' for {equipment_id} empirical bearing anomaly in {total_elapsed}ms."
+                if is_public_replay
+                else f"Autonomous Settlement Complete: {cost_sats} sats paid to '{vendor_name}' for {equipment_id} emergency bearing service in {total_elapsed}ms."
+            ),
         )
 
     async def get_proof_package(self, db: Session, payment_id: str, neo4j_session=None) -> dict:
@@ -1109,6 +1208,10 @@ class MachineMoneyService:
                 "event_id": (record.predictive_event_id if record else None) or meta.get("event_id", "EVT-VIB-001"),
                 "work_order_id": (record.work_order_id if record else None) or meta.get("work_order_id", "WO-2026-P101"),
                 "failure_event_id": meta.get("failure_event_id", "FE-001"),
+                "data_source_type": meta.get("data_source_type", "SYNTHETIC_GENERATOR"),
+                "dataset_name": meta.get("dataset_name"),
+                "dataset_record_id": meta.get("dataset_record_id"),
+                "replay_mode": meta.get("replay_mode", False),
                 "vendor_id": meta.get("vendor_id", "apex-diagnostics"),
                 "vendor_name": meta.get("vendor_name", "Apex Diagnostics"),
                 "vendor_pubkey": meta.get("vendor_pubkey", "02" + "a1" * 32),

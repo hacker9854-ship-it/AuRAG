@@ -35,6 +35,9 @@ def build_operational_evidence_package(
     confidence: float = 0.94,
     vibration_reading: float = 5.4,
     vibration_threshold: float = 4.5,
+    data_source_type: Optional[str] = None,
+    dataset_name: Optional[str] = None,
+    dataset_record_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Retrieve operational evidence from Knowledge Graph answering 'Why did the agent spend money?'
     (Section 18 Contract).
@@ -49,6 +52,9 @@ def build_operational_evidence_package(
         event_id=event_id,
         failure_event_id=failure_event_id,
         confidence=confidence,
+        data_source_type=data_source_type,
+        dataset_name=dataset_name,
+        dataset_record_id=dataset_record_id,
     )
 
 
@@ -83,6 +89,9 @@ async def trigger_m2m_settlement_for_event(
     work_order_id: Optional[str] = None,
     bypass_policy: bool = False,
     neo4j_session = None,
+    data_source_type: Optional[str] = None,
+    dataset_name: Optional[str] = None,
+    dataset_record_id: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Autonomous end-to-end pipeline:
     PredictiveEvent -> Machine Money Trigger -> Service mapping -> Quote -> Policy -> Invoice -> Payment -> Graph
@@ -99,6 +108,9 @@ async def trigger_m2m_settlement_for_event(
         event_id=evt_id,
         failure_event_id=failure_event_id,
         confidence=confidence,
+        data_source_type=data_source_type,
+        dataset_name=dataset_name,
+        dataset_record_id=dataset_record_id,
     )
 
     # 2. Service Mapping

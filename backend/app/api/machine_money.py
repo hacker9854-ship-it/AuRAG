@@ -198,6 +198,9 @@ class TelemetryTriggerRequest(BaseModel):
     confidence: float = Field(default=0.94, ge=0.0, le=1.0)
     work_order_id: Optional[str] = Field(default="WO-2026-P101")
     bypass_policy: bool = False
+    data_source_type: Optional[str] = Field(default="SYNTHETIC_GENERATOR", description="SYNTHETIC_GENERATOR or PUBLIC_DATASET")
+    dataset_name: Optional[str] = None
+    dataset_record_id: Optional[str] = None
 
 
 class AgentPaymentProposal(BaseModel):
@@ -229,6 +232,9 @@ async def trigger_from_telemetry(
             work_order_id=req.work_order_id,
             bypass_policy=req.bypass_policy,
             neo4j_session=neo4j_session,
+            data_source_type=req.data_source_type,
+            dataset_name=req.dataset_name,
+            dataset_record_id=req.dataset_record_id,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))

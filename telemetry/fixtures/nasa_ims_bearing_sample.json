@@ -1,0 +1,76 @@
+{
+  "dataset_metadata": {
+    "dataset_name": "NASA IMS Bearing Run-to-Failure Dataset",
+    "institution": "University of Cincinnati / NASA Prognostics Center of Excellence (PCoE)",
+    "test_id": "Test 2 (Bearing 1 Outer Race Failure)",
+    "sampling_rate_hz": 20000,
+    "speed_rpm": 2000,
+    "radial_load_lbs": 6000,
+    "sensor_type": "PCB 353B33 High Frequency Accelerometer",
+    "source_url": "https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/",
+    "governing_standard": "ISO 10816-3 Class II Rotating Machinery Vibration Evaluation",
+    "provenance_disclosure": "Public industrial condition-monitoring data replay (preprocessed representative progression fixture)"
+  },
+  "records": [
+    {
+      "record_id": "NASA-IMS-T2-REC-001",
+      "timestamp": "2004-02-12T10:32:39Z",
+      "stage": "HEALTHY_BASELINE",
+      "elapsed_hours": 0.0,
+      "vibration_rms_g": 0.061,
+      "vibration_mm_s": 1.85,
+      "bearing_temp_c": 52.4,
+      "frequency_peak_hz": 33.3,
+      "iso_zone": "Zone A/B (Permissible Unrestricted)",
+      "notes": "Nominal break-in operation. Vibration well below ISO 10816-3 4.5 mm/s warning threshold."
+    },
+    {
+      "record_id": "NASA-IMS-T2-REC-020",
+      "timestamp": "2004-02-15T02:12:39Z",
+      "stage": "NOMINAL_STABLE",
+      "elapsed_hours": 63.6,
+      "vibration_rms_g": 0.075,
+      "vibration_mm_s": 2.28,
+      "bearing_temp_c": 55.1,
+      "frequency_peak_hz": 33.3,
+      "iso_zone": "Zone A/B (Permissible Unrestricted)",
+      "notes": "Stable continuous operation. Minor micro-asperity baseline fluctuation."
+    },
+    {
+      "record_id": "NASA-IMS-T2-REC-038",
+      "timestamp": "2004-02-17T18:42:39Z",
+      "stage": "INITIAL_DEGRADATION",
+      "elapsed_hours": 128.1,
+      "vibration_rms_g": 0.118,
+      "vibration_mm_s": 3.62,
+      "bearing_temp_c": 64.8,
+      "frequency_peak_hz": 236.4,
+      "iso_zone": "Zone B (Acceptable Monitoring)",
+      "notes": "Nascent inner/outer raceway micro-pitting. BPFO ball-pass frequency harmonics emerging."
+    },
+    {
+      "record_id": "NASA-IMS-T2-REC-042",
+      "timestamp": "2004-02-18T14:12:39Z",
+      "stage": "ZONE_C_ANOMALY_EXCURSION",
+      "elapsed_hours": 147.6,
+      "vibration_rms_g": 0.176,
+      "vibration_mm_s": 5.42,
+      "bearing_temp_c": 84.6,
+      "frequency_peak_hz": 236.4,
+      "iso_zone": "Zone C (Unacceptable Long-Term Damage / Remediation Required)",
+      "notes": "Vibration excursion crossing ISO 10816-3 Zone C boundary (5.42 mm/s > 4.50 mm/s). Triggers autonomous maintenance intervention."
+    },
+    {
+      "record_id": "NASA-IMS-T2-REC-045",
+      "timestamp": "2004-02-19T06:22:39Z",
+      "stage": "CRITICAL_FAILURE",
+      "elapsed_hours": 163.8,
+      "vibration_rms_g": 0.384,
+      "vibration_mm_s": 11.75,
+      "bearing_temp_c": 102.3,
+      "frequency_peak_hz": 236.4,
+      "iso_zone": "Zone D (Critical Trip / Catastrophic Spallation)",
+      "notes": "Severe outer race spalling and raceway flaking. Equipment shutdown required."
+    }
+  ]
+}

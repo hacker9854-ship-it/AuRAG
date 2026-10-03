@@ -755,7 +755,7 @@ export interface ExecutionStageEvent {
 }
 
 export interface JudgeExecutionRequest {
-  scenario?: "INDUSTRIAL_EMERGENCY" | "POLICY_ESCALATION" | "PROVIDER_FAILURE";
+  scenario?: "INDUSTRIAL_EMERGENCY" | "POLICY_ESCALATION" | "PROVIDER_FAILURE" | "PUBLIC_DATASET_REPLAY";
   equipment_id?: string;
   override_cost_sats?: number;
   auto_approve?: boolean;
@@ -931,6 +931,9 @@ export interface VendorQuoteCandidate {
   within_policy_cap: boolean;
   score: number;
   valid_until: string;
+  bolt11?: string;
+  payment_hash?: string;
+  vendor_node_type?: string;
 }
 
 export interface VendorRFQRequest {

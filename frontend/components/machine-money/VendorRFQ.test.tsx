@@ -108,7 +108,7 @@ describe("Machine Money Phase 4: Multi-Vendor RFQ Component", () => {
 
     expect(screen.getByTestId("vendor-rfq-container")).toBeInTheDocument();
     expect(screen.getByText("Autonomous RFQ Marketplace")).toBeInTheDocument();
-    expect(screen.getByText("Pre-approved Synthetic Vendor Nodes")).toBeInTheDocument();
+    expect(screen.getByText("PRE-APPROVED DEMO VENDOR NODES")).toBeInTheDocument();
 
     // 4 Strategy buttons
     expect(screen.getByTestId("strategy-fastest_sla")).toBeInTheDocument();
@@ -132,7 +132,7 @@ describe("Machine Money Phase 4: Multi-Vendor RFQ Component", () => {
     expect(screen.getAllByText("320 sats").length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("450 sats")).toBeInTheDocument();
     expect(screen.getByText("0.8 hrs")).toBeInTheDocument();
-    expect(screen.getAllByText(/Synthetic Node/).length).toBe(3);
+    expect(screen.getAllByText("DEMO VENDOR NODE").length).toBe(3);
   });
 
   it("renders explainable selection rationale box with scoring model", async () => {

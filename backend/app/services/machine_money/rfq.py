@@ -4,11 +4,14 @@ Supports Phase 4 (FR-04, BE-03) under Bitshala BOSS Battle 2026 guidelines.
 All candidate vendor data is clearly labeled as synthetic for demonstration purposes.
 """
 import hashlib
+import logging
 import os
 import secrets
 import uuid
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
+
+import httpx
 
 from backend.app.services.machine_money.bolt11 import encode_bolt11
 from backend.app.services.machine_money.providers.mock import register_preimage
@@ -19,6 +22,43 @@ from backend.app.services.machine_money.schemas import (
     VendorRFQResponse,
     utcnow,
 )
+
+logger = logging.getLogger(__name__)
+
+# Configured independent vendor node endpoints (Task 2A.6)
+DEFAULT_VENDOR_NODES = [
+    {
+        "vendor_id": "apex-diagnostics",
+        "env_var": "VENDOR_APEX_URL",
+        "default_url": "http://localhost:8101",
+        "app_module": "services.vendor_apex.server",
+    },
+    {
+        "vendor_id": "precision-dynamics",
+        "env_var": "VENDOR_PRECISION_URL",
+        "default_url": "http://localhost:8102",
+        "app_module": "services.vendor_precision.server",
+    },
+    {
+        "vendor_id": "quantum-reliability",
+        "env_var": "VENDOR_QUANTUM_URL",
+        "default_url": "http://localhost:8103",
+        "app_module": "services.vendor_quantum.server",
+    },
+]
+
+
+def get_vendor_node_urls() -> List[Dict[str, str]]:
+    """Discover configured vendor node URLs from environment variables."""
+    nodes = []
+    for cfg in DEFAULT_VENDOR_NODES:
+        url = os.environ.get(cfg["env_var"], cfg["default_url"]).rstrip("/")
+        nodes.append({
+            "vendor_id": cfg["vendor_id"],
+            "url": url,
+            "app_module": cfg["app_module"],
+        })
+    return nodes
 
 # Catalog of deterministic synthetic vendor bidding nodes
 CANDIDATE_VENDORS_BY_SERVICE: Dict[str, List[Dict[str, Any]]] = {
@@ -165,6 +205,9 @@ def get_candidate_quotes_for_service(
                 reliability_score=c["reliability_score"],
                 reputation_tier=c["reputation_tier"],
                 parts_included=c["parts_included"],
+                bolt11=encode_bolt11(amount_sats=c["amount_sats"], payment_hash_hex=bid_payment_hash, description=f"Service Quote {candidate_id}"),
+                payment_hash=bid_payment_hash,
+                vendor_node_type="DEMO VENDOR NODE",
                 is_synthetic=True,
                 within_policy_cap=True,
                 score=0.0,
@@ -174,15 +217,125 @@ def get_candidate_quotes_for_service(
     return candidates
 
 
-def process_vendor_rfq(request: VendorRFQRequest, use_live_dispatch: bool = False) -> VendorRFQResponse:
-    """Execute rule/model-driven explainable multi-vendor RFQ selection (FR-04)."""
+def dispatch_http_rfq(
+    request: VendorRFQRequest,
+    timeout_seconds: Optional[float] = None,
+    allow_asgi_fallback: bool = True,
+) -> List[VendorQuoteCandidate]:
+    """Dispatch real HTTP POST /quote requests to configured independent vendor webhook services (Task 2A.7).
+
+    Validates schema, checks quote expiry, handles timeouts / 500s / connection errors,
+    and returns valid candidate quotes.
+    """
+    effective_timeout = timeout_seconds if timeout_seconds is not None else float(
+        os.environ.get("VENDOR_RFQ_TIMEOUT", "0.2" if allow_asgi_fallback else "1.5")
+    )
+    candidates: List[VendorQuoteCandidate] = []
+    nodes = get_vendor_node_urls()
+    now = utcnow()
+    req_payload = {
+        "equipment_id": request.equipment_id,
+        "service_id": request.service_id,
+        "max_budget_sats": request.max_budget_sats,
+        "strategy": request.strategy.value,
+    }
+
+    for node in nodes:
+        url = f"{node['url']}/quote"
+        data = None
+        # 1. Attempt real HTTP network request
+        try:
+            with httpx.Client(timeout=effective_timeout) as client:
+                res = client.post(url, json=req_payload)
+                if res.status_code == 200:
+                    data = res.json()
+                else:
+                    logger.warning(f"Vendor node {node['vendor_id']} at {url} returned HTTP {res.status_code}")
+        except Exception as net_exc:
+            # 2. If network socket fails and host is localhost, attempt in-process ASGI dispatch for zero-daemon testing
+            if allow_asgi_fallback and ("localhost" in node["url"] or "127.0.0.1" in node["url"]):
+                try:
+                    import importlib
+                    mod = importlib.import_module(node["app_module"])
+                    app = getattr(mod, "app", None)
+                    if app:
+                        from starlette.testclient import TestClient
+                        with TestClient(app) as asgi_client:
+                            res = asgi_client.post("/quote", json=req_payload)
+                            if res.status_code == 200:
+                                data = res.json()
+                            else:
+                                logger.warning(f"Vendor node {node['vendor_id']} ASGI returned HTTP {res.status_code}")
+                except Exception as asgi_exc:
+                    logger.warning(f"Vendor node {node['vendor_id']} unreachable: {asgi_exc}")
+            else:
+                logger.warning(f"Vendor node {node['vendor_id']} at {url} unreachable: {net_exc}")
+
+        # 3. Validate response schema and quote integrity
+        if data and isinstance(data, dict):
+            try:
+                candidate_id = data.get("candidate_id") or f"BID-{node['vendor_id'][:4].upper()}-{uuid.uuid4().hex[:4].upper()}"
+                amount_sats = int(data["amount_sats"])
+                sla_hours = float(data["sla_hours"])
+                reliability_score = float(data["reliability_score"])
+                reputation_tier = str(data.get("reputation_tier", "A"))
+                parts_included = list(data.get("parts_included", []))
+                bolt11 = data.get("bolt11")
+                payment_hash = data.get("payment_hash")
+
+                valid_until_str = data.get("valid_until")
+                if valid_until_str:
+                    valid_until = datetime.fromisoformat(valid_until_str.replace("Z", "+00:00"))
+                    if valid_until < now:
+                        logger.warning(f"Rejecting expired quote from vendor {node['vendor_id']} (expired at {valid_until})")
+                        continue
+                else:
+                    valid_until = now + timedelta(minutes=15)
+
+                candidate = VendorQuoteCandidate(
+                    candidate_id=candidate_id,
+                    vendor_id=data.get("vendor_id", node["vendor_id"]),
+                    vendor_name=data.get("vendor_name", node["vendor_id"]),
+                    node_pubkey=data.get("node_pubkey", "02" + "00" * 32),
+                    service_id=request.service_id,
+                    service_name=data.get("service_name", f"{request.service_id} Inspection"),
+                    amount_sats=amount_sats,
+                    sla_hours=sla_hours,
+                    reliability_score=reliability_score,
+                    reputation_tier=reputation_tier,
+                    parts_included=parts_included,
+                    bolt11=bolt11,
+                    payment_hash=payment_hash,
+                    vendor_node_type="DEMO VENDOR NODE",
+                    is_synthetic=True,
+                    within_policy_cap=amount_sats <= request.max_budget_sats,
+                    score=0.0,
+                    valid_until=valid_until,
+                )
+                candidates.append(candidate)
+            except Exception as val_exc:
+                logger.warning(f"Rejecting malformed quote from vendor {node['vendor_id']}: {val_exc}")
+
+    return candidates
+
+
+def process_vendor_rfq(request: VendorRFQRequest, use_live_dispatch: bool = True) -> VendorRFQResponse:
+    """Execute rule/model-driven explainable multi-vendor RFQ selection (FR-04, Phase 2A)."""
     rfq_id = f"RFQ-{uuid.uuid4().hex[:10].upper()}"
     requested_at = utcnow()
 
-    candidates = get_candidate_quotes_for_service(
-        service_id=request.service_id,
-        equipment_id=request.equipment_id,
-    )
+    candidates: List[VendorQuoteCandidate] = []
+    if use_live_dispatch:
+        try:
+            candidates = dispatch_http_rfq(request)
+        except Exception as exc:
+            logger.info("Live HTTP RFQ dispatch error (%s); falling back to local catalog", exc)
+
+    if not candidates:
+        candidates = get_candidate_quotes_for_service(
+            service_id=request.service_id,
+            equipment_id=request.equipment_id,
+        )
 
     # Flag policy compliance on each candidate
     for c in candidates:
@@ -326,4 +479,5 @@ def process_vendor_rfq(request: VendorRFQRequest, use_live_dispatch: bool = Fals
         selection_rationale=rationale,
         scoring_model=scoring_model_meta,
         is_synthetic=True,
+        synthetic_disclosure="PRE-APPROVED DEMO VENDOR: Independent HTTP webhook nodes for Machine Money autonomous bidding demonstration",
     )

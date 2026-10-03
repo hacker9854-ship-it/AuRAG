@@ -123,7 +123,7 @@ export function VendorRFQ({
             Cap: <strong className="text-emerald-500">{policyCapSats} sats</strong>
           </span>
           <span className="text-[10px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2 py-1 rounded-lg border border-purple-500/20">
-            Pre-approved Synthetic Vendor Nodes
+            PRE-APPROVED DEMO VENDOR NODES
           </span>
         </div>
       </div>
@@ -258,8 +258,8 @@ export function VendorRFQ({
                       <span className="text-[10px] text-muted-foreground font-mono truncate">
                         {c.vendor_id}
                       </span>
-                      <span className="text-[8px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-1 py-0.2 rounded border border-purple-500/20">
-                        Synthetic Node
+                      <span className="text-[8px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-1 py-0.5 rounded border border-purple-500/20">
+                        {c.vendor_node_type || "DEMO VENDOR NODE"}
                       </span>
                     </div>
                   </div>
