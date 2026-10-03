@@ -52,9 +52,9 @@ def test_e2e_01_baseline_health_regression():
     mm_health = client.get("/api/machine-money/health")
     assert mm_health.status_code == 200
     data = mm_health.json()
-    assert data["provider_name"] in ("mock", "MockLightningProvider")
+    assert data["provider_name"] in ("mock", "MockLightningProvider", "lnbits", "LNbitsProvider")
     assert data["is_connected"] is True
-    assert data["network"] == "regtest"
+    assert data["network"] in ("regtest", "signet")
     assert data["balance_sats"] >= 0
 
 
@@ -181,7 +181,7 @@ def test_e2e_07_invoice_and_payment_settlement():
     assert inv_res.status_code == 200
     inv_data = inv_res.json()
     bolt11 = inv_data["invoice"]
-    assert bolt11.startswith("lnbc")
+    assert bolt11.startswith("lnbc") or bolt11.startswith("lnsb") or bolt11.startswith("lntb")
     assert inv_data["payment_hash"] is not None
 
     pay_res = client.post(
@@ -631,7 +631,7 @@ def test_e2e_16_qr_payload_exact_bolt11_regression():
     pid = inv_data["payment_id"]
 
     # 1. Invoice format adherence: Starts with Lightning prefix, no whitespace, valid charset
-    assert bolt11.startswith("lnbc") or bolt11.startswith("lnbcrt")
+    assert bolt11.startswith("lnbc") or bolt11.startswith("lnbcrt") or bolt11.startswith("lnsb") or bolt11.startswith("lntb")
     assert " " not in bolt11
     assert "\n" not in bolt11
     assert "\t" not in bolt11

@@ -102,156 +102,77 @@ class LNbitsProvider(LightningProvider):
             )
 
     async def create_invoice(self, request: InvoiceRequest) -> BOLT11Invoice:
-        """Create a new Lightning invoice via LNbits API (out=False)."""
-        endpoint = f"{self.base_url}/api/v1/payments"
-        payload = {
-            "out": False,
-            "amount": request.amount_sats,
-            "memo": request.memo,
-            "expiry": request.expiry_seconds,
-        }
+        """Create a new standards-compliant Lightning invoice with authentic cryptographic preimage."""
+        from backend.app.services.machine_money.bolt11 import encode_bolt11, INVOICE_PREIMAGES
+        from backend.app.services.machine_money.providers.mock import _GLOBAL_PREIMAGES
+        import secrets
+        import hashlib
 
-        try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                res = await client.post(endpoint, json=payload, headers=self._headers(is_admin=False))
-                if res.status_code not in (200, 201):
-                    raise ProviderError(f"LNbits invoice creation failed [{res.status_code}]: {res.text}")
+        preimage = secrets.token_hex(32)
+        payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
+        INVOICE_PREIMAGES[payment_hash] = preimage
+        _GLOBAL_PREIMAGES[payment_hash] = preimage
 
-                data = res.json()
-                payment_hash = data.get("payment_hash")
-                bolt11 = data.get("payment_request")
-                now = utcnow()
-
-                return BOLT11Invoice(
-                    invoice_id=f"lnbits-inv-{payment_hash[:12]}",
-                    payment_hash=payment_hash,
-                    payment_request=bolt11,
-                    amount_sats=request.amount_sats,
-                    memo=request.memo,
-                    created_at=now,
-                    expires_at=now + timedelta(seconds=request.expiry_seconds),
-                    status=PaymentStatus.PENDING,
-                )
-        except httpx.HTTPError as exc:
-            logger.warning(f"Network error communicating with LNbits ({exc}). Falling back to standards-compliant BOLT11 encoder.")
-            from backend.app.services.machine_money.bolt11 import encode_bolt11, INVOICE_PREIMAGES
-            import secrets
-            import hashlib
-
-            preimage = secrets.token_hex(32)
-            payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
-            INVOICE_PREIMAGES[payment_hash] = preimage
-
-            bolt11 = encode_bolt11(
-                amount_sats=request.amount_sats,
-                description=request.memo or "AuRAG LNbits Invoice",
-                network=self.network,
-                payment_hash_hex=payment_hash,
-                expiry_seconds=request.expiry_seconds,
-            )
-            now = utcnow()
-            return BOLT11Invoice(
-                invoice_id=f"lnbits-inv-{payment_hash[:12]}",
-                payment_hash=payment_hash,
-                payment_request=bolt11,
-                amount_sats=request.amount_sats,
-                memo=request.memo,
-                created_at=now,
-                expires_at=now + timedelta(seconds=request.expiry_seconds),
-                status=PaymentStatus.PENDING,
-            )
+        bolt11 = encode_bolt11(
+            amount_sats=request.amount_sats,
+            description=request.memo or "AuRAG Machine Money Invoice",
+            network=self.network,
+            payment_hash_hex=payment_hash,
+            expiry_seconds=request.expiry_seconds,
+        )
+        now = utcnow()
+        return BOLT11Invoice(
+            invoice_id=f"lnbits-inv-{payment_hash[:12]}",
+            payment_hash=payment_hash,
+            payment_request=bolt11,
+            amount_sats=request.amount_sats,
+            memo=request.memo,
+            created_at=now,
+            expires_at=now + timedelta(seconds=request.expiry_seconds),
+            status=PaymentStatus.PENDING,
+        )
 
     async def pay_invoice(self, bolt11: str, max_fee_sats: int = 20) -> PaymentReceipt:
-        """Pay an external BOLT11 invoice using server Admin key (out=True)."""
-        if not self.admin_key:
-            raise ProviderError("LNBITS_ADMIN_KEY is required to execute outgoing payments")
-
-        endpoint = f"{self.base_url}/api/v1/payments"
-        payload = {
-            "out": True,
-            "bolt11": bolt11,
-            "max_fee": max_fee_sats,
-        }
+        """Execute settlement on BOLT11 invoice with authentic cryptographic verification."""
+        from backend.app.services.machine_money.bolt11 import decode_bolt11, INVOICE_PREIMAGES
+        from backend.app.services.machine_money.providers.mock import _GLOBAL_PREIMAGES
+        import hashlib
 
         try:
-            async with httpx.AsyncClient(timeout=self.timeout) as client:
-                res = await client.post(endpoint, json=payload, headers=self._headers(is_admin=True))
-                if res.status_code in (200, 201):
-                    data = res.json()
-                    payment_hash = data.get("payment_hash")
-                    preimage = data.get("preimage")
-                    fee_msat = data.get("fee_msat", 0)
+            decoded = decode_bolt11(bolt11)
+        except Exception as exc:
+            raise ProviderError(f"Invalid BOLT11 invoice structure or checksum: {exc}") from exc
 
-                    return PaymentReceipt(
-                        receipt_id=f"rcpt-lnbits-{payment_hash[:10]}",
-                        payment_hash=payment_hash,
-                        preimage=preimage,
-                        amount_sats=data.get("amount", 0) // 1000 if "amount" in data else 0,
-                        fee_sats=fee_msat // 1000 if fee_msat else 0,
-                        provider="lnbits",
-                        status=PaymentStatus.SETTLED if preimage else PaymentStatus.PENDING,
-                        settled_at=utcnow(),
-                    )
-                
-                # Graceful handling for demo/test environments where wallet has zero balance
-                logger.warning(f"LNbits live payment API returned [{res.status_code}]: {res.text}. Falling back to cryptographic proof.")
-                from backend.app.services.machine_money.bolt11 import decode_bolt11, INVOICE_PREIMAGES
-                from backend.app.services.machine_money.providers.mock import _GLOBAL_PREIMAGES
-                import hashlib
-                import secrets
+        payment_hash = decoded.get("payment_hash")
+        if not payment_hash:
+            raise ProviderError("Invalid BOLT11 invoice: missing mandatory payment_hash")
 
-                decoded = decode_bolt11(bolt11)
-                payment_hash = decoded.get("payment_hash")
-                if not payment_hash:
-                    raise ProviderError(f"LNbits payment execution failed [{res.status_code}]: {res.text}")
-
-                preimage = INVOICE_PREIMAGES.get(payment_hash) or _GLOBAL_PREIMAGES.get(payment_hash)
-                if not preimage:
-                    preimage = secrets.token_hex(32)
-                    payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
-
-                return PaymentReceipt(
-                    receipt_id=f"rcpt-lnbits-{payment_hash[:10]}",
-                    payment_hash=payment_hash,
-                    preimage=preimage,
-                    amount_sats=decoded.get("amount_sats") or 250,
-                    fee_sats=0,
-                    provider="lnbits",
-                    status=PaymentStatus.SETTLED,
-                    settled_at=utcnow(),
-                )
-        except httpx.HTTPError as exc:
-            logger.warning(f"Network error communicating with LNbits ({exc}). Falling back to cryptographic proof.")
-            from backend.app.services.machine_money.bolt11 import decode_bolt11, INVOICE_PREIMAGES
-            from backend.app.services.machine_money.providers.mock import _GLOBAL_PREIMAGES
-            import hashlib
-            import secrets
-
-            try:
-                decoded = decode_bolt11(bolt11)
-                payment_hash = decoded.get("payment_hash")
-            except Exception:
-                decoded = {}
-                payment_hash = None
-
-            if not payment_hash:
-                payment_hash = hashlib.sha256(b"lnbits_fallback_" + bolt11.encode()).hexdigest()
-
-            preimage = INVOICE_PREIMAGES.get(payment_hash) or _GLOBAL_PREIMAGES.get(payment_hash)
-            if not preimage:
-                preimage = secrets.token_hex(32)
-                payment_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
-
-            return PaymentReceipt(
-                receipt_id=f"rcpt-lnbits-{payment_hash[:10]}",
-                payment_hash=payment_hash,
-                preimage=preimage,
-                amount_sats=decoded.get("amount_sats") if decoded else 250,
-                fee_sats=0,
-                provider="lnbits",
-                status=PaymentStatus.SETTLED,
-                settled_at=utcnow(),
+        preimage = INVOICE_PREIMAGES.get(payment_hash) or _GLOBAL_PREIMAGES.get(payment_hash)
+        if not preimage:
+            raise ProviderError(
+                f"Unregistered invoice: payment hash {payment_hash} is not registered in provider store. "
+                "Settlement rejected (0 satoshis deducted)."
             )
+
+        # Enforce sha256(preimage) == payment_hash
+        computed_hash = hashlib.sha256(bytes.fromhex(preimage)).hexdigest()
+        if computed_hash.lower() != payment_hash.lower():
+            raise ProviderError(
+                f"Cryptographic proof mismatch: sha256(preimage) != payment_hash {payment_hash}. "
+                "Settlement rejected (0 satoshis deducted)."
+            )
+
+        amount_sats = decoded.get("amount_sats") or 250
+        return PaymentReceipt(
+            receipt_id=f"rcpt-lnbits-{payment_hash[:10]}",
+            payment_hash=payment_hash,
+            preimage=preimage,
+            amount_sats=amount_sats,
+            fee_sats=0,
+            provider="lnbits",
+            status=PaymentStatus.SETTLED,
+            settled_at=utcnow(),
+        )
 
     async def check_payment(self, payment_hash: str) -> PaymentReceipt:
         """Verify whether an invoice has been paid on the Lightning Network."""

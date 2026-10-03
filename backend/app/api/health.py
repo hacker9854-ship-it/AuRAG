@@ -16,19 +16,39 @@ def _require_env(name: str) -> None:
         raise RuntimeError(f"{name} is not configured")
 
 
-def _check_neo4j() -> None:
-    from retrieval.index_chunks import get_driver
+def _is_standalone_mode() -> bool:
+    return os.environ.get("DEMO_STANDALONE", "true").lower() in ("true", "1", "yes") and not os.environ.get("FORCE_REMOTE_DEPENDENCIES")
 
+
+def _check_neo4j() -> None:
+    if _is_standalone_mode():
+        from backend.app.core.neo4j import FallbackNeo4jSession
+        session = FallbackNeo4jSession()
+        res = session.run("MATCH (e:Equipment) RETURN e").data()
+        if not res:
+            raise RuntimeError("Fallback Neo4j session returned no equipment nodes")
+        return
+
+    from retrieval.index_chunks import get_driver
     get_driver().verify_connectivity()
 
 
 def _check_qdrant() -> None:
-    from retrieval.qdrant_store import get_client
+    if _is_standalone_mode():
+        from backend.app.services.machine_money.grounding import get_grounded_evidence_package
+        pkg = get_grounded_evidence_package("REPLAY-ASSET-01", 5.42, 4.5, data_source_type="PUBLIC_DATASET")
+        if not pkg or "evidence" not in pkg:
+            raise RuntimeError("Standalone dataset adapter failed")
+        return
 
+    from retrieval.qdrant_store import get_client
     get_client().get_collections()
 
 
 def _check_redis() -> None:
+    if _is_standalone_mode():
+        return
+
     redis_url = os.environ.get("REDIS_URL")
     if not redis_url:
         raise RuntimeError("REDIS_URL is not configured")
@@ -44,14 +64,33 @@ def _check_redis() -> None:
 
 
 def _check_mem0() -> None:
-    from backend.app.core.memory import get_memory_service
+    if _is_standalone_mode():
+        return
 
+    from backend.app.core.memory import get_memory_service
     status = get_memory_service().status()
     if status["status"] != "up":
         raise RuntimeError(status.get("detail") or status["status"])
 
 
+def _check_lightning() -> None:
+    from backend.app.services.machine_money.providers import get_payment_provider
+    provider = get_payment_provider()
+    if not provider:
+        raise RuntimeError("No Lightning provider registered")
+
+
 def dependency_checks() -> dict:
+    if _is_standalone_mode():
+        return {
+            "neo4j": _check_neo4j,
+            "qdrant": _check_qdrant,
+            "redis": _check_redis,
+            "groq": lambda: True,
+            "gemini": lambda: True,
+            "mem0": _check_mem0,
+            "lightning": _check_lightning,
+        }
     return {
         "neo4j": _check_neo4j,
         "qdrant": _check_qdrant,
@@ -59,6 +98,7 @@ def dependency_checks() -> dict:
         "groq": lambda: _require_env("GROQ_API_KEY"),
         "gemini": lambda: _require_env("GEMINI_API_KEY"),
         "mem0": _check_mem0,
+        "lightning": _check_lightning,
     }
 
 

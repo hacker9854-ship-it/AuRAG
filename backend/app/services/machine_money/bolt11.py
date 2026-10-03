@@ -428,6 +428,7 @@ def decode_bolt11(invoice_str: str) -> Dict[str, Any]:
         "network": network,
         "amount_sats": amount_sats,
         "timestamp": ts,
+        "payment_hash": tags.get("payment_hash"),
         "tags": tags,
         "payee_pubkey": rec_pub_hex,
         "is_signature_valid": rec_pub is not None,

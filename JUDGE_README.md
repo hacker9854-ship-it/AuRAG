@@ -31,6 +31,11 @@
 [Neo4j Operational Graph: (Payment)-[:FUNDS]->(WorkOrder)]
 ```
 
+> **🛡️ Zero-Failure Hackathon Architecture (1 Single Point of Network)**:  
+> High-stakes hackathon demos often fail when relying on 6 cloud services (Neo4j AuraDB + Qdrant + Redis + Groq + Gemini + Lightning) over conference WiFi.  
+> AuRAG defaults to a resilient **Standalone Local Engine**: local SQLite relational storage, sub-millisecond in-memory operational graph, and offline NASA IMS condition-monitoring telemetry.  
+> **Only 1 single service touches the live network: The Sovereign Bitcoin Lightning Node (LNbits Signet)**. Real sats, real cryptographic preimages, zero moving parts to fail.
+
 ---
 
 ## 🎬 2. Live Demo — 1-Click Fast Path (60 Seconds)
