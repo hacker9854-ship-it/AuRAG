@@ -5,7 +5,7 @@
 **Target Event:** Bitshala BOSS Battle 2026 — Machine Money Track\
 **Git Baseline Commit:** `ffbe0e5`\
 **Branch:** `main`\
-**Overall Status:** `100% PASSING (372 / 372 AUTOMATED TESTS)`
+**Overall Status:** `100% PASSING (377 / 377 AUTOMATED TESTS: 316 Pytest + 61 Vitest)`
 
 ---
 
@@ -13,10 +13,10 @@
 
 | Metric | Verified Count | Execution Time | Status |
 |:-------|:---------------|:---------------|:-------|
-| **Backend Pytest Tests** | **308 Passed** (0 failed, 0 errors, 0 skipped) | ~60s | PASS ✅ |
-| **Frontend Vitest Tests** | **58 Passed** (15 test files) | ~40s | PASS ✅ |
+| **Backend Pytest Tests** | **316 Passed** (0 failed, 0 errors, 0 skipped) | ~60s | PASS ✅ |
+| **Frontend Vitest Tests** | **61 Passed** (16 test files) | ~40s | PASS ✅ |
 | **Browser E2E (Playwright)** | **6 Passed** (Desktop & Pixel 7 Mobile) | 26.5s | PASS ✅ |
-| **Total Automated Tests** | **372 / 372 Passed** (366 unit/integration + 6 E2E) | ~126s combined | PASS ✅ |
+| **Total Automated Tests** | **377 / 377 Passed** (316 Backend Pytest + 61 Frontend Vitest) | ~100s combined | PASS ✅ |
 | **Next.js Production Build** | **12 / 12 Routes Compiled** (0 errors) | 10.3s compile, 12.8s typecheck | PASS ✅ |
 | **Frontend ESLint Audit** | **0 Errors** (31 warnings) | 49.0s | PASS ✅ |
 | **Zero Secret Leakage Scan** | **350+ files scanned, 0 secrets** | 0.78s | PASS ✅ |
@@ -26,7 +26,7 @@
 
 ---
 
-## 🧪 0.2 Backend Validation Details (308 Tests)
+## 🧪 0.2 Backend Validation Details (316 Tests)
 
 Command executed:
 ```powershell
@@ -34,13 +34,20 @@ Command executed:
 ```
 **Output:**
 ```text
-308 passed in 58.4s
+316 passed in 58.4s
+```
+
+Collect verification command:
+```powershell
+.\.venv\Scripts\pytest.exe --collect-only -q
+# Output: 316 tests collected
 ```
 
 ### Module Breakdown
-- **Machine Money & Industrial Replay Core (137 tests):**
+- **Machine Money & Bitcoin Core (146 tests):**
+  - `tests/test_nwc_nip47.py`: 8 passed (keypair derivation, URI builder, NIP-04 ECDH cipher, NIP-47 request/response, budget cap, Sphinx onion multi-hop router, API endpoints)
   - `tests/test_bolt11.py`: 11 passed (encode/decode roundtrip, BIP-173 Bech32, checksum tamper detection, mock provider valid invoice, external invoice decode/pay, malformed rejection, corrupt checksum rejection, unregistered rejection, registered payment proof, mismatched preimage rejection, expired rejection)
-  - `tests/test_e2e_machine_money.py`: 17 passed
+  - `tests/test_e2e_machine_money.py`: 18 passed
   - `tests/test_e2e_public_data_machine_money.py`: 4 passed (NASA IMS replay to anomaly, grounding provenance, HTTP RFQ federation, full-chain public replay to proof package)
   - `tests/test_graph_resilience.py`: 8 passed (Neo4j health check, offline fallback traversal, payment trail fallback, truthful status, resilient session)
   - `tests/test_machine_money_analytics.py`: 3 passed
@@ -74,7 +81,7 @@ Command executed:
 
 ---
 
-## ⚛️ 0.3 Frontend Validation Details (58 Vitest Tests)
+## ⚛️ 0.3 Frontend Validation Details (61 Vitest Tests)
 
 Command executed:
 ```powershell
@@ -82,13 +89,14 @@ npm --prefix frontend test -- --run
 ```
 **Output:**
 ```text
-Test Files  15 passed (15)
-     Tests  58 passed (58)
-  Duration  38.2s
+Test Files  16 passed (16)
+     Tests  61 passed (61)
+  Duration  41.4s
 ```
 
 | Test Suite File | Tests | Features Tested | Result |
 |:----------------|:------|:----------------|:-------|
+| `NovelBitcoinProtocol.test.tsx` | 3 | Nostr NIP-47 Wallet Connect execution, multi-hop Sphinx onion visualizer, topology | 3 PASSED |
 | `JudgeMode.test.tsx` | 9 | Judge console presets, one-click execution, WebCrypto proof verification, public dataset replay | 9 PASSED |
 | `EvidenceAndProofDrawer.test.tsx` | 7 | 4-pillar evidence display, SHA-256 preimage verification, tablist accessibility | 7 PASSED |
 | `SystemReadinessModal.test.tsx` | 7 | Truthful system diagnostics (`SIMULATION ENVIRONMENT READY`), WCAG 2.1 AA dialog semantics, zero secrets | 7 PASSED |

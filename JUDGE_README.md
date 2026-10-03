@@ -98,19 +98,24 @@ Instead of relying on fictional plant generator numbers, AuRAG's primary hero be
 To verify that the entire codebase is genuine, tested, and fully functional:
 
 ```bash
-# 1. Verify Frontend Vitest Suite (61 tests across 16 suites)
+# 1. Verify Full Backend Pytest Suite (316 tests collected & passing)
+pytest -q
+# Quick collect verification:
+pytest --collect-only -q  # Output: 316 tests collected
+
+# 2. Verify Frontend Vitest Suite (61 tests across 16 suites)
 cd frontend
 npm test -- --run
 
-# 2. Verify Backend Machine Money & Bitcoin Suites (12 tests)
-pytest tests/test_e2e_public_data_machine_money.py tests/test_nwc_nip47.py -v
+# 3. Verify Core Machine Money, Public Data & Bitcoin Suites (30 tests)
+pytest tests/test_e2e_public_data_machine_money.py tests/test_e2e_machine_money.py tests/test_nwc_nip47.py -v
 
-# 3. Verify Clean Production Build
+# 4. Verify Clean Production Build
 cd frontend
 npm run build
 ```
 
-**Result**: 100% Passing Tests, 0 Build Errors.
+**Result**: 100% Passing Tests (316 Backend Pytest + 61 Frontend Vitest = 377 Total), 0 Build Errors.
 
 ---
 

@@ -20,8 +20,9 @@
 </p>
 
 <p align="center">
-  <a href="https://boss-battle.devfolio.co"><img src="https://img.shields.io/badge/Bitshala%20BOSS%202026-Machine%20Money%20Track-F7931A?style=for-the-badge&logo=bitcoin&logoColor=white" alt="BOSS 2026 Track"/></a>
-  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Tests-366%2F366%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Tests 366/366 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Pytest-316%2F316%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Pytest 316/316 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Vitest-61%2F61%20Passing-729B1B?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest 61/61 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Total%20Tests-377%2F377%20Passing-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white" alt="Total Tests 377/377 Passing"/></a>
   <a href="https://au-rag.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-au--rag.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo"/></a>
   <a href="https://aurag-production.up.railway.app/docs"><img src="https://img.shields.io/badge/API-Swagger%20Docs-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="API Docs"/></a>
 </p>
@@ -254,7 +255,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 | **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Bitcoin Lightning Network (BOLT11 micro-settlement)** |
 | **Audit Trail** | Paper / ERP records | ❌ None | **✅ Cryptographic preimage + GraphRAG evidence chain** |
 | **Policy Enforcement** | Manual manager approval | ❌ None | **✅ Authoritative backend spending caps with auto-escalation** |
-| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 366 Automated Tests (308 Backend + 58 Frontend)** |
+| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 377 Automated Tests (316 Backend Pytest + 61 Frontend Vitest)** |
 
 ---
 
@@ -271,7 +272,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🔄 **Deterministic Idempotency Protection** — SHA-256 idempotency cache rejecting duplicate physical anomaly triggers and network retries.
 - 📦 **Payment Proof Drawer & Evidence Pack** — Interactive sliding drawer for inspecting raw JSON, hex preimages, BOLT-11 invoices, GraphRAG failure codes (`FE-001`), and downloadable audit reports.
 - 🖥️ **Industrial Operations Cockpit** — 12 interactive Next.js 16 routes featuring dark mode, responsive layout (1080p → mobile), live execution timeline, and system readiness diagnostics.
-- 🧪 **Comprehensive Test Coverage** — 80 backend Pytest tests + 56 frontend Vitest tests covering E2E lifecycle, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
+- 🧪 **Comprehensive Test Coverage** — 316 backend Pytest tests + 61 frontend Vitest tests (377 total) covering E2E lifecycle, Nostr NWC (NIP-47), multi-hop routing, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
 
 ---
 
@@ -307,8 +308,8 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 **Testing & Verification**  
-![Pytest](https://img.shields.io/badge/Pytest-80%20Tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest-56%20Tests-729B1B?style=for-the-badge&logo=vitest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-316%20Tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-61%20Tests-729B1B?style=for-the-badge&logo=vitest&logoColor=white)
 
 </div>
 
@@ -407,14 +408,14 @@ Judges can reproduce all test suites and verify the architecture in under 60 sec
 git clone https://github.com/hacker9854-ship-it/AuRAG.git
 cd AuRAG
 
-# 2. Run all 80 Backend Machine Money Tests (Pytest)
-powershell -Command ".\.venv\Scripts\pytest.exe -q tests/test_e2e_machine_money.py (Get-ChildItem tests/test_machine_money*.py) tests/test_secret_scan.py"
-# Expected Output:
-# 80 passed in ~7s
+# 2. Run all 316 Backend Tests (Pytest)
+pytest -q
+# Quick collect verification:
+pytest --collect-only -q  # Output: 316 tests collected
 
-# 3. Run all 56 Frontend Tests (Vitest)
+# 3. Run all 61 Frontend Tests (Vitest)
 npm --prefix frontend test -- --run
-# Expected Output: 15 test files | 56 tests passed
+# Expected Output: 16 test files | 61 tests passed
 
 # 4. Verify Next.js Production Build (0 errors)
 npm --prefix frontend run build
@@ -512,7 +513,7 @@ AuRAG/
 ├── agents/                   # LangGraph Multi-Agent Team (RCA, Compliance, Copilot)
 ├── ingestion/                # Multimodal Ingestion (P&ID Drawings, OCR, PDFs)
 ├── telemetry/                # Synthetic SCADA Ingestion & Anomaly Matching
-├── tests/                    # 308 Automated Backend Tests (Pytest)
+├── tests/                    # 316 Automated Backend Tests (Pytest)
 │   ├── test_e2e_machine_money.py   # Full lifecycle E2E tests
 │   ├── test_machine_money_*.py     # Unit, integration, policy, failure tests
 │   └── ...
@@ -621,11 +622,11 @@ GET /api/v1/machine-money/budget/status
 
 | Test Suite | Scope | Result | Execution Time |
 |:-----------|:------|:------:|:--------------:|
-| **Backend Pytest** | Unit, Integration, E2E, BOLT11, Policy, Failure-Path, Secret-Scan | **308 / 308 Passed** | ~60s |
-| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics | **58 / 58 Passed** (15 suites) | ~38s |
+| **Backend Pytest** | Unit, Integration, E2E, BOLT11, NWC NIP-47, Policy, Failure-Path, Secret-Scan | **316 / 316 Passed** | ~60s |
+| **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics, NWC | **61 / 61 Passed** (16 suites) | ~40s |
 | **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 11.1s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
-| **Total Automated Tests** | Combined backend + frontend | **366 / 366 Passed** | ~98s |
+| **Total Automated Tests** | Combined backend + frontend | **377 / 377 Passed** | ~100s |
 
 ### 🛡️ Claim-to-Evidence Verification Matrix
 
@@ -648,7 +649,7 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 
 | Document | Description |
 |:---------|:------------|
-| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 308 Pytest + 58 Vitest = 366 tests passed, build status |
+| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 316 Pytest + 61 Vitest = 377 tests passed, build status |
 | [**CLAIM_EVIDENCE_MATRIX.md**](./docs/CLAIM_EVIDENCE_MATRIX.md) | Master claim-to-evidence verification matrix auditing 13 technical claims with allowed wording |
 | [**JUDGE_DEMO_SCRIPT.md**](./docs/JUDGE_DEMO_SCRIPT.md) | Precise 0:00–5:00 minute-by-minute judge demo script with talking points and screen actions |
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |

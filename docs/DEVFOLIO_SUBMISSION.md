@@ -57,9 +57,9 @@ When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG tr
 
 ## 5. Verification & Testing Proof
 
-- **372 / 372 Automated Tests Passing (100%):**
-  - 308 Pytest backend tests (Machine Money core, BOLT11, RFQ federation, graph resilience, idempotency, failure-paths).
-  - 58 Vitest frontend component tests (React 19, Next.js 16, JudgeMode, VendorRFQ, ProofVerification).
+- **377 Automated Tests Passing (100%):**
+  - 316 Pytest backend tests (Machine Money core, Nostr NWC NIP-47, BOLT11, RFQ federation, graph resilience, idempotency, failure-paths).
+  - 61 Vitest frontend component tests (React 19, Next.js 16, JudgeMode, VendorRFQ, ProofVerification, NWC UI).
   - 6 Playwright Browser E2E tests (Desktop & Pixel 7 Mobile responsive flows).
   - Complete end-to-end integration and failure recovery suites.
 - **Zero Secrets Committed:** Tested against `.gitignore` with `*.key`, `*.pem`, `*.macaroon` protection.

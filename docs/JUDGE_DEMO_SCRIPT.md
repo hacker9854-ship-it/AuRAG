@@ -84,7 +84,7 @@
 * **Narration:**
   > "To summarize our technical defensibility:
   > 1. **Zero Credential Leaks:** Our pre-submission scanners scanned 350+ files — zero API keys or secrets in source.
-  > 2. **Complete Test Coverage:** 308 Pytest backend tests and 58 Vitest frontend tests (366 total automated tests) — 100% green across regression, failure-paths, and E2E loops.
+  > 2. **Complete Test Coverage:** 316 Pytest backend tests and 61 Vitest frontend tests (377 total automated tests) — 100% green across regression, failure-paths, and E2E loops.
   > 3. **Production Deployed:** Next.js 16 live on Vercel, FastAPI Docker container live on Railway.
   > 4. **Authentic Provenance:** All code written during the Bitshala build window with preserved git timestamps.
   > AuRAG proves that when machines have money, industrial operations transform from slow, reactive maintenance into autonomous, self-healing cyber-physical infrastructure designed for zero unplanned downtime.
