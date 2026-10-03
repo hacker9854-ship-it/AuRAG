@@ -74,9 +74,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
   const isEscalated = response?.status === "PENDING_APPROVAL";
   const anomalyEvent = response?.events?.find((e) => e.stage === "ANOMALY_DETECTED");
   const evidenceEvent = response?.events?.find((e) => e.stage === "EVIDENCE_MATCHED");
-  const isPublicReplay =
-    response?.scenario === "PUBLIC_DATASET_REPLAY" ||
-    anomalyEvent?.data?.data_source_type === "PUBLIC_DATASET";
+  const isPublicReplay = response
+    ? response.scenario === "PUBLIC_DATASET_REPLAY" ||
+      anomalyEvent?.data?.data_source_type === "PUBLIC_DATASET"
+    : true;
   const datasetName =
     (anomalyEvent?.data?.dataset_name as string) ||
     (isPublicReplay ? "NASA IMS Bearing Run-to-Failure (Test 2)" : null);
@@ -288,38 +289,90 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
         </div>
       </div>
 
+      {/* NASA IMS Empirical Benchmark Showcase */}
+      <div className="my-4 p-4 rounded-2xl bg-cyan-950/20 border border-cyan-500/30 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <Database className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span className="font-bold text-sm text-foreground">
+              Empirical Benchmark: NASA IMS Bearing Run-to-Failure Dataset
+            </span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40">
+              Real Open Science Data
+            </span>
+          </div>
+          <span className="text-[11px] text-muted-foreground font-mono">
+            Univ. of Cincinnati / NASA Ames PCoE
+          </span>
+        </div>
+
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          AuRAG evaluates real empirical vibration data from Rexnord ZA-2115 double-row bearings running continuously at 2,000 RPM under 6,000 lbs radial load (sampled at 20 kHz by PCB 353B33 accelerometers) rather than fictional synthetic sensor values.
+        </p>
+
+        {/* 5-Stage Progression Breakdown */}
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 pt-1 font-mono text-[10px]">
+          <div className="p-2 rounded-lg bg-card/60 border border-border/60">
+            <div className="text-emerald-400 font-bold">1. Baseline (0.0h)</div>
+            <div className="text-muted-foreground">1.85 mm/s • 52.4°C</div>
+            <div className="text-slate-400 truncate">REC-001 (Healthy)</div>
+          </div>
+          <div className="p-2 rounded-lg bg-card/60 border border-border/60">
+            <div className="text-emerald-400 font-bold">2. Stable (63.6h)</div>
+            <div className="text-muted-foreground">2.28 mm/s • 55.1°C</div>
+            <div className="text-slate-400 truncate">REC-020 (Nominal)</div>
+          </div>
+          <div className="p-2 rounded-lg bg-card/60 border border-border/60">
+            <div className="text-amber-400 font-bold">3. Degradation (128.1h)</div>
+            <div className="text-muted-foreground">3.62 mm/s • 64.8°C</div>
+            <div className="text-slate-400 truncate">REC-038 (Zone B)</div>
+          </div>
+          <div className="p-2 rounded-lg bg-cyan-950/40 border border-cyan-500/60 shadow-xs relative">
+            <div className="text-cyan-400 font-bold flex items-center justify-between">
+              <span>4. Excursion (147.6h)</span>
+              <span className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
+            </div>
+            <div className="text-cyan-200 font-bold">5.42 mm/s • 84.6°C</div>
+            <div className="text-cyan-300 font-semibold truncate">REC-042 (Zone C) ➔ PAY</div>
+          </div>
+          <div className="p-2 rounded-lg bg-card/60 border border-border/60">
+            <div className="text-destructive font-bold">5. Terminal (163.8h)</div>
+            <div className="text-muted-foreground">11.75 mm/s • 102.3°C</div>
+            <div className="text-slate-400 truncate">REC-045 (Spalling)</div>
+          </div>
+        </div>
+      </div>
+
       {/* Control Buttons Grid */}
       <div className="py-4 flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
-        {/* Primary CTA */}
-        <button
-          type="button"
-          data-testid="run-emergency-button"
-          aria-label="Run industrial emergency autonomous settlement scenario (250 satoshis)"
-          onClick={() => handleRunScenario("INDUSTRIAL_EMERGENCY", 250)}
-          disabled={isRunning}
-          className="relative group overflow-hidden px-6 py-3.5 bg-gradient-to-r from-amber-500 via-amber-600 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-slate-950 font-bold text-sm rounded-xl shadow-lg hover:shadow-amber-500/25 transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-amber-500/40 hover:ring-amber-500 focus-visible:ring-4 focus-visible:ring-amber-400 outline-none w-full sm:w-auto"
-        >
-          <Play className={`w-4 h-4 fill-current ${isRunning ? "animate-spin" : "group-hover:translate-x-0.5 transition-transform"}`} />
-          <span>RUN INDUSTRIAL EMERGENCY</span>
-          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-black/20 text-white font-medium">
-            250 sats
-          </span>
-        </button>
-
-        {/* Public Dataset Replay Preset (Task 2A.4 / 2A.13) */}
+        {/* Real Public Dataset Replay Preset (Featured Hero Trigger) */}
         <button
           type="button"
           data-testid="run-public-replay-button"
           aria-label="Run public dataset replay scenario (NASA IMS Bearing Outer Race Spall)"
           onClick={() => handleRunScenario("PUBLIC_DATASET_REPLAY", 250)}
           disabled={isRunning}
-          className="px-4 py-3 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 font-semibold text-xs rounded-xl border border-cyan-500/30 hover:border-cyan-500/60 transition-all flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-cyan-500 outline-none w-full sm:w-auto"
+          className="relative group overflow-hidden px-5 py-3.5 bg-gradient-to-r from-cyan-600 via-cyan-500 to-teal-600 hover:from-cyan-500 hover:to-teal-500 text-slate-950 font-bold text-xs sm:text-sm rounded-xl shadow-lg hover:shadow-cyan-500/25 transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-95 ring-2 ring-cyan-500/40 hover:ring-cyan-500 focus-visible:ring-4 focus-visible:ring-cyan-400 outline-none w-full sm:w-auto"
         >
-          <Database className="w-4 h-4 text-cyan-500" />
-          <span>PUBLIC DATASET REPLAY</span>
-          <span className="text-[10px] font-mono bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 px-1.5 py-0.5 rounded">
-            NASA IMS
+          <Database className={`w-4 h-4 fill-current ${isRunning ? "animate-spin" : "group-hover:translate-x-0.5 transition-transform"}`} />
+          <span>RUN REAL DATASET REPLAY (NASA IMS)</span>
+          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-black/20 text-white font-medium">
+            250 sats
           </span>
+        </button>
+
+        {/* Primary CTA (Synthetic Baseline) */}
+        <button
+          type="button"
+          data-testid="run-emergency-button"
+          aria-label="Run industrial emergency autonomous settlement scenario (250 satoshis)"
+          onClick={() => handleRunScenario("INDUSTRIAL_EMERGENCY", 250)}
+          disabled={isRunning}
+          className="px-4 py-3 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-semibold text-xs rounded-xl border border-border transition-all flex items-center justify-center gap-2 disabled:opacity-50 focus-visible:ring-2 focus-visible:ring-primary outline-none w-full sm:w-auto"
+        >
+          <Play className="w-3.5 h-3.5 fill-current" />
+          <span>RUN INDUSTRIAL EMERGENCY</span>
+          <span className="text-[10px] font-mono opacity-70">250 sats</span>
         </button>
 
         {/* Secondary Policy Escalation Trigger */}

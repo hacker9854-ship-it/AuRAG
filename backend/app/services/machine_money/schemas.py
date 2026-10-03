@@ -142,8 +142,8 @@ class ExecutionStageEvent(BaseModel):
 
 
 class JudgeExecutionRequest(BaseModel):
-    scenario: str = Field(default="INDUSTRIAL_EMERGENCY", description="INDUSTRIAL_EMERGENCY, POLICY_ESCALATION, PROVIDER_FAILURE, or PUBLIC_DATASET_REPLAY")
-    equipment_id: str = Field(default="P-101A", description="Equipment tag identifier")
+    scenario: str = Field(default="PUBLIC_DATASET_REPLAY", description="PUBLIC_DATASET_REPLAY (NASA IMS Benchmark), INDUSTRIAL_EMERGENCY, POLICY_ESCALATION, or PROVIDER_FAILURE")
+    equipment_id: str = Field(default="REPLAY-ASSET-01", description="Equipment tag identifier (defaults to NASA IMS test rig REPLAY-ASSET-01)")
     override_cost_sats: Optional[int] = Field(default=None, description="Optional override satoshi amount")
     auto_approve: bool = Field(default=True, description="Whether to auto-pay if under spending cap")
     confidence: Optional[float] = Field(default=None, description="Diagnostic confidence score (0.0 - 1.0)")

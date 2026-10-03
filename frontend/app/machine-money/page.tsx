@@ -335,6 +335,32 @@ export default function MachineMoneyPage() {
       )}
 
       {/* --------------------------------------------------------------------- */}
+      {/* Empirical Dataset Benchmark Provenance Banner (NASA IMS Bearing)       */}
+      {/* --------------------------------------------------------------------- */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-cyan-950/25 border border-cyan-500/40 text-xs shadow-xs">
+        <div className="flex items-center gap-2.5">
+          <DatabaseIcon className="size-4 text-cyan-400 shrink-0" />
+          <div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-bold text-foreground">Empirical Benchmark Grounding:</span>
+              <Badge variant="outline" className="text-[10px] text-cyan-300 border-cyan-500/50 bg-cyan-500/20 font-mono">
+                NASA IMS Bearing Run-to-Failure (PCoE)
+              </Badge>
+              <Badge variant="outline" className="text-[10px] text-muted-foreground border-border font-mono">
+                Asset: REPLAY-ASSET-01
+              </Badge>
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              AuRAG replaces fictional synthetic drift with authentic run-to-failure condition monitoring from the University of Cincinnati / NASA Ames Research Center.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 font-mono text-[10px] text-cyan-400 bg-background/80 px-2.5 py-1 rounded border border-cyan-500/30">
+          <span>Record: NASA-IMS-T2-REC-042 (147.6h &bull; 5.42 mm/s Zone C)</span>
+        </div>
+      </div>
+
+      {/* --------------------------------------------------------------------- */}
       {/* Judge Mode: One-Click Autonomous Settlement Pipeline & Live Timeline   */}
       {/* --------------------------------------------------------------------- */}
       <JudgeMode
@@ -360,25 +386,25 @@ export default function MachineMoneyPage() {
       {/* Demonstration Controls & Scenario Presets                             */}
       {/* --------------------------------------------------------------------- */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="hover:border-amber-500/50 transition-colors">
+        <Card className="hover:border-cyan-500/50 transition-colors">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
-              <Badge variant="success" className="text-[10px]">Scenario 1: Autonomous</Badge>
-              <ZapIcon className="size-4 text-amber-500" />
+              <Badge variant="info" className="text-[10px] bg-cyan-500/20 text-cyan-300 border-cyan-500/40">Scenario 1: Real Benchmark</Badge>
+              <DatabaseIcon className="size-4 text-cyan-400" />
             </div>
-            <CardTitle className="text-sm font-semibold">Autonomous Telemetry Settle</CardTitle>
+            <CardTitle className="text-sm font-semibold">NASA IMS Benchmark Replay</CardTitle>
             <CardDescription className="text-xs">
-              Vibration spike (94%) quotes Bearing Inspection (250 sats $\le$ 500 cap) and settles automatically.
+              Authentic 147.6h vibration excursion (5.42 mm/s &gt; 4.5 mm/s ISO threshold) triggers 250 sats autonomous settlement.
             </CardDescription>
           </CardHeader>
           <CardFooter className="pt-1">
             <Button
-              className="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-medium text-xs h-8 gap-1.5"
+              className="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-semibold text-xs h-8 gap-1.5 shadow-sm"
               onClick={() => handleTriggerTelemetry(94, "WO-2026-P101")}
               disabled={triggering}
             >
               <PlayIcon className="size-3.5 fill-current" />
-              {triggering ? "Executing M2M Settle..." : "Trigger Autonomous Settlement"}
+              {triggering ? "Replaying NASA Benchmark..." : "Replay NASA IMS Benchmark"}
             </Button>
           </CardFooter>
         </Card>

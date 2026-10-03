@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 _DEFAULT_EQUIPMENT = [
+    {"tag_id": "REPLAY-ASSET-01", "name": "NASA Bearing Test Rig Shaft 1 (IMS Replay)", "type": "NASA PCoE Test Rig Bearing"},
     {"tag_id": "P-101", "name": "Crude Charge Pump A", "type": "Centrifugal Pump"},
     {"tag_id": "P-102", "name": "Crude Charge Pump B", "type": "Centrifugal Pump"},
     {"tag_id": "C-201", "name": "Process Gas Compressor - Train 1", "type": "Reciprocating Compressor"},

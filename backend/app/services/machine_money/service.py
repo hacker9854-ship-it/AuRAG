@@ -651,8 +651,8 @@ class MachineMoneyService:
     async def execute_judge_scenario(
         self,
         db: Session,
-        scenario: str = "INDUSTRIAL_EMERGENCY",
-        equipment_id: str = "P-101A",
+        scenario: str = "PUBLIC_DATASET_REPLAY",
+        equipment_id: str = "REPLAY-ASSET-01",
         override_cost_sats: Optional[int] = None,
         auto_approve: bool = True,
         neo4j_session=None,
