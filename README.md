@@ -153,8 +153,8 @@ In high-consequence industrial facilities (power plants, refineries, chemical ma
 ### How AuRAG Solves It with Real Empirical Data & Machine Money
 AuRAG grounds its primary demonstration on the **NASA IMS Bearing Run-to-Failure Open Science Dataset** (University of Cincinnati / NASA Ames PCoE), pairing genuine physical failure physics with autonomous financial sovereignty:
 - **Empirical Accelerometry ➔ Root Cause in Seconds**: When high-frequency accelerometry from NASA IMS Bearing Test 2 (`NASA-IMS-T2-REC-042` at 147.6h) breaches 5.42 mm/s (exceeding ISO 10816 Zone C 4.5 mm/s threshold with outer race BPFO harmonic spall), AuRAG's GraphRAG engine traverses Neo4j ontology to identify bearing raceway degradation (`FE-001`) and governing repair procedure (`PROC-001`).
-- **Autonomous M2M Lightning Settlement**: AuRAG solicits competitive quotes across decentralized vendor nodes (evaluated via an illustrative multi-objective bidding simulation: Apex Diagnostics, Precision Dynamics, Quantum Reliability), pays a real BOLT11 Lightning invoice via our live LNbits Signet node within strict zero-trust budget caps, and permanently binds the **cryptographic SHA-256 preimage** in Neo4j.
-- **Empirical Physics vs. Illustrative Economics**: While physical sensor readings and Lightning settlement are **100% real**, downstream plant economics ($1.17M modelled downtime exposure @ $260k/hr) are explicitly documented as **illustrative macro-economic simulations** demonstrating autonomous agent ROI calculations.
+- **Autonomous M2M Lightning Settlement**: AuRAG solicits competitive quotes across decentralized vendor nodes (evaluated via an illustrative multi-objective bidding simulation: Apex Diagnostics, Precision Dynamics, Quantum Reliability), settles a standards-compliant BOLT11 Lightning invoice via the configured provider (LNbits Signet when live, mock for offline evaluation) within strict zero-trust budget caps, and permanently binds the **cryptographic SHA-256 preimage** in Neo4j.
+- **Empirical Physics vs. Illustrative Economics**: While physical sensor readings are **100% real** and Lightning settlement architecture is **live-capable** (default evaluation mode: `MACHINE_MONEY_PROVIDER=mock`, explicitly labeled in UI), downstream plant economics ($1.17M modelled downtime exposure @ $260k/hr) are explicitly documented as **illustrative macro-economic simulations** demonstrating autonomous agent ROI calculations.
 
 ---
 
@@ -182,7 +182,7 @@ sequenceDiagram
     Note over Policy: Checks: 250 sats <= 500 sat autonomous cap<br/>Daily spend within budget
     Policy-->>M2M: APPROVED (Zero-Trust Verified)
     M2M->>LNbits: POST /api/v1/payments (Pay BOLT11 Invoice via Live Node)
-    LNbits-->>M2M: Payment Settled (Real Preimage: 94b933006490ce2e...)
+    LNbits-->>M2M: Payment Settled (Preimage: 94b933006490ce2e...)
     M2M->>Ledger: Commit Work Order + Preimage + TX Hash
     Ledger-->>NASA: Work Order #WO-2026-P101 FUNDED & Dispatched
 ```

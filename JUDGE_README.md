@@ -34,7 +34,7 @@
 > **🛡️ Zero-Failure Hackathon Architecture (1 Single Point of Network)**:  
 > High-stakes hackathon demos often fail when relying on 6 cloud services (Neo4j AuraDB + Qdrant + Redis + Groq + Gemini + Lightning) over conference WiFi.  
 > AuRAG defaults to a resilient **Standalone Local Engine**: local SQLite relational storage, sub-millisecond in-memory operational graph, and offline NASA IMS condition-monitoring telemetry.  
-> **Only 1 single service touches the live network: The Sovereign Bitcoin Lightning Node (LNbits Signet)**. Real sats, real cryptographic preimages, zero moving parts to fail.
+> **Only 1 single service touches the live network: The Sovereign Bitcoin Lightning Node (LNbits Signet)**. Live-capable Lightning architecture with an explicitly disclosed mock/regtest evaluation mode. The active provider (`MACHINE_MONEY_PROVIDER`) is dynamically surfaced in the UI.
 
 ---
 
@@ -50,13 +50,13 @@
 1. Navigate to the **Machine Money Console** (`/machine-money`).
 2. Look at the top **"ONE BUTTON, ONE WOW"** hero panel.
 3. Click the giant Golden button:  
-   👉 **`⚡ EXECUTE 1-CLICK DEMO (NASA IMS ANOMALY ➔ REAL LNBITS PAYMENT)`**
+   👉 **`⚡ EXECUTE 1-CLICK DEMO (NASA IMS ANOMALY ➔ LIGHTNING SETTLEMENT)`**
 
 ### 🌟 The "One WOW" Result on Your Screen (~200ms):
 Three punchy, indisputable proofs appear immediately:
-1. **🚨 Real Sensor Anomaly**: Authentic NASA IMS Bearing vibration excursion (**5.42 mm/s > 4.5 mm/s** ISO 10816 Zone C alarm) replayed directly from open science accelerometry (Rexnord ZA-2115, REC-042).
-2. **⚡ Real Lightning Settlement**: **250 sats** autonomously routed to the diagnostic node via our live **LNbits Signet node** with zero human latency under our autonomous spending policy cap.
-3. **🔐 Cryptographic Preimage on Screen**: The genuine 32-byte SHA-256 settlement preimage (`eaa9f3...`) is displayed right on screen with a 1-click clipboard copy button and verified proof against the invoice payment hash (`sha256(preimage) == payment_hash`).
+1. **🚨 Sensor Anomaly (100% Real Data)**: Authentic NASA IMS Bearing vibration excursion (**5.42 mm/s > 4.5 mm/s** ISO 10816 Zone C alarm) replayed directly from open science accelerometry (Rexnord ZA-2115, REC-042).
+2. **⚡ Lightning Settlement**: **250 sats** autonomously routed to the diagnostic node via the configured Lightning provider under our autonomous spending policy cap. The UI dynamically displays `MOCK / SIMULATION` or `LIVE LIGHTNING` based on the active `MACHINE_MONEY_PROVIDER` setting.
+3. **🔐 Cryptographic Preimage on Screen**: A 32-byte SHA-256 settlement preimage (`eaa9f3...`) is displayed on screen with a 1-click clipboard copy button and verified proof against the invoice payment hash (`sha256(preimage) == payment_hash`).
 
 *(Optional: For technical judges wanting to inspect the deep GraphRAG reasoning, Neo4j Cypher queries, multi-vendor RFQ scoring, and Sphinx onion routing, inspect the **"Technical Audit & 6-Stage GraphRAG Pipeline"** section directly below the WOW card).*
 
@@ -94,7 +94,7 @@ AuRAG enforces a strict, honest line between **real empirical science** and **il
 | Layer | Classification | Technical Source & Real-World Grounding |
 |:------|:---------------|:----------------------------------------|
 | **Vibration Waveforms & Accelerometry** | **100% REAL** | **NASA IMS Bearing Run-to-Failure Dataset** (Univ. of Cincinnati / NASA Ames PCoE). 4 Rexnord ZA-2115 bearings, 2,000 RPM, 6,000 lbs radial load, 20 kHz PCB 353B33 accelerometer. Record `REC-042` at 147.6h reaches 5.42 mm/s (ISO 10816 Zone C breach). |
-| **Bitcoin Settlement & Cryptography** | **100% REAL** | **Live Bitcoin Lightning Node (LNbits Signet)**. Generates real BOLT11 payment requests; verifies genuine 32-byte cryptographic SHA-256 preimages (`sha256(preimage) == payment_hash`). |
+| **Bitcoin Settlement & Cryptography** | **Live-Capable Architecture** | Pluggable Lightning provider (LNbits Signet / Mock). Generates standards-compliant BOLT11 payment requests and verifies 32-byte SHA-256 preimages (`sha256(preimage) == payment_hash`). Default evaluation mode: `MACHINE_MONEY_PROVIDER=mock` (explicitly labeled in UI). |
 | **Operational Knowledge Graph** | **100% REAL** | Real-world ISO 10816-3 vibration severity standards, SKF bearing mechanical catalog specifications, and industrial SOPs in Neo4j. |
 | **Vendor Bidding Candidates** | **[Illustrative Simulation]** | Synthetic vendor nodes (*Apex Diagnostics*, *Precision Dynamics*, *Quantum Reliability*) illustrating decentralized multi-vendor RFQ scoring. |
 | **Plant Macro-Economics** | **[Illustrative Model]** | Parameterized industrial plant model ($1.17M modelled downtime exposure @ $260k/hr) illustrating autonomous agent ROI calculation. |
