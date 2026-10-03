@@ -105,9 +105,14 @@ export default function InvestigatePage() {
   return (
     <div className="dashboard-enter mx-auto flex w-full max-w-[1600px] flex-col gap-4 p-4 sm:p-6">
         <section className="flex flex-col gap-1">
-          <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">Operational investigation</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">GraphRAG Evidence Justification</h1>
+            <Badge variant="outline" className="text-xs font-mono border-primary/40 text-primary">
+              Audit & Reasoning Engine
+            </Badge>
+          </div>
           <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-            Ask one operational question, evaluate the answer, and inspect its evidence in the same working context.
+            Deterministic multi-agent reasoning, SOP validation, and citation graph trails that mathematically justify autonomous machine payments and maintenance interventions.
           </p>
         </section>
 

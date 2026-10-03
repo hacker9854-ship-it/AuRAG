@@ -4,8 +4,8 @@ import AppShell from "@/components/AppShell";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
-  title: "AuRAG | Unified Operations by Niss",
-  description: "Industrial knowledge intelligence and autonomous Machine Money for evidence-led operations. Engineered by Niss.",
+  title: "AuRAG | Autonomous Machine Money Protocol",
+  description: "Industrial machines holding sovereign Bitcoin Lightning wallets (BOLT-11 / Nostr NWC), executing autonomous vendor payments grounded in deterministic GraphRAG evidence. Engineered by Niss.",
 };
 
 export default function RootLayout({

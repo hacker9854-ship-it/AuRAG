@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlertIcon, CircleCheckIcon, FlaskConicalIcon, LoaderCircleIcon } from "lucide-react";
+import { CircleAlertIcon, CircleCheckIcon, FlaskConicalIcon, LoaderCircleIcon, ZapIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
@@ -39,6 +39,10 @@ export default function DashboardHeader({
 
       <div className="flex shrink-0 items-center gap-2">
         <NotificationCenter />
+        <Badge variant="outline" className="hidden lg:inline-flex text-[11px] font-mono border-amber-500/40 text-amber-500 bg-amber-500/10">
+          <ZapIcon data-icon="inline-start" className="size-3 fill-amber-500 mr-1" />
+          Machine Money Active
+        </Badge>
         <Badge variant="outline" className="hidden sm:inline-flex">
           <FlaskConicalIcon data-icon="inline-start" />
           Demo environment

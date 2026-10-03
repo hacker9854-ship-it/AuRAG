@@ -75,9 +75,14 @@ export default function WorkOrdersPage() {
     <div className="dashboard-enter mx-auto flex w-full max-w-[1600px] flex-col gap-5 p-4 sm:p-6">
         <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div className="flex flex-col gap-1">
-            <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">Work-order decisions</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="font-heading text-xl font-semibold tracking-tight sm:text-2xl">Funded Work-Order Ledger</h1>
+              <Badge variant="outline" className="text-xs font-mono border-amber-500/40 text-amber-500">
+                Cryptographically Bound
+              </Badge>
+            </div>
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground">
-              Review predictive drafts, preserve edits and decisions, and inspect the resulting audit history.
+              Inspect machine-funded work orders, vendor assignments, and cryptographic payment preimages recorded in the Neo4j operational graph.
             </p>
           </div>
           <div className="flex gap-2">

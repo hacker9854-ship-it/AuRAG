@@ -30,16 +30,19 @@ import {
 } from "@/components/ui/sidebar";
 import type { ReadinessResponse } from "@/lib/api";
 
-const workspaceItems = [
+const machineMoneyItems = [
   { label: "Command Center", icon: LayoutDashboardIcon, href: "/" },
-  { label: "Investigate", icon: SearchIcon, href: "/investigate" },
+  { label: "Machine Money", icon: ZapIcon, href: "/machine-money", highlight: true },
   { label: "Predictive Watch", icon: GaugeIcon, href: "/predictive-watch" },
-  { label: "Machine Money", icon: ZapIcon, href: "/machine-money" },
+];
+
+const evidenceRagItems = [
+  { label: "Investigate", icon: SearchIcon, href: "/investigate" },
+  { label: "Work Orders", icon: ClipboardListIcon, href: "/work-orders" },
   { label: "Operations & Governance", icon: SlidersIcon, href: "/operations" },
   { label: "Knowledge Risk", icon: UserRoundSearchIcon, href: "/knowledge-risk" },
   { label: "RAG Comparison", icon: GitCompareArrowsIcon, href: "/comparison" },
   { label: "Evaluation", icon: ChartNoAxesCombinedIcon, href: "/evaluation" },
-  { label: "Work Orders", icon: ClipboardListIcon, href: "/work-orders" },
 ];
 
 export default function AppSidebar({ readiness }: { readiness: ReadinessResponse | null }) {
@@ -57,15 +60,15 @@ export default function AppSidebar({ readiness }: { readiness: ReadinessResponse
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              tooltip="AuRAG Command Center"
+              tooltip="AuRAG Autonomous Machine Money"
               render={<Link href="/" onClick={closeMobileSidebar} />}
             >
-              <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary font-heading font-semibold text-primary-foreground">
-                A
+              <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-amber-500 font-heading font-bold text-slate-950">
+                ⚡
               </div>
               <div className="flex min-w-0 flex-col items-start group-data-[collapsible=icon]:hidden">
                 <span className="font-heading text-base font-semibold tracking-tight">AuRAG</span>
-                <span className="truncate text-xs text-muted-foreground">Operations intelligence · by Niss</span>
+                <span className="truncate text-xs text-muted-foreground">Autonomous Machine Money · by Niss</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -73,19 +76,57 @@ export default function AppSidebar({ readiness }: { readiness: ReadinessResponse
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Machine Money Flagship Group */}
         <SidebarGroup>
-          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[11px] font-semibold text-amber-500/90 uppercase tracking-wider">
+            Autonomous Machine Money
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {workspaceItems.map((item) => {
+              {machineMoneyItems.map((item) => {
                 const Icon = item.icon;
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname.startsWith(`${item.href}/`));
                 return (
                   <SidebarMenuItem key={item.label}>
                     <SidebarMenuButton
-                      isActive={
-                        pathname === item.href ||
-                        (item.href !== "/" && pathname.startsWith(`${item.href}/`))
-                      }
+                      isActive={isActive}
+                      tooltip={item.label}
+                      className={item.highlight ? "font-semibold text-amber-500 hover:text-amber-400" : ""}
+                      render={<Link href={item.href} onClick={closeMobileSidebar} />}
+                    >
+                      <Icon className={item.highlight ? "text-amber-500" : undefined} />
+                      <span className="flex-1">{item.label}</span>
+                      {item.highlight && (
+                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400 border border-amber-500/30 group-data-[collapsible=icon]:hidden">
+                          Lightning
+                        </span>
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Evidence & Justification (GraphRAG) Group */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+            Evidence & Justification (RAG)
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {evidenceRagItems.map((item) => {
+                const Icon = item.icon;
+                const isActive =
+                  pathname === item.href ||
+                  (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+                return (
+                  <SidebarMenuItem key={item.label}>
+                    <SidebarMenuButton
+                      isActive={isActive}
                       tooltip={item.label}
                       render={<Link href={item.href} onClick={closeMobileSidebar} />}
                     >
