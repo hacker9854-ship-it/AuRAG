@@ -1,6 +1,13 @@
-# Python
+# Python Bytecode & Cache
 __pycache__/
-*.pyc
+**/__pycache__/
+*.py[cod]
+*.[Pp][Yy][Cc]
+*.[Pp][Yy][Oo]
+*.pyd
+*$py.class
+.pytest_cache/
+**/.pytest_cache/
 .venv/
 .venv-broken-*/
 venv/
@@ -8,7 +15,6 @@ venv/
 .uv-cache/
 .uv-python/
 .python312/
-.pytest_cache/
 
 # Node / Next.js
 node_modules/
@@ -41,3 +47,6 @@ data/**/*.tmp
 scratch/
 test-results/
 playwright-report/
+*.zip
+AuRAG-Submission.zip
+
