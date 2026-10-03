@@ -51,8 +51,8 @@ All tests were executed against the combined test suite (`tests/test_machine_mon
   "amount_sats": 250,
   "status": "SETTLED",
   "bolt11": "lnbc2500n1pjmockbolt11invoicestringformachinemoney...",
-  "payment_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-  "preimage": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+  "payment_hash": "81ebd7332d750fe868ef8777b6fa43e0b608b01014f1aa4fe6d02a6d3c92d421",
+  "preimage": "eaa9f31cebb48b2c50cfeda77ddae8789b1b0c8486eff6b4ecc1c55a51542c04",
   "fee_sats": 0,
   "idempotency_key": "idemp-plant-mumbai-01-P-101A-bearing-inspection-EVT-VIB-001",
   "work_order_id": "WO-2026-P101"

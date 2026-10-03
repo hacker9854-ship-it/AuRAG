@@ -15,15 +15,18 @@ def record_payment_in_graph(
     session,
     payment_id: str,
     payment_hash: str,
-    preimage: Optional[str],
-    amount_sats: int,
-    provider: str,
-    status: str,
+    preimage: Optional[str] = None,
+    amount_sats: int = 0,
+    provider: str = "lnbits",
+    status: str = "SETTLED",
     work_order_id: Optional[str] = None,
     predictive_event_id: Optional[str] = None,
     service_provider_name: Optional[str] = None,
+    service_provider_id: Optional[str] = None,
+    **kwargs: Any,
 ) -> bool:
     """Record Payment node and attach semantic relationships to existing industrial entities."""
+    sp_target = service_provider_name or service_provider_id
     cypher = """
     MERGE (p:Payment {id: $payment_id})
     SET p.payment_hash = $payment_hash,

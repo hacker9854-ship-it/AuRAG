@@ -591,11 +591,11 @@ Idempotency-Key: m2m-pay-001
 **Response (200 OK):**
 ```json
 {
-  "payment_id": "pay-8c11e",
+  "payment_id": "PAY-EXEC-JM-2F15EDB4",
   "status": "SETTLED",
   "amount_sats": 250,
-  "payment_preimage": "6a4f29c3d4e8b91a7f0e21c3b5a79e4d...",
-  "tx_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "payment_preimage": "eaa9f31cebb48b2c50cfeda77ddae8789b1b0c8486eff6b4ecc1c55a51542c04",
+  "tx_hash": "81ebd7332d750fe868ef8777b6fa43e0b608b01014f1aa4fe6d02a6d3c92d421",
   "recorded_in_graph": true
 }
 ```

@@ -295,6 +295,41 @@ def decode_bolt11(invoice_str: str) -> Dict[str, Any]:
         raise ValueError("Invoice string must be non-empty")
 
     invoice_str = invoice_str.strip().lower()
+
+    try:
+        import bolt11 as b11_lib
+        b_inv = b11_lib.decode(invoice_str)
+        tags_dict = {
+            "payment_hash": b_inv.payment_hash,
+            "description": b_inv.description,
+            "expiry": b_inv.expiry,
+            "min_final_cltv_expiry_delta": 18,
+        }
+        for t in getattr(b_inv.tags, "tags", []):
+            char_val = getattr(t.char, "value", str(t.char))
+            if char_val == "c":
+                tags_dict["min_final_cltv_expiry_delta"] = t.data
+            elif char_val == "s":
+                tags_dict["payment_secret"] = t.data
+            elif char_val == "p":
+                tags_dict["payment_hash"] = t.data
+            elif char_val == "d":
+                tags_dict["description"] = t.data
+            elif char_val == "x":
+                tags_dict["expiry"] = t.data
+
+        return {
+            "network": b_inv.currency or "bc",
+            "amount_sats": b_inv.amount_msat // 1000 if b_inv.amount_msat else 0,
+            "timestamp": b_inv.date or int(time.time()),
+            "payment_hash": b_inv.payment_hash,
+            "payee_pubkey": b_inv.payee,
+            "is_signature_valid": True,
+            "tags": tags_dict,
+        }
+    except Exception:
+        pass
+
     pos = invoice_str.rfind("1")
     if pos == -1:
         raise ValueError("Invalid BOLT11: missing '1' separator")

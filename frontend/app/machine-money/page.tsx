@@ -665,10 +665,10 @@ export default function MachineMoneyPage() {
                 <span className="text-muted-foreground">Payment Hash:</span>
                 <div className="flex items-center gap-1">
                   <span className="font-mono text-[10px] truncate max-w-[120px]">
-                    {executionResult?.payment_hash || "e3b0c44298fc1c149afbf4c8..."}
+                    {executionResult?.payment_hash || "81ebd7332d750fe868ef8777..."}
                   </span>
                   <button
-                    onClick={() => handleCopy(executionResult?.payment_hash || "e3b0c44298fc1c149afbf4c8", "hash")}
+                    onClick={() => handleCopy(executionResult?.payment_hash || "81ebd7332d750fe868ef8777b6fa43e0b608b01014f1aa4fe6d02a6d3c92d421", "hash")}
                     className="text-muted-foreground hover:text-foreground"
                   >
                     <CopyIcon className="size-3" />
@@ -678,7 +678,7 @@ export default function MachineMoneyPage() {
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">Preimage Proof:</span>
                 <span className="font-mono text-[10px] text-emerald-600 dark:text-emerald-400 truncate max-w-[140px]">
-                  {executionResult?.preimage || "9f86d081884c7d659a2f..."}
+                  {executionResult?.preimage || "eaa9f31cebb48b2c50cfeda7..."}
                 </span>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
