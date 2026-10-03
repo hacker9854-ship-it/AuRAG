@@ -259,6 +259,8 @@ export interface GraphRelationship {
 export interface GraphResponse {
   nodes: GraphNode[];
   relationships: GraphRelationship[];
+  graph_status?: "ONLINE" | "DEGRADED / FALLBACK" | string;
+  fallback_active?: boolean;
 }
 
 export async function fetchGraph(graphPaths: { type: string; id: string }[]): Promise<GraphResponse> {
@@ -268,6 +270,31 @@ export async function fetchGraph(graphPaths: { type: string; id: string }[]): Pr
     body: JSON.stringify({ graph_paths: graphPaths }),
   });
   if (!res.ok) throw new Error("Graph fetch failed");
+  return res.json();
+}
+
+export interface GraphHealthResponse {
+  status: "ONLINE" | "DEGRADED" | string;
+  state_label: "ONLINE" | "DEGRADED / FALLBACK" | string;
+  connected: boolean;
+  mode: string;
+  database?: string;
+  uri?: string;
+  detail?: string;
+  fallback_active: boolean;
+}
+
+export async function fetchGraphHealth(): Promise<GraphHealthResponse> {
+  const res = await fetch(`${API_URL}/api/graph/health`, { cache: "no-store" });
+  if (!res.ok) {
+    return {
+      status: "DEGRADED",
+      state_label: "DEGRADED / FALLBACK",
+      connected: false,
+      mode: "FALLBACK_REPRESENTATION",
+      fallback_active: true,
+    };
+  }
   return res.json();
 }
 

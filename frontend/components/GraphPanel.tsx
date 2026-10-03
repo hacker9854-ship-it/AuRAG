@@ -44,7 +44,16 @@ function label(node: GraphResponse["nodes"][number]): string {
 
 type Result = { key: string; graph: GraphResponse } | { key: string; error: string };
 
-function Legend({ types }: { types: string[] }) {
+function Legend({
+  types,
+  fallbackActive,
+  graphStatus,
+}: {
+  types: string[];
+  fallbackActive?: boolean;
+  graphStatus?: string;
+}) {
+  const isFallback = fallbackActive || graphStatus === "DEGRADED / FALLBACK";
   return (
     <div className="flex flex-wrap items-center gap-2 border-b p-3">
       <span className="mr-1 text-xs font-medium text-muted-foreground">Node classes</span>
@@ -54,7 +63,19 @@ function Legend({ types }: { types: string[] }) {
           {type}
         </Badge>
       ))}
-      <span className="ml-auto hidden text-xs text-muted-foreground xl:block">Drag nodes · scroll to zoom</span>
+      <div className="ml-auto flex items-center gap-2">
+        <span
+          data-testid="graph-status-badge"
+          className={`font-mono text-[10px] px-2 py-0.5 rounded border font-semibold flex items-center gap-1 ${
+            isFallback
+              ? "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20"
+              : "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+          }`}
+        >
+          GRAPH STATUS: {isFallback ? "DEGRADED / FALLBACK" : "LIVE AURA"}
+        </span>
+        <span className="hidden text-xs text-muted-foreground xl:block">Drag nodes · scroll to zoom</span>
+      </div>
     </div>
   );
 }
@@ -64,6 +85,7 @@ function EvidenceDetails({ graph, query }: { graph: GraphResponse; query: string
   for (const node of graph.nodes) {
     (grouped[node.type] ??= []).push(label(node));
   }
+  const isFallback = graph.fallback_active || graph.graph_status === "DEGRADED / FALLBACK";
 
   return (
     <div className="grid h-full min-h-0 grid-cols-[auto_1fr] border-t">
@@ -81,6 +103,15 @@ function EvidenceDetails({ graph, query }: { graph: GraphResponse; query: string
       </div>
       <ScrollArea className="min-h-0">
         <div className="flex flex-col gap-3 p-4">
+          {isFallback && (
+            <div
+              data-testid="graph-fallback-banner"
+              className="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-[11px] text-amber-700 dark:text-amber-300 flex items-center justify-between"
+            >
+              <span>Resilient Fallback Graph: Remote Aura disconnected or paused. Operating in deterministic offline mode.</span>
+              <span className="font-mono text-[9px] uppercase px-1.5 py-0.5 rounded bg-amber-500/20 font-bold">Fallback</span>
+            </div>
+          )}
           {query && <p className="line-clamp-2 text-xs text-muted-foreground">“{query}”</p>}
           {Object.entries(grouped).map(([type, names]) => (
             <div key={type} className="grid gap-1 sm:grid-cols-[120px_1fr]">
@@ -194,24 +225,37 @@ export default function GraphPanel({
     );
   }
 
-  const nodes: CanvasNode[] = (result.graph.nodes || []).map((node) => ({
+  // Deduplicate nodes defensively in frontend to eliminate any potential React key warnings
+  const uniqueNodesMap = new Map<string, (typeof result.graph.nodes)[0]>();
+  for (const node of result.graph.nodes || []) {
+    if (!uniqueNodesMap.has(node.id)) {
+      uniqueNodesMap.set(node.id, node);
+    }
+  }
+  const uniqueNodesList = Array.from(uniqueNodesMap.values());
+
+  const nodes: CanvasNode[] = uniqueNodesList.map((node) => ({
     id: node.id,
     caption: `${node.type}: ${label(node)}`,
     color: TYPE_COLORS[node.type] ?? "#718096",
     size: node.type === "Equipment" ? 32 : 24,
   }));
-  const relationships: CanvasRelationship[] = result.graph.relationships.map((relationship) => ({
-    id: `${relationship.source}-${relationship.type}-${relationship.target}`,
+  const relationships: CanvasRelationship[] = (result.graph.relationships || []).map((relationship, idx) => ({
+    id: `${relationship.source}-${relationship.type}-${relationship.target}-${idx}`,
     from: relationship.source,
     to: relationship.target,
     caption: relationship.type,
     color: "#667085",
   }));
-  const presentTypes = [...new Set(result.graph.nodes.map((node) => node.type))];
+  const presentTypes = [...new Set(uniqueNodesList.map((node) => node.type))];
 
   return (
     <div className="grid h-full min-h-0 grid-rows-[auto_minmax(280px,1fr)_170px]">
-      <Legend types={presentTypes} />
+      <Legend
+        types={presentTypes}
+        fallbackActive={result.graph.fallback_active}
+        graphStatus={result.graph.graph_status}
+      />
       <div className="min-h-0 bg-muted/20">
         <GraphCanvas key={key} nodes={nodes} rels={relationships} />
       </div>

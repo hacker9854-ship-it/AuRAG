@@ -193,12 +193,24 @@ def fetch_graph(request: GraphRequest, session=Depends(get_session)) -> dict:
             formatted = {key: value for key, value in node.items() if key != "eid"}
             unique_nodes[formatted["id"]] = formatted
 
+        is_live_active = getattr(session, "is_live", False)
+
         return {
             "nodes": list(unique_nodes.values()),
             "relationships": list(relationships_by_key.values()),
+            "graph_status": "ONLINE" if is_live_active else "DEGRADED / FALLBACK",
+            "fallback_active": not is_live_active,
         }
     except Exception as exc:
         raise HTTPException(
             status_code=503,
             detail={"error": "graph_failed", "detail": str(exc)},
         ) from exc
+
+
+@router.get("/graph/health")
+def get_graph_health() -> dict:
+    """Truthful health check for Neo4j Aura connectivity and fallback readiness."""
+    from backend.app.core.neo4j import check_neo4j_health
+    return check_neo4j_health()
+

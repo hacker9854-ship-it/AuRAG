@@ -91,17 +91,21 @@ def get_payment_graph_trail(session, payment_id: str) -> Dict[str, Any]:
     RETURN p, wo, evt, fe, eq, sp
     """
     try:
+        from backend.app.core.neo4j import FallbackNeo4jSession
+        is_fallback = isinstance(session, FallbackNeo4jSession) or not getattr(session, "is_live", True)
         result = session.run(cypher, payment_id=payment_id).data()
         if not result:
-            from backend.app.core.neo4j import FallbackNeo4jSession
             fallback_res = FallbackNeo4jSession().run(cypher, payment_id=payment_id).data()
             if fallback_res:
                 result = fallback_res
+                is_fallback = True
             else:
                 return {
                     "payment_id": payment_id,
                     "found": False,
                     "explanation": "Payment not found in Knowledge Graph",
+                    "is_fallback": True,
+                    "graph_status": "DEGRADED / FALLBACK",
                 }
 
         row = result[0]
@@ -115,6 +119,8 @@ def get_payment_graph_trail(session, payment_id: str) -> Dict[str, Any]:
         return {
             "payment_id": payment_id,
             "found": True,
+            "is_fallback": is_fallback,
+            "graph_status": "DEGRADED / FALLBACK" if is_fallback else "ONLINE",
             "status": p.get("status", "SETTLED"),
             "amount_sats": p.get("amount_sats", 0),
             "payment_hash": p.get("payment_hash"),

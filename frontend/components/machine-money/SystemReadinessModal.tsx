@@ -36,6 +36,9 @@ export function SystemReadinessModal({
   const network = health?.network || "regtest";
   const isMock = health?.is_mock !== false || providerName.toLowerCase().includes("mock");
   const isLive = !isMock && isConnected;
+  const graphStatus = health?.details?.graph_status;
+  const graphConnected = health?.details?.graph_connected;
+  const isGraphDegraded = graphStatus === "DEGRADED / FALLBACK" || graphConnected === false;
   const latencyDisplay = health?.latency_ms != null && !isMock ? `${health.latency_ms.toFixed(1)} ms` : "DEMO VALUE (MOCK)";
   const balanceDisplay = health?.balance_sats != null && !isMock ? `${health.balance_sats.toLocaleString("en-US")} sats` : "DEMO VALUE (MOCK)";
   const providerStatusState = isConnected ? (isLive ? "CONNECTED" : "DEMO VALUE (MOCK)") : "DISCONNECTED";
@@ -63,12 +66,14 @@ export function SystemReadinessModal({
                 <span
                   data-testid="system-readiness-status-badge"
                   className={`font-mono text-[10px] px-2 py-0.5 rounded border font-semibold ${
-                    isLive
+                    isLive && !isGraphDegraded
                       ? "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                      : isLive && isGraphDegraded
+                      ? "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20"
                       : "text-purple-600 dark:text-purple-400 bg-purple-500/10 border-purple-500/20"
                   }`}
                 >
-                  {isLive ? "ALL SYSTEMS NOMINAL" : "SIMULATION ENVIRONMENT READY"}
+                  {isLive ? (isGraphDegraded ? "GRAPH STATUS: DEGRADED / FALLBACK" : "ALL SYSTEMS NOMINAL") : "SIMULATION ENVIRONMENT READY"}
                 </span>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">
@@ -198,7 +203,9 @@ export function SystemReadinessModal({
                 </div>
                 <div className="flex justify-between">
                   <span>Operational Graph:</span>
-                  <span className="text-foreground">Neo4j Bolt + Fallback</span>
+                  <span className={isGraphDegraded ? "text-amber-500 font-semibold" : "text-foreground"}>
+                    {isGraphDegraded ? "DEGRADED / FALLBACK" : "Neo4j Aura (Connected)"}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Idempotency Store:</span>

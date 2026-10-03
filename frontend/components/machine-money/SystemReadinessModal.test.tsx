@@ -69,6 +69,21 @@ describe("Machine Money Phase 10: Safe System Readiness Indicators (Task 10.3)",
     expect(screen.getByText(/500,?000 sats/)).toBeInTheDocument();
   });
 
+  it("renders GRAPH STATUS: DEGRADED / FALLBACK when Neo4j is degraded, never ALL SYSTEMS NOMINAL", () => {
+    const degradedGraphHealth: MachineMoneyHealth = {
+      ...liveHealth,
+      details: {
+        ...liveHealth.details,
+        graph_status: "DEGRADED / FALLBACK",
+        graph_connected: false,
+      },
+    };
+    render(<SystemReadinessModal isOpen={true} onClose={vi.fn()} health={degradedGraphHealth} />);
+    expect(screen.queryByText("ALL SYSTEMS NOMINAL")).not.toBeInTheDocument();
+    expect(screen.getByText("GRAPH STATUS: DEGRADED / FALLBACK")).toBeInTheDocument();
+    expect(screen.getByText("DEGRADED / FALLBACK")).toBeInTheDocument();
+  });
+
   it("ensures zero secret keys or private hashes are visible in rendered output", () => {
     const { container } = render(
       <SystemReadinessModal isOpen={true} onClose={vi.fn()} health={mockHealth} />

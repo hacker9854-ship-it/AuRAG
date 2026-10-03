@@ -85,6 +85,7 @@ _IN_MEMORY_GRAPH_NODES = {
     "P-101": {"labels": ["Equipment"], "props": {"tag_id": "P-101", "name": "Crude Charge Pump P-101", "type": "Centrifugal Pump"}},
     "P-101A": {"labels": ["Equipment"], "props": {"tag_id": "P-101A", "name": "Crude Charge Pump P-101A", "type": "Centrifugal Pump"}},
     "P-101B": {"labels": ["Equipment"], "props": {"tag_id": "P-101B", "name": "Crude Charge Pump P-101B", "type": "Centrifugal Pump"}},
+    "REPLAY-ASSET-01": {"labels": ["Equipment"], "props": {"tag_id": "REPLAY-ASSET-01", "name": "NASA Bearing Test Rig Shaft 1 (Replay)", "type": "Test Rig Bearing"}},
     "C-201": {"labels": ["Equipment"], "props": {"tag_id": "C-201", "name": "Recycle Gas Compressor C-201", "type": "Centrifugal Compressor"}},
     "HX-401": {"labels": ["Equipment"], "props": {"tag_id": "HX-401", "name": "Preheat Exchanger HX-401", "type": "Shell and Tube Exchanger"}},
     "PSV-701": {"labels": ["Equipment"], "props": {"tag_id": "PSV-701", "name": "Pressure Safety Valve PSV-701", "type": "Safety Relief Valve"}},
@@ -108,12 +109,14 @@ _IN_MEMORY_GRAPH_NODES = {
 _IN_MEMORY_GRAPH_EDGES = [
     ("P-101", "FE-001", "EXPERIENCED"),
     ("P-101A", "FE-001", "EXPERIENCED"),
+    ("REPLAY-ASSET-01", "FE-001", "EXPERIENCED"),
     ("P-101", "P-101A", "HAS_PART"),
     ("FE-001", "WO-1002", "RESOLVED_BY"),
     ("FE-001", "WO-1001", "DOCUMENTED_IN"),
     ("WO-1002", "PROC-001", "GOVERNED_BY"),
     ("FE-001", "WO-2026-P101", "RESOLVED_BY"),
     ("P-101A", "WO-2026-P101", "PERFORMED_ON"),
+    ("REPLAY-ASSET-01", "WO-2026-P101", "PERFORMED_ON"),
     ("C-201", "FE-002", "EXPERIENCED"),
     ("FE-002", "WO-1003", "RESOLVED_BY"),
     ("WO-1003", "PROC-002", "GOVERNED_BY"),
@@ -128,6 +131,7 @@ _IN_MEMORY_GRAPH_EDGES = [
 
 class FallbackNeo4jSession:
     """Resilient fallback session when remote Neo4j Aura sandbox is unreachable or paused."""
+    is_live = False
 
     def run(self, query: str, **kwargs):
         # Handle WorkOrder write mutations
@@ -227,6 +231,7 @@ class FallbackNeo4jSession:
                         {"t": "P-101B", "tag_id": "P-101B"},
                         {"t": "C-201", "tag_id": "C-201"},
                         {"t": "PSV-701", "tag_id": "PSV-701"},
+                        {"t": "REPLAY-ASSET-01", "tag_id": "REPLAY-ASSET-01"},
                     ]
                 if "RETURN p.name AS n" in query or "RETURN p.name as n" in query or query.strip() == "MATCH (p:Person) RETURN p.name AS n":
                     return [
@@ -237,7 +242,7 @@ class FallbackNeo4jSession:
                 # 2. Equipment multi-hop traversal query (_EQUIPMENT_CYPHER)
                 if ("e:Equipment {tag_id:$tag}" in query) or ("failure_events" in query and "clauses" in query and "procedures" in query):
                     tag = kwargs.get("tag", "P-101")
-                    if tag in ("P-101", "P-101A"):
+                    if tag in ("P-101", "P-101A", "REPLAY-ASSET-01"):
                         return [{
                             "failure_events": [{"id": "FE-001", "date": "2025-03-14", "symptom": "High vibration and elevated bearing temperature on P-101", "root_cause": "Bearing cage degradation and improper lubrication"}],
                             "work_orders": [
@@ -680,62 +685,53 @@ class FallbackNeo4jSession:
 
         return FallbackResult()
 
-_neo4j_is_live = None
-
 class ResilientResult:
-    def __init__(self, real_result, fallback_result):
+    def __init__(self, real_result, fallback_result, session=None):
         self._real = real_result
         self._fallback = fallback_result
+        self._session = session
 
     def data(self):
-        global _neo4j_is_live
-        if _neo4j_is_live is False:
+        if self._session and not self._session.is_live:
             return self._fallback.data()
         try:
-            res = self._real.data()
-            _neo4j_is_live = True
-            return res
+            return self._real.data()
         except Exception as exc:
-            _neo4j_is_live = False
+            if self._session:
+                self._session._live_failed = True
             logger.warning("Neo4j result.data() failed (%s); using fallback.", exc)
             return self._fallback.data()
 
     def single(self):
-        global _neo4j_is_live
-        if _neo4j_is_live is False:
+        if self._session and not self._session.is_live:
             return self._fallback.single()
         try:
-            res = self._real.single()
-            _neo4j_is_live = True
-            return res
+            return self._real.single()
         except Exception as exc:
-            _neo4j_is_live = False
+            if self._session:
+                self._session._live_failed = True
             logger.warning("Neo4j result.single() failed (%s); using fallback.", exc)
             return self._fallback.single()
 
     def values(self, *keys):
-        global _neo4j_is_live
-        if _neo4j_is_live is False:
+        if self._session and not self._session.is_live:
             return self._fallback.values(*keys)
         try:
-            res = self._real.values(*keys)
-            _neo4j_is_live = True
-            return res
+            return self._real.values(*keys)
         except Exception as exc:
-            _neo4j_is_live = False
+            if self._session:
+                self._session._live_failed = True
             logger.warning("Neo4j result.values() failed (%s); using fallback.", exc)
             return self._fallback.values(*keys)
 
     def __iter__(self):
-        global _neo4j_is_live
-        if _neo4j_is_live is False:
+        if self._session and not self._session.is_live:
             return iter(self._fallback)
         try:
-            res = iter(self._real)
-            _neo4j_is_live = True
-            return res
+            return iter(self._real)
         except Exception as exc:
-            _neo4j_is_live = False
+            if self._session:
+                self._session._live_failed = True
             logger.warning("Neo4j result iterator failed (%s); using fallback.", exc)
             return iter(self._fallback)
 
@@ -744,20 +740,23 @@ class ResilientNeo4jSession:
     """Wraps a Neo4j session with fallback to FallbackNeo4jSession on query error."""
 
     def __init__(self, real_session=None):
-        global _neo4j_is_live
-        self._real_session = real_session if _neo4j_is_live is not False else None
+        self._real_session = real_session
         self._fallback = FallbackNeo4jSession()
+        self._live_failed = False
 
     def run(self, query: str, **kwargs):
-        global _neo4j_is_live
-        if self._real_session is not None and _neo4j_is_live is not False:
+        if self._real_session is not None and not self._live_failed:
             try:
                 real_res = self._real_session.run(query, **kwargs)
-                return ResilientResult(real_res, self._fallback.run(query, **kwargs))
+                return ResilientResult(real_res, self._fallback.run(query, **kwargs), session=self)
             except Exception as exc:
-                _neo4j_is_live = False
+                self._live_failed = True
                 logger.warning("Live Neo4j run failed (%s); using fallback mock result.", exc)
         return self._fallback.run(query, **kwargs)
+
+    @property
+    def is_live(self) -> bool:
+        return self._real_session is not None and not self._live_failed
 
     def close(self):
         if self._real_session is not None:
@@ -807,6 +806,61 @@ def _get_neo4j_driver():
             raise RuntimeError("Missing NEO4J_URI/NEO4J_USERNAME/NEO4J_PASSWORD")
         _neo4j_driver = GraphDatabase.driver(uri, auth=(user, pwd), connection_timeout=5.0, max_connection_lifetime=300)
     return _neo4j_driver
+
+
+def check_neo4j_health() -> dict:
+    """Truthfully check remote Neo4j Aura connectivity and return structured health diagnostics.
+
+    Returns:
+        dict with status ('ONLINE' or 'DEGRADED'), state_label ('ONLINE' or 'DEGRADED / FALLBACK'),
+        connected (bool), fallback_active (bool), and diagnostic detail.
+    """
+    import os
+    uri = os.environ.get("NEO4J_URI")
+    user = os.environ.get("NEO4J_USERNAME")
+    pwd = os.environ.get("NEO4J_PASSWORD")
+    db = _get_neo4j_database()
+
+    masked_uri = "UNSET"
+    if uri:
+        masked_uri = uri.split("@")[-1] if "@" in uri else uri
+
+    if not all([uri, user, pwd]):
+        return {
+            "status": "DEGRADED",
+            "state_label": "DEGRADED / FALLBACK",
+            "connected": False,
+            "mode": "FALLBACK_REPRESENTATION",
+            "database": db or "default",
+            "uri": masked_uri,
+            "detail": "Missing NEO4J_URI, NEO4J_USERNAME, or NEO4J_PASSWORD environment variables",
+            "fallback_active": True,
+        }
+
+    try:
+        driver = _get_neo4j_driver()
+        driver.verify_connectivity()
+        return {
+            "status": "ONLINE",
+            "state_label": "ONLINE",
+            "connected": True,
+            "mode": "LIVE_AURA",
+            "database": db or "default",
+            "uri": masked_uri,
+            "detail": "Connected to remote Neo4j Aura instance",
+            "fallback_active": False,
+        }
+    except Exception as exc:
+        return {
+            "status": "DEGRADED",
+            "state_label": "DEGRADED / FALLBACK",
+            "connected": False,
+            "mode": "FALLBACK_REPRESENTATION",
+            "database": db or "default",
+            "uri": masked_uri,
+            "detail": f"Remote Neo4j connectivity check failed: {exc}",
+            "fallback_active": True,
+        }
 
 
 def get_session():

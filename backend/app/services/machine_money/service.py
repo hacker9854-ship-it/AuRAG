@@ -62,8 +62,21 @@ class MachineMoneyService:
         self.provider = get_payment_provider()
 
     async def get_health(self) -> ProviderHealth:
-        """Query health and readiness of the underlying Lightning settlement rail."""
-        return await self.provider.health()
+        """Query health and readiness of the underlying Lightning settlement rail and graph persistence."""
+        health = await self.provider.health()
+        try:
+            from backend.app.core.neo4j import check_neo4j_health
+            graph_diag = check_neo4j_health()
+            health.details["graph_status"] = graph_diag.get("state_label", "DEGRADED / FALLBACK")
+            health.details["graph_connected"] = bool(graph_diag.get("connected", False))
+            health.details["graph_fallback"] = bool(graph_diag.get("fallback_active", True))
+            health.details["graph_detail"] = graph_diag.get("detail", "")
+        except Exception as exc:
+            health.details["graph_status"] = "DEGRADED / FALLBACK"
+            health.details["graph_connected"] = False
+            health.details["graph_fallback"] = True
+            health.details["graph_detail"] = str(exc)
+        return health
 
     def generate_quote(
         self,
@@ -1240,6 +1253,8 @@ class MachineMoneyService:
                     "ServiceProvider(Industrial Dynamics)",
                 ],
                 "trail": trail,
+                "is_fallback": trail.get("is_fallback", True),
+                "graph_status": trail.get("graph_status", "DEGRADED / FALLBACK"),
             },
             "audit": {
                 "audit_ledger_status": "SQL_PERSISTED",

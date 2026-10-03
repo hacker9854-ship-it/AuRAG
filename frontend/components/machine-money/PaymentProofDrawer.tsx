@@ -257,18 +257,30 @@ export function PaymentProofDrawer({
               {/* Tab 3: Operational Graph Lineage */}
               {activeTab === "graph" && (
                 <div className="space-y-4">
-                  <div>
-                    <h4 className="text-sm font-bold">Neo4j Operational Lineage (Graph Trail)</h4>
-                    <p className="text-xs text-muted-foreground">
-                      Visual chain connecting physical sensor telemetry to financial settlement and work order execution.
-                    </p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-bold">Neo4j Operational Lineage (Graph Trail)</h4>
+                      <p className="text-xs text-muted-foreground">
+                        Visual chain connecting physical sensor telemetry to financial settlement and work order execution.
+                      </p>
+                    </div>
+                    <span
+                      data-testid="graph-lineage-status-badge"
+                      className={`font-mono text-[10px] px-2 py-0.5 rounded border font-semibold ${
+                        (data.graph_links as any)?.is_fallback !== false
+                          ? "text-amber-600 dark:text-amber-400 bg-amber-500/10 border-amber-500/20"
+                          : "text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border-emerald-500/20"
+                      }`}
+                    >
+                      {(data.graph_links as any)?.is_fallback !== false ? "DEGRADED / FALLBACK" : "LIVE AURA"}
+                    </span>
                   </div>
 
                   {/* Visual Node Chain */}
                   <div className="p-4 bg-muted/30 rounded-2xl border border-border/60 space-y-3">
                     <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
                       {data.graph_links.lineage.map((node, i) => (
-                        <React.Fragment key={node}>
+                        <React.Fragment key={`${node}-${i}`}>
                           <span className="px-2.5 py-1 rounded-lg bg-card border border-border font-semibold shadow-xs">
                             {node}
                           </span>
