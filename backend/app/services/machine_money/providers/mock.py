@@ -66,8 +66,10 @@ class MockLightningProvider(LightningProvider):
     Clearly designated as MOCK / SIMULATION in all metadata, receipts, and invoices.
     Generates genuinely parseable, standard-compliant BOLT11 invoices with cryptographically valid preimages.
     """
+    name = "mock"
 
     def __init__(self, initial_balance_sats: int = 1_000_000):
+        self.name = "mock"
         self.provider_name = "mock"
         self.network = "regtest"
         self.balance_sats = initial_balance_sats

@@ -20,8 +20,10 @@ from backend.app.services.machine_money.schemas import (
 
 class NWCProvider(LightningProvider):
     """Nostr Wallet Connect payment provider adhering to NIP-47 specifications."""
+    name = "nwc"
 
     def __init__(self, uri_or_config: Optional[str] = None):
+        self.name = "nwc"
         self.client = NWCClient(uri_or_config)
 
     async def health(self) -> ProviderHealth:

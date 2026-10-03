@@ -130,8 +130,8 @@ class MachineMoneyService:
                 return existing
 
         invoice = await self.provider.create_invoice(request)
-        provider_name = os.environ.get("MACHINE_MONEY_PROVIDER", "mock")
-        network = os.environ.get("MACHINE_MONEY_NETWORK", "regtest")
+        provider_name = getattr(self.provider, "name", os.environ.get("MACHINE_MONEY_PROVIDER", "lnbits"))
+        network = getattr(self.provider, "network", os.environ.get("MACHINE_MONEY_NETWORK", "signet"))
 
         record = PaymentRecord(
             payment_id=f"PAY-{uuid.uuid4().hex[:12]}",
@@ -212,8 +212,8 @@ class MachineMoneyService:
             requires_human_approval = False
 
 
-        provider_name = os.environ.get("MACHINE_MONEY_PROVIDER", "mock")
-        network = os.environ.get("MACHINE_MONEY_NETWORK", "regtest")
+        provider_name = getattr(self.provider, "name", os.environ.get("MACHINE_MONEY_PROVIDER", "lnbits"))
+        network = getattr(self.provider, "network", os.environ.get("MACHINE_MONEY_NETWORK", "signet"))
 
         if requires_human_approval:
             # Task 6.2: Complete context before human approval
