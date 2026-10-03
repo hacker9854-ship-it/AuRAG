@@ -46,7 +46,11 @@ data/**/*.tmp
 .pytest_tmp/
 scratch/
 test-results/
-playwright-report/
 *.zip
 AuRAG-Submission.zip
+
+# Local scratch notes & session logs
+NOTES.md
+*.scratch.*
+scratch/
 

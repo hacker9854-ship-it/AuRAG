@@ -649,6 +649,7 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 
 | Document | Description |
 |:---------|:------------|
+| [**ARCHITECTURE.md**](./ARCHITECTURE.md) | Canonical system architecture, component diagrams, and Architecture Decision Records (ADRs) |
 | [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 316 Pytest + 61 Vitest = 377 tests passed, build status |
 | [**CLAIM_EVIDENCE_MATRIX.md**](./docs/CLAIM_EVIDENCE_MATRIX.md) | Master claim-to-evidence verification matrix auditing 13 technical claims with allowed wording |
 | [**JUDGE_DEMO_SCRIPT.md**](./docs/JUDGE_DEMO_SCRIPT.md) | Precise 0:00–5:00 minute-by-minute judge demo script with talking points and screen actions |

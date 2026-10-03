@@ -122,6 +122,7 @@ npm run build
 ## 📚 Technical Deep-Dive Index (Optional Appendices)
 
 If you wish to inspect our in-depth engineering documentation, architecture diagrams, and mathematical derivations:
+* 🏗️ [Core System Architecture & Engineering Decision Records (ADRs)](./ARCHITECTURE.md)
 * 🗺️ [Machine Money Architecture Spec](./docs/ARCHITECTURE_MACHINE_MONEY.md)
 * 📜 [Verification & Audit Evidence Report](./docs/MACHINE_MONEY_VERIFICATION.md)
 * 📊 [Industrial Downtime Economics Derivation](./docs/MACHINE_MONEY_ECONOMICS.md)
