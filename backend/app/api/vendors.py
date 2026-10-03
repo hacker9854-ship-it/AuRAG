@@ -2,7 +2,7 @@
 
 Provides live HTTP REST endpoints for external and internal industrial vendor nodes
 (Apex Diagnostics, Precision Dynamics, Quantum Reliability) to receive RFQs,
-compute dynamic competitive bids, and issue cryptographically verifiable BOLT11 invoices.
+compute HTTP-federated vendor quotes, and issue cryptographically verifiable BOLT11 invoices.
 """
 import hashlib
 import secrets
@@ -103,12 +103,12 @@ def list_vendor_nodes():
 
 @router.post("/{vendor_id}/quote")
 def request_single_vendor_quote(vendor_id: str, req: VendorQuoteRequest):
-    """Query a specific vendor node via live HTTP endpoint to receive a dynamic, signed quote."""
+    """Query a specific vendor node via live HTTP endpoint to receive a federated quote."""
     vendor = REGISTERED_VENDOR_NODES.get(vendor_id)
     if not vendor:
         raise HTTPException(status_code=404, detail=f"Vendor node '{vendor_id}' not found in registry")
 
-    # Dynamic pricing adjustment based on urgency
+    # Urgency-based adjustment on predetermined base rate
     urgency_multiplier = 1.0
     if req.urgency.lower() == "emergency":
         urgency_multiplier = 1.25

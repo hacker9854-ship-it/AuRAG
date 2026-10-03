@@ -348,7 +348,7 @@ Maintain canonical synthetic demo (`P-101A`) while routing public replay through
 Retrieved evidence for replayed events must expose provenance (`source_type: PUBLIC_DATASET`, `dataset`, `record_id`, `score`). Fallback labeled `CONTROLLED DEMO FIXTURE`.
 
 ### 2A.6 Create independent mock vendor webhook services
-Independently addressable vendor microservices under `services/vendor_apex/`, `services/vendor_precision/`, and `services/vendor_quantum/` exposing `POST /quote` and `GET /health` with dynamic pricing, SLA, and BOLT11 invoices.
+Independently addressable vendor microservices under `services/vendor_apex/`, `services/vendor_precision/`, and `services/vendor_quantum/` exposing `POST /quote` and `GET /health` with HTTP-federated vendor quotes, SLA, and BOLT11 invoices.
 
 ### 2A.7 Real HTTP RFQ dispatch
 RFQ engine discovers configured vendor nodes via environment URLs (`VENDOR_APEX_URL`, etc.), dispatches real HTTP POST `/quote`, validates response schema, handles timeouts/HTTP 500s, runs scoring, and binds vendor node → rfq_id → quote_id → invoice → payment_id.

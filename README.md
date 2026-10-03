@@ -395,7 +395,7 @@ Rather than relying on local hardcoded dictionaries, AuRAG federates multi-vendo
 | **Precision Dynamics** | `8102` (`VENDOR_PRECISION_URL`) | `GET /health`, `POST /quote` | `ILLUSTRATIVE DEMO VENDOR NODE` (Multi-Objective Bidding Simulation) |
 | **Quantum Reliability** | `8103` (`VENDOR_QUANTUM_URL`) | `GET /health`, `POST /quote` | `ILLUSTRATIVE DEMO VENDOR NODE` (Multi-Objective Bidding Simulation) |
 
-> ℹ️ **Vendor Disclosure**: Vendor nodes in this hackathon demo are independent HTTP webhook microservices (`services/vendor_*`), **illustrating decentralized agent RFQ negotiation, not real industrial contractors or live industrial suppliers**. Every candidate bid returns dynamic pricing, SLAs, and registered BOLT11 payment requests, establishing genuine HTTP request/response federation. See [docs/VENDOR_FEDERATION.md](./docs/VENDOR_FEDERATION.md).
+> ℹ️ **Vendor Disclosure**: Vendor nodes in this hackathon demo are independent HTTP webhook microservices (`services/vendor_*`), **illustrating decentralized agent RFQ negotiation, not real industrial contractors or live industrial suppliers**. Every candidate bid returns HTTP-federated vendor quotes, SLAs, and registered BOLT11 payment requests, establishing genuine HTTP request/response federation. See [docs/VENDOR_FEDERATION.md](./docs/VENDOR_FEDERATION.md).
 
 ---
 
