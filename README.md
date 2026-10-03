@@ -69,37 +69,43 @@
 
 ---
 
-### 🔐 3. Machine Money — Cryptographic Payment Proof Drawer
-<img src="./docs/screenshots/machine-money-proof-drawer.png" width="100%" alt="Payment Proof Drawer — SHA-256 preimage verification, BOLT11 QR matrix, and Neo4j graph lineage"/>
-<p><i>Inspectable cryptographic proof package: SHA-256(preimage) matching payment hash, standards-compliant BOLT11 QR code matrix, and Neo4j causal graph trail</i></p>
+### 🤝 3. Machine Money — Autonomous Multi-Vendor RFQ Marketplace
+<img src="./docs/screenshots/machine-money-rfq.png" width="100%" alt="Multi-Vendor RFQ Marketplace — 3 pre-approved synthetic vendor bids, multi-objective scoring, and SLA selection"/>
+<p><i>Autonomous RFQ bidding: 3 pre-approved synthetic vendor nodes evaluated via deterministic scoring (Cost × Latency × SLA) under configurable selection strategies</i></p>
 
 ---
 
-### 🛡️ 4. Machine Money — Policy Escalation Gate (>500 Sats)
-<img src="./docs/screenshots/machine-money-policy-escalation.png" width="100%" alt="Policy Escalation Gate — Quoted amount exceeds 500-sat autonomous cap requiring human digital sign-off"/>
+### 🔐 4. Machine Money — Cryptographic Payment Proof Verification
+<img src="./docs/screenshots/machine-money-proof-drawer.png" width="100%" alt="Payment Proof Drawer — SHA-256 preimage verification, BOLT11 invoice, and Neo4j graph lineage"/>
+<p><i>Inspectable cryptographic proof package: SHA-256(preimage) matching payment hash, standards-compliant BOLT11 payment request, and Neo4j causal graph trail</i></p>
+
+---
+
+### 🛡️ 5. Machine Money — Policy Escalation Gate (>500 Sats)
+<img src="./docs/screenshots/machine-money-policy-escalation.png" width="100%" alt="Policy Escalation Gate — Quoted amount (1,200 sats) exceeds 500-sat autonomous cap requiring human digital sign-off"/>
 <p><i>Zero-Trust policy enforcement: Quotes exceeding the 500-sat cap unconditionally halt in PENDING_APPROVAL; unilateral API bypass attempts rejected with HTTP 403</i></p>
 
 ---
 
-### ⚠️ 5. Machine Money — Provider Failure & Graceful Degradation
+### ⚠️ 6. Machine Money — Provider Failure & Graceful Degradation
 <img src="./docs/screenshots/machine-money-provider-failure.png" width="100%" alt="Provider Failure Simulation — Channel liquidity exhaustion handling with retry guidance and zero lost funds"/>
 <p><i>Resilience verification: Temporary channel failure safely preserves wallet balance (0 sats deducted), records structured failure audit, and outputs remediation guidance</i></p>
 
 ---
 
-### 💰 6. Machine Money — Industrial Economics & Explainability Drawer
+### 💰 7. Machine Money — Industrial Economics & Explainability Drawer
 <img src="./docs/screenshots/machine-money-economics.png" width="100%" alt="Industrial Economics Explainability Drawer — Step-by-step formula derivation, assumptions table, and sensitivity sandbox"/>
 <p><i>Step-by-step economic derivation ($1.17M modelled downtime exposure vs. 250-sat payment, 7,800,000:1 ratio) with interactive sensitivity sandbox and synthetic disclosures</i></p>
 
 ---
 
-### 🖥️ 7. Command Center — Operator Dashboard
+### 🖥️ 8. Command Center — Operator Dashboard
 <img src="./docs/screenshots/command-center.png" width="100%" alt="AuRAG Command Center — Industrial operations dashboard with system health, knowledge graph, and quick actions"/>
 <p><i>Industrial operations command center with system health monitoring, knowledge graph status, active alerts, and quick-action panels</i></p>
 
 ---
 
-### 📡 8. Predictive Watch — SCADA Telemetry Monitor
+### 📡 9. Predictive Watch — SCADA Telemetry Monitor
 <img src="./docs/screenshots/predictive-watch.png" width="100%" alt="Predictive Watch — Real-time SCADA telemetry monitoring with vibration, pressure, and temperature sensors"/>
 <p><i>Real-time SCADA sensor monitoring with vibration excursion detection, ISO 10816 zone classification, and automated anomaly alerting</i></p>
 
