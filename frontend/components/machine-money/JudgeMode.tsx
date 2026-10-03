@@ -5,6 +5,7 @@ import {
   Activity,
   AlertOctagon,
   AlertTriangle,
+  CheckCircle2,
   Clock,
   Database,
   DollarSign,
@@ -385,6 +386,39 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           </div>
         )}
       </div>
+
+      {/* Policy Escalation Scenario Status & Human Sign-Off (PRD4 Phase 8 Flow) */}
+      {response?.status === "PENDING_APPROVAL" && (
+        <div
+          data-testid="policy-escalation-alert"
+          className="mb-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-xs space-y-2.5 animate-in fade-in"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2 font-bold text-amber-600 dark:text-amber-400">
+              <ShieldAlert className="w-4 h-4 shrink-0 text-amber-500" />
+              <span>Zero-Trust Policy Gate Triggered — Operator Approval Required</span>
+            </div>
+            <button
+              type="button"
+              data-testid="approve-escalation-button"
+              onClick={() => handleRunScenario("INDUSTRIAL_EMERGENCY", response.payment_record?.amount_sats || 1200)}
+              disabled={isRunning}
+              className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-sm transition-all flex items-center justify-center gap-1.5 text-xs cursor-pointer disabled:opacity-50 active:scale-95"
+            >
+              <CheckCircle2 className="w-3.5 h-3.5" />
+              <span>Sign &amp; Approve Settlement</span>
+            </button>
+          </div>
+          <p className="text-muted-foreground text-xs leading-relaxed">
+            {response.summary || "Spending policy limit exceeded: 1,200 sats exceeds autonomous cap (500 sats). Escalating to human plant operator review."}
+          </p>
+          <div className="flex flex-wrap items-center gap-4 text-[11px] font-mono text-muted-foreground pt-0.5">
+            <span>Amount: <strong className="text-amber-600 dark:text-amber-400 font-semibold">{response.payment_record?.amount_sats || 1200} sats</strong></span>
+            <span>Autonomous Cap: <strong className="text-foreground">500 sats</strong></span>
+            <span>Queue Status: <strong className="text-amber-600 dark:text-amber-400">PENDING_APPROVAL</strong></span>
+          </div>
+        </div>
+      )}
 
       {/* Provider Failure Scenario Status & Retry Guidance (Task 6.3) */}
       {response?.status === "FAILED" && (
