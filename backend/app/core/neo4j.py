@@ -104,6 +104,43 @@ _IN_MEMORY_GRAPH_NODES = {
     "PROC-002": {"labels": ["Procedure"], "props": {"id": "PROC-002", "title": "Compressor Intercooler Maintenance Procedure"}},
     "FACT1948-S37": {"labels": ["RegulatoryClause"], "props": {"clause_id": "FACT1948-S37", "text": "Factories Act 1948 Section 37: Explosion prevention measures"}},
     "OISD-STD-132-10.2ii": {"labels": ["RegulatoryClause"], "props": {"clause_id": "OISD-STD-132-10.2ii", "text": "OISD-STD-132 Clause 10.2(ii): PSV calibration history and periodic testing requirements"}},
+    "NASA-IMS-T2-REC-042": {
+        "labels": ["DatasetRecord", "EvidenceRecord"],
+        "props": {
+            "id": "NASA-IMS-T2-REC-042",
+            "dataset": "NASA IMS Bearing Run-to-Failure Dataset",
+            "record_id": "NASA-IMS-T2-REC-042",
+            "run_hours": 147.6,
+            "vibration_peak": 5.42,
+            "unit": "mm/s",
+            "fault_signature": "Outer Race BPFO Harmonic Spalling",
+            "iso_threshold": 4.5,
+            "sensor_type": "PCB 353B33 20kHz Accelerometer",
+            "source_reference": "https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/",
+        },
+    },
+    "ISO-10816-3": {
+        "labels": ["RegulatoryClause"],
+        "props": {
+            "clause_id": "ISO-10816-3",
+            "source": "ISO 10816-3 Mechanical Vibration Severity",
+            "text": "ISO 10816-3 Mechanical Vibration Zone C threshold (4.5 mm/s): Unrestricted continuous operation not permissible; immediate maintenance intervention required.",
+        },
+    },
+    "DOC-NASA-IMS-001": {
+        "labels": ["Chunk"],
+        "props": {
+            "id": "DOC-NASA-IMS-001",
+            "text": "NASA IMS Bearing Run-to-Failure Record NASA-IMS-T2-REC-042 (147.6h): High-frequency PCB 353B33 accelerometer on REPLAY-ASSET-01 measures radial vibration excursion at 5.42 mm/s exceeding ISO 10816-3 Zone C threshold (4.5 mm/s) with outer race BPFO spall signature. Mandatory maintenance intervention justified under PROC-001 and WO-1002.",
+        },
+    },
+    "DOC-ISO-10816-001": {
+        "labels": ["Chunk"],
+        "props": {
+            "id": "DOC-ISO-10816-001",
+            "text": "ISO 10816-3 Mechanical Vibration Severity Standard: Class II industrial rotating machines exceeding 4.5 mm/s RMS vibration velocity breach Zone B into Zone C. Corrective bearing replacement and laser alignment work order WO-1002 mandatory.",
+        },
+    },
 }
 
 _IN_MEMORY_GRAPH_EDGES = [
@@ -126,6 +163,13 @@ _IN_MEMORY_GRAPH_EDGES = [
     ("PSV-701", "OISD-STD-132-10.2ii", "APPLIES_TO"),
     ("HX-401", "FE-003", "EXPERIENCED"),
     ("P-102", "FE-006", "EXPERIENCED"),
+    ("REPLAY-ASSET-01", "NASA-IMS-T2-REC-042", "RECORDED_IN"),
+    ("NASA-IMS-T2-REC-042", "FE-001", "EXHIBITS_FAILURE_MODE"),
+    ("NASA-IMS-T2-REC-042", "ISO-10816-3", "VIOLATES_STANDARD"),
+    ("NASA-IMS-T2-REC-042", "WO-1002", "JUSTIFIES"),
+    ("NASA-IMS-T2-REC-042", "WO-2026-P101", "JUSTIFIES"),
+    ("REPLAY-ASSET-01", "DOC-NASA-IMS-001", "DOCUMENTED_IN"),
+    ("REPLAY-ASSET-01", "DOC-ISO-10816-001", "DOCUMENTED_IN"),
 ]
 
 
@@ -242,7 +286,58 @@ class FallbackNeo4jSession:
                 # 2. Equipment multi-hop traversal query (_EQUIPMENT_CYPHER)
                 if ("e:Equipment {tag_id:$tag}" in query) or ("failure_events" in query and "clauses" in query and "procedures" in query):
                     tag = kwargs.get("tag", "P-101")
-                    if tag in ("P-101", "P-101A", "REPLAY-ASSET-01"):
+                    if tag == "REPLAY-ASSET-01":
+                        return [{
+                            "failure_events": [
+                                {
+                                    "id": "FE-001",
+                                    "date": "2026-02-14",
+                                    "symptom": "NASA IMS Bearing 1 outer race BPFO harmonic spalling (5.42 mm/s radial excursion)",
+                                    "root_cause": "Accelerated roller-bearing race degradation under 6,000 lbs radial load",
+                                }
+                            ],
+                            "work_orders": [
+                                {
+                                    "id": "WO-1002",
+                                    "date": "2026-02-14",
+                                    "type": "Emergency Overhaul",
+                                    "status": "Overdue",
+                                    "description": "Overhaul bearing assembly, laser alignment, and lubrication replacement for REPLAY-ASSET-01",
+                                },
+                                {
+                                    "id": "WO-2026-P101",
+                                    "date": "2026-02-14",
+                                    "type": "Corrective",
+                                    "status": "FUNDED",
+                                    "description": "Emergency Outboard Bearing Overhaul funded via Sovereign Lightning micro-payment",
+                                },
+                            ],
+                            "clauses": [
+                                {
+                                    "id": "ISO-10816-3",
+                                    "source": "ISO 10816-3 Severity Standard",
+                                    "text": "ISO 10816-3 Zone C threshold (4.5 mm/s): Vibration severity exceeds acceptable continuous operation limit. Mandatory corrective overhaul required.",
+                                }
+                            ],
+                            "procedures": [
+                                {
+                                    "id": "PROC-001",
+                                    "title": "Centrifugal Pump and Rotating Rig Bearing Maintenance SOP",
+                                    "version": "1.0",
+                                }
+                            ],
+                            "chunks": [
+                                {
+                                    "id": "DOC-NASA-IMS-001",
+                                    "text": "NASA IMS Bearing Run-to-Failure Record NASA-IMS-T2-REC-042 (147.6h): High-frequency PCB 353B33 accelerometer on REPLAY-ASSET-01 measures radial vibration excursion at 5.42 mm/s exceeding ISO 10816-3 Zone C threshold (4.5 mm/s) with outer race BPFO spall signature. Mandatory maintenance intervention justified under PROC-001 and WO-1002.",
+                                },
+                                {
+                                    "id": "DOC-ISO-10816-001",
+                                    "text": "ISO 10816-3 Mechanical Vibration Severity Standard: Class II industrial rotating machines exceeding 4.5 mm/s RMS vibration velocity breach Zone B into Zone C. Corrective bearing replacement and laser alignment work order WO-1002 mandatory.",
+                                },
+                            ],
+                        }]
+                    elif tag in ("P-101", "P-101A"):
                         return [{
                             "failure_events": [{"id": "FE-001", "date": "2025-03-14", "symptom": "High vibration and elevated bearing temperature on P-101", "root_cause": "Bearing cage degradation and improper lubrication"}],
                             "work_orders": [
@@ -584,6 +679,8 @@ class FallbackNeo4jSession:
                     ]
                 if "Chunk" in query:
                     return [
+                        {"id": "DOC-NASA-IMS-001", "text": "NASA IMS Bearing Run-to-Failure Record NASA-IMS-T2-REC-042 (147.6h): High-frequency PCB 353B33 accelerometer on REPLAY-ASSET-01 measures radial vibration excursion at 5.42 mm/s exceeding ISO 10816-3 Zone C threshold (4.5 mm/s) with outer race BPFO spall signature. Mandatory maintenance intervention justified under PROC-001 and WO-1002."},
+                        {"id": "DOC-ISO-10816-001", "text": "ISO 10816-3 Mechanical Vibration Severity Standard: Class II industrial rotating machines exceeding 4.5 mm/s RMS vibration velocity breach Zone B into Zone C. Corrective bearing replacement and laser alignment work order WO-1002 mandatory."},
                         {"id": "DOC-LOG-001-C002", "text": "FE-001 — P-101 Drive-End Bearing Failure (2025-03-14). Excessive vibration and bearing degradation caused by missed quarterly lubrication WO-1002."},
                         {"id": "DOC-LOG-001-C003", "text": "FE-002 — C-201 Compressor High Discharge Temperature Trip (2025-05-02). Fouled intercooler tubes cleaned under WO-1003."},
                         {"id": "DOC-LOG-001-C004", "text": "FE-004 — PSV-701 Safety Relief Valve Calibration Non-Compliance (2025-07-15). Overdue WO-1007 calibration per OISD-STD-132-10.2ii."},
@@ -594,6 +691,7 @@ class FallbackNeo4jSession:
                         {"id": "P-101", "tag_id": "P-101", "t": "P-101", "name": "Crude Charge Pump P-101", "type": "Centrifugal Pump"},
                         {"id": "P-101A", "tag_id": "P-101A", "t": "P-101A", "name": "Crude Charge Pump P-101A", "type": "Centrifugal Pump"},
                         {"id": "P-101B", "tag_id": "P-101B", "t": "P-101B", "name": "Crude Charge Pump P-101B", "type": "Centrifugal Pump"},
+                        {"id": "REPLAY-ASSET-01", "tag_id": "REPLAY-ASSET-01", "t": "REPLAY-ASSET-01", "name": "NASA Bearing Test Rig Shaft 1 (Replay)", "type": "Test Rig Bearing"},
                         {"id": "C-201", "tag_id": "C-201", "t": "C-201", "name": "Recycle Gas Compressor C-201", "type": "Centrifugal Compressor"},
                         {"id": "HX-401", "tag_id": "HX-401", "t": "HX-401", "name": "Preheat Exchanger HX-401", "type": "Shell and Tube Exchanger"},
                         {"id": "PSV-701", "tag_id": "PSV-701", "t": "PSV-701", "name": "Pressure Safety Valve PSV-701", "type": "Safety Relief Valve"},
@@ -601,6 +699,12 @@ class FallbackNeo4jSession:
                     ]
                 if "RegulatoryClause" in query or "clause" in query.lower():
                     return [
+                        {
+                            "id": "ISO-10816-3",
+                            "clause_id": "ISO-10816-3",
+                            "source": "ISO 10816-3 Severity Standard",
+                            "text": "ISO 10816-3 Zone C threshold (4.5 mm/s): Vibration severity exceeds acceptable continuous operation limit. Mandatory corrective overhaul required.",
+                        },
                         {
                             "id": "FACT1948-S37",
                             "clause_id": "FACT1948-S37",

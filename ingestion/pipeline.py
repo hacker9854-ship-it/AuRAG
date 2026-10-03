@@ -110,7 +110,7 @@ def extract_entities_llm(client, text: str) -> list[Mention]:
 # --- Closed-world fuzzy matching (never creates new nodes) ------------------
 
 _DIGIT_OCR_FIX = str.maketrans({"O": "0", "o": "0", "I": "1", "l": "1", "S": "5", "s": "5", "B": "8"})
-_TAG_RE = re.compile(r"^[A-Z]+-\d+$")
+_TAG_RE = re.compile(r"^[A-Z0-9]+(?:-[A-Z0-9]+)+$")
 
 
 def normalize_equipment_tag(raw: str) -> str | None:
