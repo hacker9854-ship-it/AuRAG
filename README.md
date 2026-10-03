@@ -38,18 +38,17 @@
 
 </div>
 
-### 🏆 For Bitshala BOSS Battle 2026 Judges (30-Second Executive Summary)
+### 🏆 For Bitshala BOSS Battle 2026 Judges (3-Minute Fast-Track)
 
-> **AuRAG** is an **industrial Machine Money workflow**: connecting industrial telemetry replay/simulation, Neo4j GraphRAG root-cause analysis, and autonomous Bitcoin Lightning micro-settlement. When machinery anomalies trigger, AuRAG diagnoses the issue, negotiates quotes across 3 pre-approved synthetic vendor nodes via real HTTP dispatch, settles micro-payments in satoshis over Lightning, and binds cryptographically verifiable payment-state evidence to the maintenance ledger — with measured demo execution time under 15 seconds (measured demo runtime; live Lightning mainnet settlement depends on network routing hops).
+> ⚡ **JUDGES START HERE**: Please read **[JUDGE_README.md](./JUDGE_README.md)** for the 3-minute executive summary, 1-click live demo link, and novel Bitcoin architecture breakdown without wading through 50KB of technical documentation!
 >
-> 📌 **Direct Judge Links**:
+> 📌 **Direct Judge Quick Links**:
+> - ⚡ **Fast-Track Judge Guide**: **[JUDGE_README.md](./JUDGE_README.md)** (3-Minute Read)
 > - 🌐 **Live Production App**: [au-rag.vercel.app/machine-money](https://au-rag.vercel.app/machine-money)
 > - 🎬 **3–5 Min Judge Demo Script**: [docs/JUDGE_DEMO_SCRIPT.md](./docs/JUDGE_DEMO_SCRIPT.md)
-> - 📜 **Machine Money Verification Report**: [docs/MACHINE_MONEY_VERIFICATION.md](./docs/MACHINE_MONEY_VERIFICATION.md)
-> - 🧪 **Test Evidence (308 Backend + 58 Frontend = 366 Tests)**: [docs/CURRENT_TEST_SNAPSHOT.md](./docs/CURRENT_TEST_SNAPSHOT.md)
-> - 📋 **Full Implementation Changelog (Phases 0–11)**: [docs/CHANGELOG_MACHINE_MONEY.md](./docs/CHANGELOG_MACHINE_MONEY.md)
-> - ✅ **Hackathon Eligibility & Provenance**: [docs/HACKATHON_ELIGIBILITY.md](./docs/HACKATHON_ELIGIBILITY.md)
-> - 💻 **Interactive Machine Money Console**: `frontend/app/machine-money` (12 Next.js 16 live routes)
+> - 🔬 **Empirical Dataset Benchmark**: NASA IMS Bearing Run-to-Failure (`REPLAY-ASSET-01`)
+> - 🧪 **Test Evidence**: 100% Passing (61 Frontend + 12 Backend Machine Money Tests)
+> - 📜 **Full Technical Verification Report**: [docs/MACHINE_MONEY_VERIFICATION.md](./docs/MACHINE_MONEY_VERIFICATION.md)
 
 ---
 
