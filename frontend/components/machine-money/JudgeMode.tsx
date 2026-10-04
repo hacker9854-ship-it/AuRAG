@@ -466,10 +466,10 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
               <span className="text-[9px] font-normal text-amber-500 ml-0.5">[Illustrative]</span>
             </span>
             <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-              $1.17M Modelled Exposure
+              $1.17M Modelled Downtime Exposure
             </span>
             <span className="text-[10px] text-muted-foreground font-mono">
-              Illustrative Plant Scenario
+              Based on illustrative synthetic plant parameters
             </span>
           </div>
         </div>

@@ -255,7 +255,7 @@ export function IndustrialEconomics({
                 Risk-weighted: <span className="text-foreground font-mono font-semibold">${(riskWeightedExposure / 1000).toFixed(0)}k</span>
               </div>
               <div className="text-[9px] text-muted-foreground/80 mt-1 italic">
-                Modelled estimate based on synthetic industrial facility parameters
+                Based on illustrative synthetic plant parameters
               </div>
             </div>
 
@@ -273,17 +273,17 @@ export function IndustrialEconomics({
               </div>
             </div>
 
-            {/* KPI 4: Economic Protection Multiple */}
+            {/* KPI 4: Modelled Exposure/Payment Ratio */}
             <div className="p-3 rounded-lg bg-card/80 border border-emerald-500/30 bg-emerald-950/10">
               <div className="text-[11px] text-emerald-400 flex items-center gap-1 font-medium">
                 <TrendingUpIcon className="size-3.5" />
-                Protection Multiple
+                Modelled Exposure/Payment Ratio
               </div>
               <div className="text-xl sm:text-2xl font-black font-mono text-emerald-300 mt-1">
                 {(protectionMultiple / 1000000).toFixed(1)}M&times;
               </div>
               <div className="text-[10px] text-emerald-400/80 mt-0.5 font-medium">
-                Net value: ${(netPreserved / 1000000).toFixed(2)}M preserved
+                Modelled exposure/payment ratio (not actual ROI)
               </div>
             </div>
           </div>
@@ -472,7 +472,7 @@ export function IndustrialEconomics({
                     onClick={() => handleCopyFormula(
                       "Modelled Downtime Exposure = Avoided Outage Duration (4.5h) * Outage Cost Rate ($260,000/h) = $1,170,000\n" +
                       "Intervention Cost = 250 sats ≈ $0.15 (at $60k/BTC)\n" +
-                      "Protection Multiple = $1,170,000 / $0.15 ≈ 7,800,000 : 1\n" +
+                      "Modelled Exposure/Payment Ratio = $1,170,000 / $0.15 ≈ 7.8M:1 (not actual ROI)\n" +
                       "Net Value Preserved = (Avoided Outage Hours * Hourly Outage Rate) - Intervention Cost USD"
                     )}
                   >
@@ -484,7 +484,7 @@ export function IndustrialEconomics({
                   <div className="text-emerald-400 font-semibold text-[11px] uppercase tracking-wider">Step-by-Step Economic Derivation:</div>
                   <div>Modelled Downtime Exposure = Avoided Outage Duration (4.5h) &times; Outage Cost Rate ($260,000/h) = $1,170,000</div>
                   <div>Intervention Cost = 250 sats &asymp; $0.15 (at $60,000/BTC)</div>
-                  <div>Protection Multiple = $1,170,000 / $0.15 &asymp; 7,800,000 : 1</div>
+                  <div>Modelled Exposure/Payment Ratio = $1,170,000 / $0.15 &asymp; 7.8M:1 (not actual ROI)</div>
                   <div className="pt-1 border-t border-border/40 text-[11px] text-slate-300">
                     Net Value Preserved = (Avoided Outage Hours &times; Hourly Outage Rate) &minus; Intervention Cost USD
                   </div>
@@ -493,7 +493,7 @@ export function IndustrialEconomics({
                   Risk-Weighted Exposure = Gross Exposure &times; Catastrophic Failure Probability (85%) = $994,500
                 </div>
                 <div className="text-[10px] text-amber-300/80 italic">
-                  Modelled estimate based on synthetic industrial facility parameters. Not an empirical historical plant loss.
+                  Based on illustrative synthetic plant parameters. Modelled exposure/payment ratio, not actual ROI.
                 </div>
               </div>
 

@@ -76,7 +76,7 @@ a4fbf57 | 2026-10-02 13:26:40 +0530 | chore(deploy): verify machine money deploy
 Section 0.3 of `PRD2.md` has been strictly respected:
 1. **Simulation Disclosures:** Invoices and settlement events from `MockLightningProvider` are explicitly labeled `MOCK / SIMULATION` on `regtest`.
 2. **Preimage Verification:** Preimages and payment hashes are genuine SHA-256 test vectors verified using Web Crypto and Python `hashlib`.
-3. **Synthetic Economic Data:** All industrial plant calculations ($1.17M downtime avoided on P-101A) are explicitly identified as **Modeled Estimates based on synthetic plant parameters**, preventing any false claims of live plant integration.
+3. **Synthetic Economic Data:** All industrial plant calculations ($1.17M modelled downtime exposure on P-101A) are explicitly identified as **Modelled Estimates based on illustrative synthetic plant parameters** (7.8M:1 modelled exposure/payment ratio, not actual ROI), preventing any false claims of live plant integration.
 
 ---
 

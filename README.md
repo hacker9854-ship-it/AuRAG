@@ -107,7 +107,7 @@
 
 ### 💰 9. Machine Money — Industrial Economics & Explainability Drawer
 <img src="./docs/screenshots/machine-money-economics.png" width="100%" alt="Industrial Economics Explainability Drawer — Step-by-step formula derivation, assumptions table, and sensitivity sandbox"/>
-<p><i>Step-by-step economic derivation ($1.17M modelled downtime exposure vs. 250-sat payment, 7,800,000:1 ratio) with interactive sensitivity sandbox and synthetic disclosures</i></p>
+<p><i>Step-by-step economic derivation ($1.17M modelled downtime exposure vs. 250-sat payment, 7.8M:1 modelled exposure/payment ratio [not actual ROI]) with interactive sensitivity sandbox (subtext: based on illustrative synthetic plant parameters)</i></p>
 
 ---
 
@@ -166,7 +166,7 @@ In high-consequence industrial facilities (power plants, refineries, chemical ma
 AuRAG grounds its primary demonstration on the **NASA IMS Bearing Run-to-Failure Open Science Dataset** (University of Cincinnati / NASA Ames PCoE), pairing genuine physical failure physics with autonomous financial sovereignty:
 - **Empirical Accelerometry ➔ Root Cause in Seconds**: When high-frequency accelerometry from NASA IMS Bearing Test 2 (`NASA-IMS-T2-REC-042` at 147.6h) breaches 5.42 mm/s (exceeding ISO 10816 Zone C 4.5 mm/s threshold with outer race BPFO harmonic spall), AuRAG's GraphRAG engine traverses Neo4j ontology to identify bearing raceway degradation (`FE-001`) and governing repair procedure (`PROC-001`).
 - **250-Sat Autonomous Settlement Flow Implemented**: AuRAG solicits competitive quotes across decentralized vendor nodes (evaluated via an illustrative multi-objective bidding simulation: Apex Diagnostics, Precision Dynamics, Quantum Reliability) and executes a 250-sat autonomous settlement flow via standards-compliant BOLT11 Lightning invoices. Demo defaults to mock provider; live LNbits Signet mode is supported and fails closed when settlement cannot be completed.
-- **Empirical Physics vs. Illustrative Economics**: While physical sensor readings are **100% real** and Lightning settlement architecture is **live-capable** (default evaluation mode: `MACHINE_MONEY_PROVIDER=mock`, explicitly labeled in UI), downstream plant economics ($1.17M modelled downtime exposure @ $260k/hr) are explicitly documented as **illustrative macro-economic simulations** demonstrating autonomous agent ROI calculations.
+- **Empirical Physics vs. Illustrative Economics**: While physical sensor readings are **100% real** and Lightning settlement architecture is **live-capable** (default evaluation mode: `MACHINE_MONEY_PROVIDER=mock`, explicitly labeled in UI), downstream plant economics ($1.17M modelled downtime exposure @ $260k/hr) are explicitly documented as **illustrative macro-economic simulations** based on illustrative synthetic plant parameters (7.8M:1 modelled exposure/payment ratio, not actual ROI).
 
 ---
 
@@ -278,7 +278,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🕸️ **Industrial GraphRAG Engine** — Hybrid retrieval combining Neo4j graph topology (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`), dense Qdrant embeddings, and BM25 lexical search.
 - 📐 **Multimodal P&ID & OCR Ingestion** — Automatic extraction of tags, valves, piping specs, and loop IDs from industrial engineering diagrams using Gemini and Google Cloud Vision.
 - 📊 **Real-Time SCADA Telemetry Watch** — Continuous monitoring of vibration, pressure, and temperature excursions with ISO 10816 zone classification and automated predictive maintenance triggers.
-- 🏭 **Industrial Economics Dashboard** — Interactive ROI calculator quantifying $1.17M modelled downtime exposure per 250-sat payment with explicit synthetic data disclosures.
+- 🏭 **Industrial Economics Dashboard** — Interactive calculator quantifying $1.17M modelled downtime exposure (subtext: *Based on illustrative synthetic plant parameters*) per 250-sat payment with a 7.8M:1 modelled exposure/payment ratio (not actual ROI).
 - 🛡️ **5-Layer Zero-Trust Financial Safeguards** — Per-transaction spending caps (>500 sats → human escalation), daily budgets, SHA-256 idempotency, human approval workflows, and atomic rollbacks.
 - 🔑 **Cryptographic Preimage Audit Trail** — Every settlement stores the Lightning payment preimage verified via `SHA256(preimage) === payment_hash` using Web Crypto (frontend) and Python `hashlib` (backend).
 - 🔄 **Deterministic Idempotency Protection** — SHA-256 idempotency cache rejecting duplicate physical anomaly triggers and network retries.
@@ -356,7 +356,7 @@ Per hackathon transparency and truthfulness standards (PRD Section 5.2), the mat
 | **BOLT11** | Standards-valid test invoices | Standards-compliant parsing with cryptographic validation (`SHA-256(preimage) == payment_hash`). |
 | **Vendors** | 3 pre-approved synthetic nodes | Apex Diagnostics, Precision Dynamics, Quantum Reliability via independent HTTP webhook microservices (`services/vendor_*`). |
 | **Graph** | Neo4j when available, resilient fallback otherwise | Live remote Neo4j AuraDB when online; truthful `[GRAPH STATUS: DEGRADED / FALLBACK]` badge and offline fallback traversal otherwise. |
-| **Economics** | Synthetic/modelled scenario | $1.17M modelled downtime exposure vs. 250-sat payment sensitivity model with explicit parameter sandbox. |
+| **Economics** | Synthetic/modelled scenario | $1.17M modelled downtime exposure vs. 250-sat payment (7.8M:1 modelled exposure/payment ratio, not actual ROI; based on illustrative synthetic plant parameters). |
 | **RAGAS** | Final acceptance-gated retrieval | RAGAS acceptance gate verified on the final commit across all 24 ground-truth operational benchmark queries ($\ge 0.70$ threshold, average faithfulness 0.96, context precision 0.90, relevancy 0.92). |
 
 ### Proof & Performance Wording Standards
@@ -651,7 +651,7 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 | **Multi-Vendor RFQ** | 3 pre-approved synthetic vendor bids (Apex, Precision, Quantum) with transparent mathematical scoring `(0.5×Cost + 0.3×Latency + 0.2×SLA)`. | `backend/app/services/machine_money/rfq.py`<br/>`tests/test_machine_money_rfq.py`<br/>`frontend/components/machine-money/VendorRFQ.tsx` | PASS ✅ |
 | **Policy Spending Cap** | Strict per-transaction spending limit (500 sats); quotes >500 sats held in `PENDING_APPROVAL`; unilateral client bypass rejected with HTTP 403. | `backend/app/services/machine_money/service.py`<br/>`tests/test_machine_money_policy_hardening.py`<br/>`tests/test_e2e_machine_money.py::test_e2e_06` | PASS ✅ |
 | **Deterministic Idempotency** | SHA-256 idempotency cache (`sha256(site:equipment:service:event)`) rejects duplicate physical anomaly triggers and network retries. | `backend/app/services/machine_money/service.py`<br/>`tests/test_machine_money_idempotency.py` | PASS ✅ |
-| **Modelled Economics** | $1.17M gross downtime exposure parameterized on synthetic plant model; inspectable step-by-step formula in Explainability Drawer. | `backend/app/services/machine_money/economics.py`<br/>`frontend/components/machine-money/IndustrialEconomics.tsx`<br/>`tests/test_machine_money_economics.py` | PASS ✅ |
+| **Modelled Economics** | $1.17M modelled downtime exposure (based on illustrative synthetic plant parameters; 7.8M:1 modelled exposure/payment ratio, not actual ROI). | `backend/app/services/machine_money/economics.py`<br/>`frontend/components/machine-money/IndustrialEconomics.tsx`<br/>`tests/test_machine_money_economics.py` | PASS ✅ |
 | **Zero Secrets Leaked** | 350+ repository files scanned with zero exposed API keys or tokens; `.env` strictly untracked and gitignored. | `tests/test_secret_scan.py` (2 passed)<br/>`docs/CURRENT_TEST_SNAPSHOT.md` | PASS ✅ |
 
 ---
@@ -718,7 +718,7 @@ Every transaction requires a deterministic SHA-256 idempotency key derived from 
 
 <details>
 <summary><b>5. Are the industrial plant data and financial figures real?</b></summary>
-No. All plant data (P-101A centrifugal pump, vibration telemetry, $1.17M downtime loss) and economic calculations are explicitly identified as <b>Modelled Estimates based on synthetic plant parameters</b>. This is disclosed transparently in the UI, documentation, and verification reports per PRD2 Section 0.3 honesty requirements.
+No. All plant data (P-101A centrifugal pump, vibration telemetry, $1.17M modelled downtime exposure) and economic calculations are explicitly identified as <b>Modelled Estimates based on illustrative synthetic plant parameters</b> (7.8M:1 modelled exposure/payment ratio, not actual ROI). This is disclosed transparently in the UI, documentation, and verification reports per PRD2 Section 0.3 honesty requirements.
 </details>
 
 <details>

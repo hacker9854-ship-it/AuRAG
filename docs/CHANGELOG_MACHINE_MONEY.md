@@ -79,7 +79,7 @@ The resulting system is an end-to-end cyber-physical autonomous micro-settlement
 ---
 
 ### Phase 5: Machine Money Analytics & Industrial Economics
-*Quantifies the macro-economic justification of micro-payments ($1.17M downtime avoided vs. 250 sat payment).*
+*Quantifies the macro-economic justification of micro-payments ($1.17M modelled downtime exposure vs. 250 sat payment; 7.8M:1 modelled exposure/payment ratio, not actual ROI).*
 
 - **Commits:**
   - `08d6c46` (2026-10-02) — `feat(machine-money): add machine money analytics metrics`

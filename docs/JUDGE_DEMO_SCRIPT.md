@@ -63,7 +63,7 @@
   > Auditing is bidirectional — you can start from a satoshi transaction and trace back to the physical motor bearing.
   > Now look at the bottom dashboard: **Industrial Economics**.
   > Why spend 250 sats? Because pump P-101A carries an hourly outage loss of $260,000. 
-  > A 250-sat intervention ($0.15 at $60k/BTC) averts 4.5 hours of emergency downtime, preserving **$1.17M in modelled downtime exposure** (based on synthetic plant parameters) — an economic protection multiple of **7.8 Million to 1**!
+  > A 250-sat intervention ($0.15 at $60k/BTC) averts 4.5 hours of emergency downtime, mitigating **$1.17M in modelled downtime exposure** (subtext: *Based on illustrative synthetic plant parameters*) — a **7.8M:1 modelled exposure/payment ratio** (not actual ROI)!
   > Every assumption is transparently parameterized in our Explainability Drawer."
 
 ---

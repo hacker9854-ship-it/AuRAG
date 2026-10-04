@@ -124,7 +124,7 @@ AuRAG enforces a strict, honest line between **real empirical science** and **il
 | **Bitcoin Settlement & Cryptography** | **250-Sat Autonomous Flow Implemented** | Demo defaults to mock provider; live LNbits Signet mode is supported and fails closed when settlement cannot be completed. Generates standards-compliant BOLT11 payment requests and verifies 32-byte SHA-256 preimages (`sha256(preimage) == payment_hash`). |
 | **Operational Knowledge Graph** | **100% REAL** | Real-world ISO 10816-3 vibration severity standards, SKF bearing mechanical catalog specifications, and industrial SOPs in Neo4j. |
 | **Vendor Bidding Candidates** | **[Illustrative Simulation]** | Synthetic vendor nodes (*Apex Diagnostics*, *Precision Dynamics*, *Quantum Reliability*) illustrating decentralized multi-vendor RFQ scoring. |
-| **Plant Macro-Economics** | **[Illustrative Model]** | Parameterized industrial plant model ($1.17M modelled downtime exposure @ $260k/hr) illustrating autonomous agent ROI calculation. |
+| **Plant Macro-Economics** | **[Illustrative Model]** | Parameterized industrial plant model ($1.17M modelled downtime exposure @ $260k/hr, based on illustrative synthetic plant parameters; 7.8M:1 modelled exposure/payment ratio, not actual ROI). |
 
 * **Test Rig**: 4 Rexnord ZA-2115 double-row bearings running at 2,000 RPM under 6,000 lbs radial load.
 * **Sensor**: High-frequency PCB 353B33 accelerometer sampled at 20 kHz.
