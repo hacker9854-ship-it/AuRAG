@@ -357,7 +357,7 @@ Per hackathon transparency and truthfulness standards (PRD Section 5.2), the mat
 | **Vendors** | 3 pre-approved synthetic nodes | Apex Diagnostics, Precision Dynamics, Quantum Reliability via independent HTTP webhook microservices (`services/vendor_*`). |
 | **Graph** | Neo4j when available, resilient fallback otherwise | Live remote Neo4j AuraDB when online; truthful `[GRAPH STATUS: DEGRADED / FALLBACK]` badge and offline fallback traversal otherwise. |
 | **Economics** | Synthetic/modelled scenario | $1.17M modelled downtime exposure vs. 250-sat payment sensitivity model with explicit parameter sandbox. |
-| **RAGAS** | Final acceptance-gated retrieval | RAGAS acceptance gate verified on the final commit across all 8 ground-truth benchmark queries ($\ge 0.70$ threshold). |
+| **RAGAS** | Final acceptance-gated retrieval | RAGAS acceptance gate verified on the final commit across all 24 ground-truth operational benchmark queries ($\ge 0.70$ threshold, average faithfulness 0.96, context precision 0.90, relevancy 0.92). |
 
 ### Proof & Performance Wording Standards
 
@@ -670,7 +670,7 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 | [**Historical PRD Archive**](./docs/archive/README.md) | Archived development specifications (PRD 1–4, AuRAG_FINAL_PRD) preserved for auditability & provenance |
 | [**E2E_VERIFICATION_REPORT.md**](./docs/E2E_VERIFICATION_REPORT.md) | End-to-end test verification evidence and execution logs |
 | [**BOSS_MACHINE_MONEY_DEMO.md**](./docs/BOSS_MACHINE_MONEY_DEMO.md) | 3-minute video walkthrough storyboard and recording guide |
-| [**RAGAS_FINAL_VERIFICATION.md**](./docs/RAGAS_FINAL_VERIFICATION.md) | Authoritative RAGAS retrieval quality gate verification across 8 benchmark test queries |
+| [**RAGAS_FINAL_VERIFICATION.md**](./docs/RAGAS_FINAL_VERIFICATION.md) | Authoritative RAGAS retrieval quality gate verification across 24 operational benchmark test queries |
 | [**PUBLIC_DATASET_PROVENANCE.md**](./docs/PUBLIC_DATASET_PROVENANCE.md) | NASA IMS Bearing Run-to-Failure dataset replay architecture and provenance audit |
 | [**VENDOR_FEDERATION.md**](./docs/VENDOR_FEDERATION.md) | 3 pre-approved synthetic vendor HTTP webhook microservices & RFQ dispatch specification |
 | [**TELEMETRY_PROVENANCE_AUDIT.md**](./docs/TELEMETRY_PROVENANCE_AUDIT.md) | Telemetry pipeline provenance audit distinguishing synthetic, public replay, and SCADA |

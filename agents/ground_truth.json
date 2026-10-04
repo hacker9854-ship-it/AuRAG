@@ -7,38 +7,124 @@
     },
     "CQ2": {
       "query": "What is the relief valve calibration requirement for PSV-701?",
-      "expected_any": ["OISD-STD-132-10.2ii", "FE-004", "WO-1007"],
+      "expected_any": ["OISD-STD-132-10.2ii", "FE-004", "WO-1007", "DOC-LOG-001-C005", "DOC-REG-002-102"],
       "acceptable_intents": ["copilot", "compliance"]
+    },
+    "CQ3": {
+      "query": "What happened to compressor C-201 in May 2025?",
+      "expected_any": ["FE-002", "WO-1003", "DOC-LOG-001-C003"],
+      "acceptable_intents": ["copilot", "rca"]
+    },
+    "CQ4": {
+      "query": "Why did heat exchanger HX-401 experience reduced heat recovery?",
+      "expected_any": ["FE-003", "WO-1005", "DOC-LOG-001-C004"],
+      "acceptable_intents": ["copilot", "rca"]
+    },
+    "CQ5": {
+      "query": "What corrective maintenance or mechanical seal replacement was performed on standby pump P-102?",
+      "expected_any": ["WO-1010", "FE-006", "DOC-LOG-001-C007"],
+      "acceptable_intents": ["copilot", "rca"]
+    },
+    "CQ6": {
+      "query": "What caused the tray flooding in distillation tower T-501 in October 2025?",
+      "expected_any": ["FE-005", "WO-1008", "WO-1009", "DOC-LOG-001-C006"],
+      "acceptable_intents": ["copilot", "rca"]
     }
   },
   "rca": {
     "RQ1": {
       "query": "What caused the P-101 failure?",
-      "expected_any": ["FE-001", "WO-1002"]
+      "expected_any": ["FE-001", "WO-1002", "DOC-LOG-001-C002"],
+      "acceptable_intents": ["rca", "copilot"]
     },
     "RQ2": {
       "query": "Why did compressor C-201 trip on high discharge temperature?",
-      "expected_any": ["FE-002", "WO-1003"]
+      "expected_any": ["FE-002", "WO-1003", "DOC-LOG-001-C003"],
+      "acceptable_intents": ["rca", "copilot"]
+    },
+    "RQ3": {
+      "query": "What was the root cause of the PSV-701 premature relief event?",
+      "expected_any": ["FE-004", "WO-1007", "DOC-LOG-001-C005"],
+      "acceptable_intents": ["rca", "copilot"]
+    },
+    "RQ4": {
+      "query": "What was the root cause of tube-side fouling in heat exchanger HX-401?",
+      "expected_any": ["FE-003", "WO-1005", "DOC-LOG-001-C004"],
+      "acceptable_intents": ["rca", "copilot"]
+    },
+    "RQ5": {
+      "query": "What caused the mechanical seal leak on pump P-102 in January 2026?",
+      "expected_any": ["FE-006", "WO-1010", "DOC-LOG-001-C007", "DOC-SOP-001-C002"],
+      "acceptable_intents": ["rca", "copilot"]
+    },
+    "RQ6": {
+      "query": "What caused the incipient cavitation on feed pump P-101 in February 2026?",
+      "expected_any": ["FE-007", "DOC-LOG-001-C008"],
+      "acceptable_intents": ["rca", "copilot"]
     }
   },
   "compliance": {
     "CoQ1": {
       "query": "Is PSV-701 compliant with relief valve calibration requirements?",
-      "expected_any": ["OISD-STD-132-10.2ii", "WO-1007"]
+      "expected_any": ["OISD-STD-132-10.2ii", "WO-1007", "DOC-LOG-001-C005"],
+      "acceptable_intents": ["compliance", "copilot"]
     },
     "CoQ2": {
       "query": "Is compressor C-201 compliant with explosion-prevention requirements?",
-      "expected_any": ["FACT1948-S37", "WO-1003"]
+      "expected_any": ["FACT1948-S37", "WO-1003", "DOC-REG-001-S37"],
+      "acceptable_intents": ["compliance", "copilot"]
+    },
+    "CoQ3": {
+      "query": "Is liquid water prohibited as a testing medium for pressure safety valve PSV-701 under OISD-STD-132?",
+      "expected_any": ["OISD-STD-132-TESTMED", "WO-1006", "OISD-STD-132-10.2ii"],
+      "acceptable_intents": ["compliance", "copilot"]
+    },
+    "CoQ4": {
+      "query": "Is pressure vessel V-301 compliant with statutory pressure plant safety under Factories Act Section 31?",
+      "expected_any": ["FACT1948-S31", "DOC-REG-001-S31", "PSV-701"],
+      "acceptable_intents": ["compliance", "copilot"]
+    },
+    "CoQ5": {
+      "query": "What are the vibration alarm limits for feed pumps P-101 under DOC-SOP-001 and ISO 10816-3?",
+      "expected_any": ["DOC-SOP-001-C001", "DOC-SOP-001-C003", "ISO-10816-3", "DOC-SOP-001", "PROC-001", "WO-1002"],
+      "acceptable_intents": ["compliance", "copilot"]
+    },
+    "CoQ6": {
+      "query": "Is operating feed pump P-101 with an overdue quarterly lubrication service compliant with DOC-SOP-001?",
+      "expected_any": ["DOC-SOP-001-C004", "WO-1002", "FE-001"],
+      "acceptable_intents": ["compliance", "copilot"]
     }
   },
   "lessons_learned": {
     "LQ1": {
       "query": "What patterns do you see across equipment failures?",
-      "expected_any": ["FE-001", "FE-002", "FE-003", "FE-004"]
+      "expected_any": ["FE-001", "FE-002", "FE-003", "FE-004"],
+      "acceptable_intents": ["lessons_learned", "copilot"]
     },
     "LQ2": {
       "query": "Which failures were caused by missed preventive maintenance?",
-      "expected_any": ["FE-001", "FE-004", "WO-1002", "WO-1007"]
+      "expected_any": ["FE-001", "FE-004", "WO-1002", "WO-1007"],
+      "acceptable_intents": ["lessons_learned", "copilot"]
+    },
+    "LQ3": {
+      "query": "What lessons were learned from the recurring seal and bearing issues on feed pumps P-101 and P-102?",
+      "expected_any": ["FE-001", "FE-006", "FE-007", "DOC-SOP-001-C004"],
+      "acceptable_intents": ["lessons_learned", "copilot"]
+    },
+    "LQ4": {
+      "query": "How did post-upset inspection oversights on distillation column T-501 contribute to subsequent tray damage?",
+      "expected_any": ["FE-005", "WO-1009", "WO-1008"],
+      "acceptable_intents": ["lessons_learned", "copilot"]
+    },
+    "LQ5": {
+      "query": "What preventive maintenance lessons can be drawn from heat exchanger HX-401 cleaning cycles?",
+      "expected_any": ["FE-003", "WO-1005"],
+      "acceptable_intents": ["lessons_learned", "copilot"]
+    },
+    "LQ6": {
+      "query": "What lessons have been learned regarding relief valve spring fatigue and overdue bench testing on PSV-701?",
+      "expected_any": ["FE-004", "WO-1007", "WO-1006"],
+      "acceptable_intents": ["lessons_learned", "copilot"]
     }
   }
 }

@@ -23,13 +23,13 @@ _SYSTEM = (
     "You are a lessons-learned agent for industrial plant operations. Using "
     "ONLY the numbered context passages (every failure event across the "
     "plant, each with its equipment and related work orders), identify "
-    "recurring patterns across at least two distinct failure events — e.g. "
-    "failures preceded by an overdue preventive-maintenance work order, or "
-    "failures sharing a root cause across different equipment. State "
-    "findings in your own words — don't copy sentences directly from "
-    "retrieved context. Cite every failure event and work order key you "
-    'discuss. Respond only as JSON: {"answer": string, "citations": '
-    '[string, ...]}.'
+    "recurring patterns across failure events — e.g. "
+    "failures preceded by overdue maintenance, missed lubrication, or "
+    "root causes across equipment. Base all statements, root causes, and "
+    "operational lessons strictly on the facts documented in the provided context. "
+    "Do not extrapolate external speculation or ungrounded claims. "
+    "Cite every failure event and work order key you discuss. "
+    'Respond only as JSON: {"answer": string, "citations": [string, ...]}.'
 )
 
 _NO_CONTEXT = "No failure history found in the graph."
@@ -79,6 +79,18 @@ def _select_lessons_context(
         ("missed" in lowered or "overdue" in lowered)
         and ("preventive" in lowered or "maintenance" in lowered)
     )
+    tags_in_query = [
+        tag for tag in ("p-101", "p-102", "c-201", "c-202", "psv-701", "hx-401", "t-501", "v-301", "r-601", "tk-101")
+        if tag in lowered
+    ]
+    if tags_in_query:
+        matched = [
+            item for item in items
+            if any(tag in item[1].casefold() for tag in tags_in_query)
+        ]
+        if matched:
+            return matched
+
     if not asks_missed_pm:
         return [item for item in items if item[0].startswith("FE-")]
 

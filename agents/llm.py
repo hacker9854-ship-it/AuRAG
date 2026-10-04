@@ -54,47 +54,60 @@ def get_gemini_client():
     return _gemini_client
 
 
-def _call_groq_json(system_prompt: str, user_prompt: str, model: str) -> dict:
-    """Shared Groq JSON-mode call + one retry-on-429, factored out so both
-    ask_json() (citation-bearing agent answers) and classify_intent() (routing)
-    share the same client/retry mechanics instead of duplicating them."""
-    client = get_client()
-    kwargs = dict(
-        model=model,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ],
-        response_format={"type": "json_object"},
-    )
-    try:
-        response = client.chat.completions.create(**kwargs)
-    except RateLimitError:
-        # ponytail: one fixed-delay retry, not a backoff framework — Groq's
-        # free-tier RPM window is short enough that a second 429 in a row
-        # inside a single agent call is unlikely
-        time.sleep(5)
-        response = client.chat.completions.create(**kwargs)
-    except BadRequestError:
-        # Groq's JSON-mode validation itself sometimes rejects the model's
-        # own output (code json_validate_failed — e.g. an unterminated
-        # string) before it ever reaches our json.loads() below. One retry,
-        # same shape as the RateLimitError case above — a persistent bad
-        # request just fails identically on retry and raises, so this can't
-        # loop.
-        response = client.chat.completions.create(**kwargs)
-
-    return json.loads(response.choices[0].message.content)
-
-
-def _call_gemini_json(system_prompt: str, user_prompt: str, model: str) -> dict:
-    response = throttled_generate(
-        get_gemini_client(),
-        model=model,
+def _call_gemini_json(system_prompt: str, user_prompt: str, model: str | None = None) -> dict:
+    gemini_model = model or os.environ.get("GEMINI_REASONING_MODEL", "gemini-3.8-flash")
+    client = get_gemini_client()
+    response = client.models.generate_content(
+        model=gemini_model,
         contents=f"System instructions:\n{system_prompt}\n\nUser request:\n{user_prompt}",
         config=types.GenerateContentConfig(response_mime_type="application/json"),
     )
     return json.loads(response.text)
+
+
+def _call_groq_json(system_prompt: str, user_prompt: str, model: str) -> dict:
+    """Shared Groq JSON-mode call with automatic fallback across models and Gemini
+    if a specific model hits quota or rate limits."""
+    client = get_client()
+    models_to_try = [model]
+    for alt in ("openai/gpt-oss-20b", "qwen/qwen3.8-27b"):
+        if alt not in models_to_try:
+            models_to_try.append(alt)
+
+    last_exc = None
+    for current_model in models_to_try:
+        kwargs = dict(
+            model=current_model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            response_format={"type": "json_object"},
+        )
+        try:
+            response = client.chat.completions.create(**kwargs)
+            return json.loads(response.choices[0].message.content)
+        except RateLimitError as exc:
+            last_exc = exc
+            continue
+        except BadRequestError:
+            try:
+                response = client.chat.completions.create(**kwargs)
+                return json.loads(response.choices[0].message.content)
+            except Exception as exc:
+                last_exc = exc
+                continue
+        except Exception as exc:
+            last_exc = exc
+            continue
+
+    # Fall back seamlessly to Gemini if all Groq models hit quota limits
+    try:
+        return _call_gemini_json(system_prompt, user_prompt)
+    except Exception:
+        if last_exc:
+            raise last_exc
+        raise
 
 
 _CITATION_RULE = (

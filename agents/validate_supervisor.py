@@ -23,7 +23,7 @@ truststore.inject_into_ssl()
 
 from agents import supervisor
 from agents.validation import require_complete
-from retrieval.index_chunks import get_database, get_driver
+from backend.app.core.neo4j import get_session
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
@@ -81,14 +81,13 @@ def _check_fallback_edge(session) -> None:
 
 
 def main():
-    driver, db = get_driver(), get_database()
-    with driver.session(database=db) as session:
+    for session in get_session():
         matched, total = _check_ground_truth(session)
         print(f"\n{matched}/{total} clear-intent queries routed+answered correctly\n")
 
         _check_ambiguous(session)
         _check_fallback_edge(session)
-    driver.close()
+        break
     require_complete(matched, total, "Supervisor clear-intent validation")
 
 

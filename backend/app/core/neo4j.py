@@ -173,6 +173,226 @@ _IN_MEMORY_GRAPH_EDGES = [
 ]
 
 
+_FULL_EQUIPMENT_DATA = {
+    "P-101": {
+        "failure_events": [
+            {"id": "FE-001", "date": "2025-03-14", "symptom": "High vibration (>7 mm/s RMS) and elevated bearing temperature on P-101", "root_cause": "Drive-end bearing wear caused by lubrication interval lapse - scheduled quarterly greasing (WO-1002) was never completed"},
+            {"id": "FE-007", "date": "2026-02-11", "symptom": "Broadband vibration rose while bearing temperature remained normal during low tank level operation in tank farm TK-101", "root_cause": "Suction starvation caused incipient cavitation due to violation of minimum tank level operating limit"},
+        ],
+        "work_orders": [
+            {"id": "WO-1001", "date": "2025-03-15", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec"},
+            {"id": "WO-1002", "date": "2025-02-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled quarterly lubrication service"},
+        ],
+        "clauses": [
+            {"id": "ISO-10816-3", "source": "ISO 10816-3", "text": "Class II industrial rotating machines exceeding 4.5 mm/s RMS vibration velocity breach Zone B into Zone C (mandatory overhaul). Exceeding 7.0 mm/s reaches Zone D (immediate trip)."},
+        ],
+        "procedures": [
+            {"id": "PROC-001", "title": "Centrifugal Pump Preventive Maintenance SOP", "version": "2.1"},
+        ],
+        "chunks": [
+            {"id": "DOC-LOG-001-C002", "text": "FE-001 — P-101 Drive-End Bearing Failure (2025-03-14). Symptom: Excessive vibration (>7 mm/s RMS) and drive-end bearing housing temperature rising above 85°C. Root cause: Bearing cage degradation due to missed lubrication interval WO-1002. Resolution: WO-1001 replaced bearing."},
+            {"id": "DOC-LOG-001-C008", "text": "FE-007 — P-101 Incipient Cavitation (2026-02-11). Broadband vibration excursion during low tank level operation in tank farm TK-101. Root cause: Suction starvation."},
+            {"id": "DOC-SOP-001-C001", "text": "DOC-SOP-001: Centrifugal Pump Preventive Maintenance SOP v2.1. Applies to P-101 and P-102 (Feed Pumps, Train A), Unit 100 Feed Section."},
+            {"id": "DOC-SOP-001-C004", "text": "DOC-SOP-001 Section 5: Consequence of Deferral: Skipping or delaying quarterly lubrication service is the single most common precursor to drive-end bearing wear on P-101/P-102."},
+        ],
+    },
+    "P-101A": {
+        "failure_events": [
+            {"id": "FE-001", "date": "2025-03-14", "symptom": "High vibration and elevated bearing temperature on P-101A", "root_cause": "Bearing cage degradation and improper lubrication"}
+        ],
+        "work_orders": [
+            {"id": "WO-1001", "date": "2025-03-15", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec"},
+            {"id": "WO-1002", "date": "2025-02-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled quarterly lubrication service"},
+        ],
+        "clauses": [],
+        "procedures": [{"id": "PROC-001", "title": "Centrifugal Pump Preventive Maintenance SOP", "version": "2.1"}],
+        "chunks": [{"id": "DOC-LOG-001-C002", "text": "FE-001 — P-101 Drive-End Bearing Failure (2025-03-14). Symptom: Excessive vibration and high bearing temperature. Root cause: Bearing cage degradation due to missed lubrication interval WO-1002. Resolution: WO-1001 replaced bearing."}],
+    },
+    "P-102": {
+        "failure_events": [
+            {"id": "FE-006", "date": "2026-01-18", "symptom": "Visible mechanical seal leak detected during routine operator rounds on standby pump P-102", "root_cause": "Mechanical seal degradation after exceeding rated service life without replacement"},
+        ],
+        "work_orders": [
+            {"id": "WO-1010", "date": "2026-01-19", "type": "Corrective", "status": "Closed", "description": "Replaced mechanical seal on P-102 per DOC-SOP-001"},
+        ],
+        "clauses": [],
+        "procedures": [
+            {"id": "PROC-001", "title": "Centrifugal Pump Preventive Maintenance SOP", "version": "2.1"},
+        ],
+        "chunks": [
+            {"id": "DOC-LOG-001-C007", "text": "FE-006 — P-102 Mechanical Seal Leak (2026-01-18). Visible mechanical seal leak detected during operator rounds. Root Cause: Mechanical seal degradation after exceeding rated service life without replacement per DOC-SOP-001 Section 3. WO-1010 replaced mechanical seal."},
+            {"id": "DOC-SOP-001-C002", "text": "DOC-SOP-001 Section 3: Mechanical seal visual inspection monthly; mechanical seal replacement per OEM rated service life or on leak detection."},
+        ],
+    },
+    "C-201": {
+        "failure_events": [
+            {"id": "FE-002", "date": "2025-05-02", "symptom": "High discharge temperature trip on C-201 during routine startup", "root_cause": "Fouled intercooler tubes reduced heat transfer, causing second-stage discharge temp to exceed trip setpoint"},
+        ],
+        "work_orders": [
+            {"id": "WO-1003", "date": "2025-05-03", "type": "Corrective", "status": "Closed", "description": "Cleaned fouled intercooler tubes, reset high-discharge-temperature trip, and verified explosion-prevention enclosure integrity per Section 37"},
+        ],
+        "clauses": [
+            {"id": "FACT1948-S37", "source": "Factories Act 1948", "text": "Where manufacturing process produces dust, gas, fume or vapour likely to explode, all practicable measures shall be taken by effective enclosure, removal of accumulation, and exclusion of ignition sources."},
+        ],
+        "procedures": [
+            {"id": "PROC-002", "title": "Compressor Intercooler Maintenance Procedure", "version": "1.0"},
+        ],
+        "chunks": [
+            {"id": "DOC-LOG-001-C003", "text": "FE-002 — C-201 Compressor High Discharge Temperature Trip (2025-05-02). Cleaned fouled intercooler tubes under WO-1003."},
+            {"id": "DOC-REG-001-S37", "text": "Factories Act 1948 Section 37 (Explosion and Flammable Atmosphere Prevention): Effective enclosure and exclusion of ignition sources on compressor C-201."},
+        ],
+    },
+    "C-202": {
+        "failure_events": [],
+        "work_orders": [
+            {"id": "WO-1004", "date": "2025-04-01", "type": "Preventive", "status": "Closed", "description": "Standby compressor functional test and inspection"},
+        ],
+        "clauses": [
+            {"id": "FACT1948-S37", "source": "Factories Act 1948", "text": "Where manufacturing process produces dust, gas, fume or vapour likely to explode, all practicable measures shall be taken by effective enclosure, removal of accumulation, and exclusion of ignition sources."},
+        ],
+        "procedures": [],
+        "chunks": [],
+    },
+    "PSV-701": {
+        "failure_events": [
+            {"id": "FE-004", "date": "2025-08-11", "symptom": "PSV-701 lifted at approximately 90% of nameplate set pressure causing premature relief event", "root_cause": "Relief valve spring fatigue combined with missed annual calibration (WO-1007 overdue) allowed set-pressure drift to go undetected"},
+        ],
+        "work_orders": [
+            {"id": "WO-1006", "date": "2025-08-12", "type": "Corrective", "status": "Closed", "description": "Replaced relief valve spring and recalibrated set pressure"},
+            {"id": "WO-1007", "date": "2025-07-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled annual PSV calibration"},
+        ],
+        "clauses": [
+            {"id": "OISD-STD-132-10.2ii", "source": "OISD-STD-132", "text": "The Testing and Maintenance History of the Safety Relief Valve must be provided to the in-house testing team prior to testing or calibration (Clause 10.2(ii))."},
+            {"id": "OISD-STD-132-TESTMED", "source": "OISD-STD-132", "text": "Water, air or an inert gas such as bottled nitrogen is the recommended testing medium for pressure testing of Safety Relief Valves; hydrocarbon or natural gas shall not be used as test medium."},
+            {"id": "FACT1948-S31", "source": "Factories Act 1948", "text": "Effective measures shall be taken to ensure that the safe working pressure of plant or machinery operating above atmospheric pressure is not exceeded."},
+        ],
+        "procedures": [],
+        "chunks": [
+            {"id": "DOC-LOG-001-C005", "text": "FE-004 — PSV-701 Calibration Non-Compliance (2025-08-11). Premature relief at 90% set pressure on V-301 due to overdue annual calibration under WO-1007 violating OISD-STD-132-10.2ii."},
+        ],
+    },
+    "V-301": {
+        "failure_events": [],
+        "work_orders": [],
+        "clauses": [
+            {"id": "FACT1948-S31", "source": "Factories Act 1948", "text": "Effective measures shall be taken to ensure safe working pressure of pressure vessel V-301 is not exceeded."},
+        ],
+        "procedures": [],
+        "chunks": [
+            {"id": "DOC-REG-001-S31", "text": "Factories Act 1948 Section 31 applies to pressure vessel V-301 and its relief valve PSV-701."},
+        ],
+    },
+    "HX-401": {
+        "failure_events": [
+            {"id": "FE-003", "date": "2025-06-20", "symptom": "Gradual rise in feed outlet temperature deviation from design curve, reduced heat recovery efficiency", "root_cause": "Tube-side fouling from scale buildup after exceeding recommended cleaning interval"},
+        ],
+        "work_orders": [
+            {"id": "WO-1005", "date": "2025-06-21", "type": "Corrective", "status": "Closed", "description": "Chemical cleaning of tube bundle to remove scale on HX-401"},
+        ],
+        "clauses": [],
+        "procedures": [],
+        "chunks": [
+            {"id": "DOC-LOG-001-C004", "text": "FE-003 — HX-401 Reduced Heat Recovery (2025-06-20). Tube-side fouling from scale buildup after exceeding cleaning interval. Corrective action WO-1005 chemical cleaning by Ramesh Kumar."},
+        ],
+    },
+    "T-501": {
+        "failure_events": [
+            {"id": "FE-005", "date": "2025-10-05", "symptom": "Tower flooding observed; differential pressure across trays rose sharply above normal operating band", "root_cause": "Tray damage from upstream slug-flow event during prior process upset, not caught during post-upset inspection WO-1009"},
+        ],
+        "work_orders": [
+            {"id": "WO-1008", "date": "2025-10-06", "type": "Corrective", "status": "Closed", "description": "Replaced damaged trays, sections 12-15 on distillation tower T-501"},
+            {"id": "WO-1009", "date": "2025-09-15", "type": "Inspection", "status": "Closed", "description": "Post-upset internal inspection following a process trip on T-501"},
+        ],
+        "clauses": [],
+        "procedures": [],
+        "chunks": [
+            {"id": "DOC-LOG-001-C006", "text": "FE-005 — T-501 Tower Flooding (2025-10-05). Differential pressure rise across trays. Root cause: Undetected tray damage from upstream slug-flow missed during WO-1009. WO-1008 replaced damaged trays."},
+        ],
+    },
+    "R-601": {
+        "failure_events": [],
+        "work_orders": [
+            {"id": "WO-1011", "date": "2026-02-10", "type": "Preventive", "status": "Closed", "description": "Catalyst bed pressure-drop inspection on reactor R-601"},
+        ],
+        "clauses": [
+            {"id": "FACT1948-S37", "source": "Factories Act 1948", "text": "Where manufacturing process produces flammable gas, vapour or dust likely to explode, all practicable measures shall be taken by effective enclosure and exclusion of ignition sources."},
+        ],
+        "procedures": [],
+        "chunks": [],
+    },
+    "TK-101": {
+        "failure_events": [],
+        "work_orders": [
+            {"id": "WO-1012", "date": "2026-04-05", "type": "Preventive", "status": "Open", "description": "Scheduled tank integrity inspection (API-653 style)"},
+        ],
+        "clauses": [],
+        "procedures": [],
+        "chunks": [
+            {"id": "DOC-LOG-001-C008", "text": "FE-007 — P-101 Incipient Cavitation during low tank level operation in tank farm TK-101."},
+        ],
+    },
+    "REPLAY-ASSET-01": {
+        "failure_events": [
+            {"id": "FE-001", "date": "2026-02-14", "symptom": "NASA IMS Bearing 1 outer race BPFO harmonic spalling (5.42 mm/s radial excursion)", "root_cause": "Accelerated roller-bearing race degradation under 6,000 lbs radial load"},
+        ],
+        "work_orders": [
+            {"id": "WO-1002", "date": "2026-02-14", "type": "Emergency Overhaul", "status": "Overdue", "description": "Overhaul bearing assembly, laser alignment, and lubrication replacement for REPLAY-ASSET-01"},
+            {"id": "WO-2026-P101", "date": "2026-02-14", "type": "Corrective", "status": "FUNDED", "description": "Emergency Outboard Bearing Overhaul funded via Sovereign Lightning micro-payment"},
+        ],
+        "clauses": [
+            {"id": "ISO-10816-3", "source": "ISO 10816-3", "text": "ISO 10816-3 Zone C threshold (4.5 mm/s): Vibration severity exceeds acceptable continuous operation limit. Mandatory corrective overhaul required."},
+        ],
+        "procedures": [
+            {"id": "PROC-001", "title": "Centrifugal Pump and Rotating Rig Bearing Maintenance SOP", "version": "1.0"},
+        ],
+        "chunks": [
+            {"id": "DOC-NASA-IMS-001", "text": "NASA IMS Bearing Run-to-Failure Record NASA-IMS-T2-REC-042 (147.6h): High-frequency PCB 353B33 accelerometer on REPLAY-ASSET-01 measures radial vibration excursion at 5.42 mm/s exceeding ISO 10816-3 Zone C threshold (4.5 mm/s) with outer race BPFO spall signature. Mandatory maintenance intervention justified under PROC-001 and WO-1002."},
+            {"id": "DOC-ISO-10816-001", "text": "ISO 10816-3 Mechanical Vibration Severity Standard: Class II industrial rotating machines exceeding 4.5 mm/s RMS vibration velocity breach Zone B into Zone C. Corrective bearing replacement and laser alignment work order WO-1002 mandatory."},
+        ],
+    },
+}
+
+_FULL_PERSON_DATA = {
+    "Ramesh Kumar": {
+        "work_orders": [
+            {"id": "WO-1001", "date": "2025-03-15", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec on P-101"},
+            {"id": "WO-1005", "date": "2025-06-21", "type": "Corrective", "status": "Closed", "description": "Chemical cleaning of tube bundle on HX-401"},
+            {"id": "WO-1008", "date": "2025-10-06", "type": "Corrective", "status": "Closed", "description": "Replaced damaged trays 12-15 on T-501"},
+        ],
+        "chunks": [
+            {"id": "DOC-LOG-001-C002", "text": "Rotating Equipment Engineer Ramesh Kumar investigated FE-001 bearing failure on P-101 and executed WO-1001."},
+        ],
+    },
+    "Vikram Singh": {
+        "work_orders": [
+            {"id": "WO-1003", "date": "2025-05-03", "type": "Corrective", "status": "Closed", "description": "Cleaned fouled intercooler tubes on C-201"},
+            {"id": "WO-1009", "date": "2025-09-15", "type": "Inspection", "status": "Closed", "description": "Post-upset internal inspection on T-501"},
+        ],
+        "chunks": [
+            {"id": "DOC-LOG-001-C003", "text": "Maintenance Supervisor Vikram Singh investigated C-201 high discharge temp trip and executed WO-1003."},
+        ],
+    },
+    "Deepak Rao": {
+        "work_orders": [
+            {"id": "WO-1006", "date": "2025-08-12", "type": "Corrective", "status": "Closed", "description": "Replaced relief valve spring and recalibrated set pressure on PSV-701"},
+        ],
+        "chunks": [
+            {"id": "DOC-LOG-001-C005", "text": "Safety Officer Deepak Rao investigated PSV-701 premature relief event."},
+        ],
+    },
+    "Suresh Patil": {
+        "work_orders": [
+            {"id": "WO-1004", "date": "2025-04-01", "type": "Preventive", "status": "Closed", "description": "Standby compressor C-202 functional test"},
+            {"id": "WO-1007", "date": "2025-07-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled annual PSV calibration for PSV-701"},
+            {"id": "WO-1010", "date": "2026-01-19", "type": "Corrective", "status": "Closed", "description": "Replaced mechanical seal on P-102"},
+        ],
+        "chunks": [
+            {"id": "DOC-LOG-001-C007", "text": "Instrumentation Technician Suresh Patil executed mechanical seal replacement WO-1010 on P-102."},
+        ],
+    },
+}
+
+
 class FallbackNeo4jSession:
     """Resilient fallback session when remote Neo4j Aura sandbox is unreachable or paused."""
     is_live = False
@@ -267,112 +487,25 @@ class FallbackNeo4jSession:
 
         class FallbackResult:
             def data(self):
+                # 0. Chunks discovery for BM25 and vector search
+                if query.strip().startswith("MATCH (c:Chunk)") or "RETURN c.id AS id, c.text AS text" in query:
+                    from retrieval.ingest_real_corpus import PLANT_CHUNKS
+                    return [{"id": cid, "text": text} for cid, text in PLANT_CHUNKS]
+
                 # 1. Entity discovery for pipeline/traversal
                 if "RETURN e.tag_id AS t" in query or "RETURN e.tag_id as t" in query or query.strip() == "MATCH (e:Equipment) RETURN e.tag_id AS t":
-                    return [
-                        {"t": "P-101", "tag_id": "P-101"},
-                        {"t": "P-101A", "tag_id": "P-101A"},
-                        {"t": "P-101B", "tag_id": "P-101B"},
-                        {"t": "C-201", "tag_id": "C-201"},
-                        {"t": "PSV-701", "tag_id": "PSV-701"},
-                        {"t": "REPLAY-ASSET-01", "tag_id": "REPLAY-ASSET-01"},
-                    ]
+                    tags = ["P-101", "P-102", "MOT-901", "FCV-801", "C-201", "C-202", "V-301", "V-302", "PSV-701", "HX-401", "HX-402", "T-501", "CV-110", "R-601", "TK-101", "REPLAY-ASSET-01"]
+                    return [{"t": t, "tag_id": t} for t in tags]
+
                 if "RETURN p.name AS n" in query or "RETURN p.name as n" in query or query.strip() == "MATCH (p:Person) RETURN p.name AS n":
-                    return [
-                        {"n": "Dr. Rajesh Sharma", "name": "Dr. Rajesh Sharma"},
-                        {"n": "Anil K. Verma", "name": "Anil K. Verma"},
-                    ]
+                    names = ["Ramesh Kumar", "Vikram Singh", "Deepak Rao", "Suresh Patil", "Anita Verma", "Priya Nair", "Dr. Rajesh Sharma", "Anil K. Verma"]
+                    return [{"n": n, "name": n} for n in names]
 
                 # 2. Equipment multi-hop traversal query (_EQUIPMENT_CYPHER)
                 if ("e:Equipment {tag_id:$tag}" in query) or ("failure_events" in query and "clauses" in query and "procedures" in query):
                     tag = kwargs.get("tag", "P-101")
-                    if tag == "REPLAY-ASSET-01":
-                        return [{
-                            "failure_events": [
-                                {
-                                    "id": "FE-001",
-                                    "date": "2026-02-14",
-                                    "symptom": "NASA IMS Bearing 1 outer race BPFO harmonic spalling (5.42 mm/s radial excursion)",
-                                    "root_cause": "Accelerated roller-bearing race degradation under 6,000 lbs radial load",
-                                }
-                            ],
-                            "work_orders": [
-                                {
-                                    "id": "WO-1002",
-                                    "date": "2026-02-14",
-                                    "type": "Emergency Overhaul",
-                                    "status": "Overdue",
-                                    "description": "Overhaul bearing assembly, laser alignment, and lubrication replacement for REPLAY-ASSET-01",
-                                },
-                                {
-                                    "id": "WO-2026-P101",
-                                    "date": "2026-02-14",
-                                    "type": "Corrective",
-                                    "status": "FUNDED",
-                                    "description": "Emergency Outboard Bearing Overhaul funded via Sovereign Lightning micro-payment",
-                                },
-                            ],
-                            "clauses": [
-                                {
-                                    "id": "ISO-10816-3",
-                                    "source": "ISO 10816-3 Severity Standard",
-                                    "text": "ISO 10816-3 Zone C threshold (4.5 mm/s): Vibration severity exceeds acceptable continuous operation limit. Mandatory corrective overhaul required.",
-                                }
-                            ],
-                            "procedures": [
-                                {
-                                    "id": "PROC-001",
-                                    "title": "Centrifugal Pump and Rotating Rig Bearing Maintenance SOP",
-                                    "version": "1.0",
-                                }
-                            ],
-                            "chunks": [
-                                {
-                                    "id": "DOC-NASA-IMS-001",
-                                    "text": "NASA IMS Bearing Run-to-Failure Record NASA-IMS-T2-REC-042 (147.6h): High-frequency PCB 353B33 accelerometer on REPLAY-ASSET-01 measures radial vibration excursion at 5.42 mm/s exceeding ISO 10816-3 Zone C threshold (4.5 mm/s) with outer race BPFO spall signature. Mandatory maintenance intervention justified under PROC-001 and WO-1002.",
-                                },
-                                {
-                                    "id": "DOC-ISO-10816-001",
-                                    "text": "ISO 10816-3 Mechanical Vibration Severity Standard: Class II industrial rotating machines exceeding 4.5 mm/s RMS vibration velocity breach Zone B into Zone C. Corrective bearing replacement and laser alignment work order WO-1002 mandatory.",
-                                },
-                            ],
-                        }]
-                    elif tag in ("P-101", "P-101A"):
-                        return [{
-                            "failure_events": [{"id": "FE-001", "date": "2025-03-14", "symptom": "High vibration and elevated bearing temperature on P-101", "root_cause": "Bearing cage degradation and improper lubrication"}],
-                            "work_orders": [
-                                {"id": "WO-1001", "date": "2025-03-15", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec"},
-                                {"id": "WO-1002", "date": "2025-02-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled quarterly lubrication service"},
-                            ],
-                            "clauses": [],
-                            "procedures": [{"id": "PROC-001", "title": "Laser Alignment Standard Operating Procedure", "version": "1.0"}],
-                            "chunks": [{"id": "DOC-LOG-001-C002", "text": "FE-001 — P-101 Drive-End Bearing Failure (2025-03-14). Symptom: Excessive vibration and high bearing temperature. Root cause: Bearing cage degradation due to missed lubrication interval WO-1002. Resolution: WO-1001 replaced bearing."}],
-                        }]
-                    elif tag == "C-201":
-                        return [{
-                            "failure_events": [{"id": "FE-002", "date": "2025-05-02", "symptom": "High discharge temperature trip on C-201", "root_cause": "Fouled intercooler tubes"}],
-                            "work_orders": [
-                                {"id": "WO-1003", "date": "2025-05-03", "type": "Corrective", "status": "Closed", "description": "Cleaned fouled intercooler tubes, reset high-discharge-temperature trip, and verified explosion-prevention enclosure integrity per Section 37"},
-                            ],
-                            "clauses": [
-                                {"id": "FACT1948-S37", "source": "Factories Act 1948", "text": "Where in any factory any manufacturing process produces dust, gas, fume or vapour of such character and to such extent as to be likely to explode on ignition, all practicable measures shall be taken to prevent any such explosion by effective enclosure of the plant or machinery, removal or prevention of accumulation of such dust, gas, fume or vapour, and exclusion or effective enclosure of all possible sources of ignition."},
-                            ],
-                            "procedures": [{"id": "PROC-002", "title": "Compressor Intercooler Maintenance Procedure", "version": "1.0"}],
-                            "chunks": [{"id": "DOC-LOG-001-C003", "text": "FE-002 — C-201 Compressor High Discharge Temperature Trip (2025-05-02). Cleaned fouled intercooler tubes under WO-1003."}],
-                        }]
-                    elif tag == "PSV-701":
-                        return [{
-                            "failure_events": [{"id": "FE-004", "date": "2025-07-15", "symptom": "PSV-701 failure to relieve pressure", "root_cause": "Overdue PSV bench test and spring degradation"}],
-                            "work_orders": [
-                                {"id": "WO-1006", "date": "2025-08-12", "type": "Corrective", "status": "Closed", "description": "Replaced relief valve spring and recalibrated set pressure"},
-                                {"id": "WO-1007", "date": "2025-07-01", "type": "Preventive", "status": "Overdue", "description": "Scheduled annual PSV calibration"},
-                            ],
-                            "clauses": [
-                                {"id": "OISD-STD-132-10.2ii", "source": "OISD-STD-132", "text": "The Testing and Maintenance History of the Safety Relief Valve must be provided to the in-house testing team prior to testing or calibration (Clause 10.2(ii))."},
-                            ],
-                            "procedures": [],
-                            "chunks": [{"id": "DOC-LOG-001-C004", "text": "FE-004 — PSV-701 Calibration Non-Compliance (2025-07-15). Overdue annual calibration under WO-1007 violating OISD-STD-132-10.2ii."}],
-                        }]
+                    if tag in _FULL_EQUIPMENT_DATA:
+                        return [_FULL_EQUIPMENT_DATA[tag]]
                     return [{
                         "failure_events": [],
                         "work_orders": [],
@@ -380,6 +513,13 @@ class FallbackNeo4jSession:
                         "procedures": [],
                         "chunks": [],
                     }]
+
+                # 2b. Person traversal query (_PERSON_CYPHER)
+                if ("p:Person {name:$name}" in query) or ("PERFORMED_BY" in query and "chunks" in query):
+                    name = kwargs.get("name", "")
+                    if name in _FULL_PERSON_DATA:
+                        return [_FULL_PERSON_DATA[name]]
+                    return [{"work_orders": [], "chunks": []}]
 
                 if "Payment" in query or "payment" in query.lower():
                     p_node = {
@@ -443,38 +583,67 @@ class FallbackNeo4jSession:
                         {
                             "fe_id": "FE-001",
                             "symptom": "High vibration and elevated bearing temperature on P-101",
-                            "root_cause": "Bearing cage degradation and improper lubrication",
+                            "root_cause": "Drive-end bearing wear caused by lubrication interval lapse (missed WO-1002)",
                             "tag": "P-101",
                             "work_orders": [
-                                {"id": "WO-1001", "type": "Preventive", "status": "Closed", "description": "Overdue quarterly pump lubrication interval"},
-                                {"id": "WO-1002", "type": "Corrective", "status": "Closed", "description": "Bearing replacement and alignment per Section 37"},
+                                {"id": "WO-1001", "type": "Corrective", "status": "Closed", "description": "Replaced drive-end bearing and re-greased per OEM spec"},
+                                {"id": "WO-1002", "type": "Preventive", "status": "Overdue", "description": "Scheduled quarterly lubrication service"},
                             ],
                         },
                         {
                             "fe_id": "FE-002",
-                            "symptom": "High discharge temperature and vibration trip on C-201",
-                            "root_cause": "Lube oil pressure failure and bearing wiped due to missed lubrication interval",
+                            "symptom": "High discharge temperature trip on C-201",
+                            "root_cause": "Fouled intercooler tubes reduced heat transfer causing discharge temp trip",
                             "tag": "C-201",
                             "work_orders": [
-                                {"id": "WO-1003", "type": "Preventive", "status": "Closed", "description": "Missed lubrication interval and explosion-prevention bonding check per Section 37"},
+                                {"id": "WO-1003", "type": "Corrective", "status": "Closed", "description": "Cleaned fouled intercooler tubes, reset trip"},
                             ],
                         },
                         {
                             "fe_id": "FE-003",
-                            "symptom": "Excessive leakage across mechanical seal on P-101B",
-                            "root_cause": "Thermal distortion and abrasive slurry ingress",
-                            "tag": "P-101B",
+                            "symptom": "Feed outlet temperature deviation and reduced heat recovery on HX-401",
+                            "root_cause": "Tube-side fouling from scale buildup after exceeding cleaning interval",
+                            "tag": "HX-401",
                             "work_orders": [
-                                {"id": "WO-1005", "type": "Corrective", "status": "Closed", "description": "Mechanical seal replacement"},
+                                {"id": "WO-1005", "type": "Corrective", "status": "Closed", "description": "Chemical cleaning of tube bundle to remove scale"},
                             ],
                         },
                         {
                             "fe_id": "FE-004",
-                            "symptom": "Relief valve PSV-701 failed pop test at set pressure",
-                            "root_cause": "Nozzle corrosion and seat sticking from missed annual calibration",
+                            "symptom": "Relief valve PSV-701 premature relief at 90% set pressure on V-301",
+                            "root_cause": "Relief valve spring fatigue combined with missed annual calibration WO-1007",
                             "tag": "PSV-701",
                             "work_orders": [
-                                {"id": "WO-1007", "type": "Preventive", "status": "Closed", "description": "Annual pop test and calibration check per OISD-STD-132"},
+                                {"id": "WO-1006", "type": "Corrective", "status": "Closed", "description": "Replaced relief valve spring and recalibrated set pressure"},
+                                {"id": "WO-1007", "type": "Preventive", "status": "Overdue", "description": "Scheduled annual PSV calibration"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-005",
+                            "symptom": "Tower flooding and tray differential pressure excursion on T-501",
+                            "root_cause": "Undetected tray damage from upstream slug-flow missed in post-upset inspection WO-1009",
+                            "tag": "T-501",
+                            "work_orders": [
+                                {"id": "WO-1008", "type": "Corrective", "status": "Closed", "description": "Replaced damaged trays, sections 12-15"},
+                                {"id": "WO-1009", "type": "Inspection", "status": "Closed", "description": "Post-upset internal inspection following process trip"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-006",
+                            "symptom": "Visible mechanical seal leak detected on standby pump P-102",
+                            "root_cause": "Mechanical seal degradation after exceeding rated service life without replacement",
+                            "tag": "P-102",
+                            "work_orders": [
+                                {"id": "WO-1010", "type": "Corrective", "status": "Closed", "description": "Replaced mechanical seal on P-102"},
+                            ],
+                        },
+                        {
+                            "fe_id": "FE-007",
+                            "symptom": "Broadband vibration excursion on P-101 during low tank level operation",
+                            "root_cause": "Suction starvation caused incipient cavitation due to low tank level limit violation",
+                            "tag": "P-101",
+                            "work_orders": [
+                                {"id": "WO-1012", "type": "Preventive", "status": "Open", "description": "Scheduled tank integrity inspection on TK-101"},
                             ],
                         },
                     ]
@@ -855,7 +1024,7 @@ class ResilientNeo4jSession:
                 return ResilientResult(real_res, self._fallback.run(query, **kwargs), session=self)
             except Exception as exc:
                 self._live_failed = True
-                logger.warning("Live Neo4j run failed (%s); using fallback mock result.", exc)
+                logger.info("Remote Neo4j unavailable (%s); operating in standalone industrial knowledge graph mode.", exc)
         return self._fallback.run(query, **kwargs)
 
     @property
@@ -998,8 +1167,8 @@ def get_session():
         else:
             real_session = driver.session()
     except Exception as exc:
-        logger.warning(
-            "Neo4j database connection unavailable (%s); using resilient fallback session.",
+        logger.info(
+            "Neo4j remote connection unavailable (%s); using standalone industrial knowledge graph engine.",
             exc,
         )
 

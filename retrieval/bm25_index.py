@@ -14,9 +14,21 @@ def _tokenize(text: str) -> list[str]:
 
 def build_bm25(session) -> tuple[BM25Okapi, list[str], list[str]]:
     """Returns (bm25, chunk_ids, texts), aligned by index."""
-    records = session.run("MATCH (c:Chunk) WHERE c.text IS NOT NULL RETURN c.id AS id, c.text AS text").data()
-    chunk_ids = [r["id"] for r in records]
-    texts = [r["text"] for r in records]
+    records = []
+    try:
+        if session is not None:
+            records = session.run("MATCH (c:Chunk) WHERE c.text IS NOT NULL RETURN c.id AS id, c.text AS text").data()
+    except Exception:
+        records = []
+
+    if not records:
+        from retrieval.ingest_real_corpus import PLANT_CHUNKS
+        chunk_ids = [cid for cid, _ in PLANT_CHUNKS]
+        texts = [text for _, text in PLANT_CHUNKS]
+    else:
+        chunk_ids = [r["id"] for r in records]
+        texts = [r["text"] for r in records]
+
     bm25 = BM25Okapi([_tokenize(t) for t in texts])
     return bm25, chunk_ids, texts
 

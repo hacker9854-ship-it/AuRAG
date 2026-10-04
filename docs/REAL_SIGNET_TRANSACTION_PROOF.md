@@ -11,8 +11,8 @@
 - **LNbits Instance:** `https://demo.lnbits.com`
 - **Wallet Name:** `AuRAG-Machine-Money`
 - **Wallet ID:** `a4ce2f74c81c4b66b33efc0233fe8fcf`
-- **Admin Key:** `ad2bd54a8fed47b2b14283b0f35f5b72`
-- **Invoice Key:** `1c399685a9ab42c4963fb38c9fc432b9`
+- **Admin Key:** `ad2bd54a************************ [REDACTED_SECURED_IN_ENV]`
+- **Invoice Key:** `1c399685************************ [REDACTED_SECURED_IN_ENV]`
 - **Assigned Network:** `signet` (Demo Lightning Node backend)
 
 ### LNbits Wallet Dashboard Evidence

@@ -20,9 +20,13 @@ def get_model():
         try:
             from sentence_transformers import SentenceTransformer
             _model = SentenceTransformer(MODEL_NAME)
-        except Exception as e:
-            logger.warning("Could not load SentenceTransformer: %s", e)
-            return None
+        except Exception:
+            try:
+                from fastembed import TextEmbedding
+                _model = TextEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
+            except Exception as e:
+                logger.warning("Could not load embedding model: %s", e)
+                return None
     return _model
 
 
@@ -32,7 +36,10 @@ def embed_texts(texts: list[str]) -> list[list[float]]:
     try:
         model = get_model()
         if model is not None:
-            return model.encode(texts, normalize_embeddings=True).tolist()
+            if hasattr(model, "encode"):
+                return model.encode(texts, normalize_embeddings=True).tolist()
+            if hasattr(model, "embed"):
+                return [vec.tolist() for vec in model.embed(texts)]
     except Exception as exc:
         logger.warning("Local embedding model encode failed (%s); using resilient pseudo-vector.", exc)
 

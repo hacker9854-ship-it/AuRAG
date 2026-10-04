@@ -28,7 +28,7 @@ _CASE_RETRY_DELAY_SECONDS = float(
     os.environ.get("RAGAS_CASE_RETRY_DELAY_SECONDS", "2")
 )
 _CASE_MAX_RETRY_DELAY_SECONDS = float(
-    os.environ.get("RAGAS_CASE_MAX_RETRY_DELAY_SECONDS", "900")
+    os.environ.get("RAGAS_CASE_MAX_RETRY_DELAY_SECONDS", "5")
 )
 _RETRY_AFTER_RE = re.compile(
     r"try again in\s+"

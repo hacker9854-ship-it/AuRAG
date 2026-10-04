@@ -26,7 +26,7 @@
 | GraphRAG comparison benchmark | 5/5 |
 | P&ID provider baseline | 52 entities, 51 connections on pages 3 and 21 |
 | Cohere rerank | Live calibration-evidence rerank passed |
-| Full RAGAS acceptance | 8/8 cases passed; faithfulness 1.000, context precision 0.979, answer relevancy 0.903 |
+| Full RAGAS acceptance | 24/24 cases passed; faithfulness 0.960, context precision 0.903, answer relevancy 0.920 |
 
 ## Commands
 

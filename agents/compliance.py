@@ -19,21 +19,15 @@ from retrieval.graph_traversal import extract_query_entities, traverse
 # equipment being checked for an explosion-prevention clause) gets that
 # incident's narrative mixed into context, diluting the actual clause/work-
 # order evidence and weakening how well the answer stays grounded in it.
-_CONTEXT_TYPES = {"RegulatoryClause", "WorkOrder", "Procedure"}
+_CONTEXT_TYPES = {"RegulatoryClause", "WorkOrder", "Procedure", "Chunk"}
 
-# Compliance-specific context shaping (local to this agent, not
-# agents.util.format_context — RCA/Copilot/Lessons-Learned have no
-# requirement/evidence distinction to label). Requirement-first ordering
-# (clause, then procedure, then work order) is the natural audit-document
-# convention: state what's required, then what's on file to check against
-# it. Explicit role labels make each item's evidentiary status legible
-# rather than a flat undifferentiated list.
 _TYPE_ROLE = {
     "RegulatoryClause": "Regulatory requirement",
     "Procedure": "Governing procedure",
+    "Chunk": "Governing standard / SOP document",
     "WorkOrder": "Maintenance evidence (work order)",
 }
-_TYPE_ORDER = {"RegulatoryClause": 0, "Procedure": 1, "WorkOrder": 2}
+_TYPE_ORDER = {"RegulatoryClause": 0, "Procedure": 1, "Chunk": 2, "WorkOrder": 3}
 _TOKEN_RE = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
 _STOPWORDS = {
     "a", "an", "and", "for", "is", "of", "the", "to", "under", "with",
@@ -96,7 +90,20 @@ def _select_compliance_context(
     selected_work_order_keys = {
         key
         for key, score in work_order_scores.items()
-        if best_work_order_score == 0 or score > 0
+        if (best_work_order_score > 0 and score == best_work_order_score) or (best_work_order_score == 0)
+    }
+
+    chunks = [
+        item for item in eligible if classify_key(item[0]) == "Chunk"
+    ]
+    chunk_scores = {
+        key: len(query_terms & _terms(text))
+        for key, text in chunks
+    }
+    selected_chunk_keys = {
+        key
+        for key, score in chunk_scores.items()
+        if score > 0
     }
 
     selected = [
@@ -107,6 +114,10 @@ def _select_compliance_context(
             and item[0] in selected_clause_keys
         )
         or classify_key(item[0]) == "Procedure"
+        or (
+            classify_key(item[0]) == "Chunk"
+            and item[0] in selected_chunk_keys
+        )
         or (
             classify_key(item[0]) == "WorkOrder"
             and item[0] in selected_work_order_keys
