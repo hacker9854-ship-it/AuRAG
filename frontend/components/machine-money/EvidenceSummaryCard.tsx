@@ -70,6 +70,9 @@ export function EvidenceSummaryCard({
           <h3 className="text-base font-bold font-heading mt-1">
             Why Did Machine Money Move? (Autonomous Causality)
           </h3>
+          <p className="text-xs text-muted-foreground mt-1 max-w-2xl leading-relaxed">
+            <span className="font-semibold text-purple-400">Why GraphRAG over a simple SCADA threshold?</span> A raw sensor threshold only detects physical symptoms (5.42 mm/s); GraphRAG justifies financial expenditure by verifying active OEM warranty, historical work orders (WO-1002), and plant SOPs (PROC-001) before satoshis are released.
+          </p>
         </div>
 
         {/* Confidence Meter Badge */}
