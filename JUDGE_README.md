@@ -138,32 +138,41 @@ AuRAG enforces a strict, honest line between **public-data replay fixtures** and
 
 To verify that the entire codebase is genuine, tested, and fully functional:
 
+> 💡 **Environment Notice (Avoid Global Package Collisions):**  
+> To ensure `pytest` executes against the repository's pinned dependencies (`pydantic`, `fastapi`, `starlette`), invoke the virtualenv binary directly or activate the environment:
+> - **Windows (Direct):** `.\.venv\Scripts\pytest.exe -q`
+> - **Linux / macOS (Direct):** `./.venv/bin/pytest -q`
+> - *(Or activate first: `source .venv/bin/activate` or `.\.venv\Scripts\activate`)*
+
 ```bash
 # 1. Verify Full Backend Pytest Suite (317 tests collected & passing)
-# (Using repo virtualenv directly or active shell):
+# Option A - Direct venv binary (1-line, no activation required):
+# Windows:
+.\.venv\Scripts\pytest.exe -q
+# Linux / macOS:
+./.venv/bin/pytest -q
+
+# Option B - Standard shell (with venv activated):
+# Windows: .\.venv\Scripts\activate   |   Linux/Mac: source .venv/bin/activate
 pytest -q
-# Or direct executable path:
-# Windows: .\.venv\Scripts\pytest.exe -q
-# Linux/Mac: ./.venv/bin/pytest -q
 
 # Quick collect verification:
-pytest --collect-only -q  # Output: 317 tests collected
+.\.venv\Scripts\pytest.exe --collect-only -q  # (or ./ .venv/bin/pytest --collect-only -q)
 
 # 2. Verify Frontend Vitest Suite (61 tests across 16 suites)
-cd frontend
-npm test -- --run
-cd ..
+npm --prefix frontend test -- --run
 
 # 3. Verify Core Machine Money, Public Data & Bitcoin Suites (30 tests)
-pytest tests/test_e2e_public_data_machine_money.py tests/test_e2e_machine_money.py tests/test_nwc_nip47.py -v
+# Windows:
+.\.venv\Scripts\pytest.exe tests/test_e2e_public_data_machine_money.py tests/test_e2e_machine_money.py tests/test_nwc_nip47.py -v
+# Linux / macOS:
+./.venv/bin/pytest tests/test_e2e_public_data_machine_money.py tests/test_e2e_machine_money.py tests/test_nwc_nip47.py -v
 
 # 4. Verify Browser E2E Suite (6 Playwright tests)
-cd frontend
-npm run test:e2e
+npm --prefix frontend run test:e2e
 
-# 5. Verify Clean Production Build
-cd frontend
-npm run build
+# 5. Verify Clean Production Build (0 errors)
+npm --prefix frontend run build
 ```
 
 **Result**: 100% Passing:

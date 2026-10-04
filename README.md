@@ -420,16 +420,29 @@ Judges can reproduce all test suites and verify the architecture in under 60 sec
 git clone https://github.com/hacker9854-ship-it/AuRAG.git
 cd AuRAG
 
-# 2. Run all 317 Backend Tests (Pytest)
+# 2. Setup Python Virtual Environment (If not already present)
+# Windows:
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+# Linux / macOS:
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# 3. Run all 317 Backend Tests (Pytest)
+# (Windows Direct) .\.venv\Scripts\pytest.exe -q
+# (Linux/Mac Direct) ./.venv/bin/pytest -q
 pytest -q
+
 # Quick collect verification:
 pytest --collect-only -q  # Output: 317 tests collected
 
-# 3. Run all 61 Frontend Tests (Vitest)
+# 4. Run all 61 Frontend Tests (Vitest)
 npm --prefix frontend test -- --run
 # Expected Output: 16 test files | 61 tests passed
 
-# 4. Verify Next.js Production Build (0 errors)
+# 5. Verify Next.js Production Build (0 errors)
 npm --prefix frontend run build
 # Expected Output: ✓ Compiled successfully (12 routes)
 ```
