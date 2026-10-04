@@ -22,7 +22,7 @@
 <p align="center">
   <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Pytest-316%2F316%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Pytest 316/316 Passing"/></a>
   <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Vitest-61%2F61%20Passing-729B1B?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest 61/61 Passing"/></a>
-  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Total%20Tests-377%2F377%20Passing-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white" alt="Total Tests 377/377 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Automated%20Checks-383%20Passing-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white" alt="Automated Checks 383 Passing"/></a>
   <a href="https://au-rag.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-au--rag.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo"/></a>
   <a href="https://aurag-production.up.railway.app/docs"><img src="https://img.shields.io/badge/API-Swagger%20Docs-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="API Docs"/></a>
 </p>
@@ -267,7 +267,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 | **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Bitcoin Lightning Network (BOLT11 micro-settlement)** |
 | **Audit Trail** | Paper / ERP records | ❌ None | **✅ Cryptographic preimage + GraphRAG evidence chain** |
 | **Policy Enforcement** | Manual manager approval | ❌ None | **✅ Authoritative backend spending caps with auto-escalation** |
-| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 377 Automated Tests (316 Backend Pytest + 61 Frontend Vitest)** |
+| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 383 Automated Checks Total (377 unit/integration tests passing + 6 browser E2E checks passing)** |
 
 ---
 
@@ -284,7 +284,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🔄 **Deterministic Idempotency Protection** — SHA-256 idempotency cache rejecting duplicate physical anomaly triggers and network retries.
 - 📦 **Payment Proof Drawer & Evidence Pack** — Interactive sliding drawer for inspecting raw JSON, hex preimages, BOLT-11 invoices, GraphRAG failure codes (`FE-001`), and downloadable audit reports.
 - 🖥️ **Industrial Operations Cockpit** — 12 interactive Next.js 16 routes featuring dark mode, responsive layout (1080p → mobile), live execution timeline, and system readiness diagnostics.
-- 🧪 **Comprehensive Test Coverage** — 316 backend Pytest tests + 61 frontend Vitest tests (377 total) covering E2E lifecycle, NIP-47-inspired NWC simulation, multi-hop routing, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
+- 🧪 **Comprehensive Test Coverage** — 377 unit/integration tests passing (316 Backend Pytest + 61 Frontend Vitest) + 6 browser E2E checks passing (383 automated checks total) covering E2E lifecycle, NIP-47-inspired NWC simulation, multi-hop routing, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
 
 ---
 
@@ -635,9 +635,11 @@ GET /api/v1/machine-money/budget/status
 |:-----------|:------|:------:|:--------------:|
 | **Backend Pytest** | Unit, Integration, E2E, BOLT11, NWC NIP-47 simulation, Policy, Failure-Path, Secret-Scan | **316 / 316 Passed** | ~60s |
 | **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics, NWC simulation | **61 / 61 Passed** (16 suites) | ~40s |
+| **Unit & Integration Tests** | Combined backend + frontend suites | **377 unit/integration tests passing** | ~100s |
+| **Browser E2E (Playwright)** | Desktop & Pixel 7 Mobile responsive flows | **6 browser E2E checks passing** | 26.5s |
+| **Total Automated Checks** | Full repository test coverage | **383 automated checks total** | ~126s combined |
 | **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 11.1s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
-| **Total Automated Tests** | Combined backend + frontend | **377 / 377 Passed** | ~100s |
 
 ### 🛡️ Claim-to-Evidence Verification Matrix
 
@@ -661,7 +663,7 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 | Document | Description |
 |:---------|:------------|
 | [**ARCHITECTURE.md**](./ARCHITECTURE.md) | Canonical system architecture, component diagrams, and Architecture Decision Records (ADRs) |
-| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 316 Pytest + 61 Vitest = 377 tests passed, build status |
+| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 377 unit/integration tests passing, 6 browser E2E checks passing (383 automated checks total), build status |
 | [**CLAIM_EVIDENCE_MATRIX.md**](./docs/CLAIM_EVIDENCE_MATRIX.md) | Master claim-to-evidence verification matrix auditing 13 technical claims with allowed wording |
 | [**JUDGE_DEMO_SCRIPT.md**](./docs/JUDGE_DEMO_SCRIPT.md) | Precise 0:00–5:00 minute-by-minute judge demo script with talking points and screen actions |
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |

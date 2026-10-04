@@ -150,12 +150,19 @@ npm test -- --run
 # 3. Verify Core Machine Money, Public Data & Bitcoin Suites (30 tests)
 pytest tests/test_e2e_public_data_machine_money.py tests/test_e2e_machine_money.py tests/test_nwc_nip47.py -v
 
-# 4. Verify Clean Production Build
+# 4. Verify Browser E2E Suite (6 Playwright tests)
+cd frontend
+npm run test:e2e
+
+# 5. Verify Clean Production Build
 cd frontend
 npm run build
 ```
 
-**Result**: 100% Passing Tests (316 Backend Pytest + 61 Frontend Vitest = 377 Total), 0 Build Errors.
+**Result**: 100% Passing:
+- **377 unit/integration tests passing** (316 Backend Pytest + 61 Frontend Vitest)
+- **6 browser E2E checks passing** (Playwright Desktop & Mobile)
+- **383 automated checks total** (0 Build Errors)
 
 ---
 
