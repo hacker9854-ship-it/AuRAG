@@ -62,6 +62,31 @@ Three punchy, indisputable proofs appear immediately:
 
 ---
 
+## ⚡ 2.5 Live Signet Lightning Node & Preimage Proof Evidence
+
+For judges auditing live network capability vs. local simulation, AuRAG connects directly to a live LNbits instance configured on the Bitcoin Lightning Signet network:
+
+### 1. Live LNbits Node & Wallet Dashboard
+<img src="./docs/lnbits_signet_wallet_proof.png" width="100%" alt="LNbits Live Signet Wallet with 250-sat Invoices and Node API Configuration"/>
+
+* **Node URL**: `https://demo.lnbits.com`
+* **Wallet Name**: `AuRAG-Machine-Money` (`a4ce2f74c81c4b66b33efc0233fe8fcf`)
+* **Real 250-Sat Invoices**: Live BOLT11 invoices issued for autonomous bearing maintenance.
+
+### 2. Cryptographic Preimage Verification & Fail-Closed Audit
+<img src="./docs/real_signet_settlement_proof.png" width="100%" alt="AuRAG Real Signet Live Node Status and Fail-Closed Verification"/>
+
+| Verification Check | Exact Value / Audit Proof | Status |
+|:---|:---|:---:|
+| **Payment Hash ($H$)** | `18a86ad31ca2dd3a67ff2a71203bd2e3fedb2fbf93252148fd0214abeab31fc5` | PASS ✅ |
+| **Settlement Preimage ($R$)** | `4fac299908f35b3589ad84b8cae3df9a68e71ac32cb49d68e150ef1e1c4e8603` | PASS ✅ |
+| **Cryptographic Lock** | `hashlib.sha256(bytes.fromhex(preimage)).hexdigest() == payment_hash` | **`True`** ✅ |
+| **Fail-Closed Guarantee** | When live balance is 0 sats, zero local preimages are emitted; payment strictly marked `FAILED` (0 sats claimed settled). | PASS ✅ |
+
+> 📜 **Complete Step-by-Step Technical Proof**: See [docs/REAL_SIGNET_TRANSACTION_PROOF.md](./docs/REAL_SIGNET_TRANSACTION_PROOF.md)
+
+---
+
 ## 🔥 3. Novel Bitcoin & Lightning Innovations
 
 Judges from the Bitcoin / Bitshala community will appreciate that this is **not** a basic LNbits API wrapper:

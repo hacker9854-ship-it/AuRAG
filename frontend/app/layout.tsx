@@ -14,7 +14,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="min-h-full antialiased">
+    <html lang="en" className="dark min-h-full antialiased">
       <body className="min-h-full">
         <TooltipProvider>
           <AppShell>{children}</AppShell>

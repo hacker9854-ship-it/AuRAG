@@ -57,55 +57,67 @@
 
 <div align="center">
 
-### ⚡ 1. Machine Money — Autonomous Payment Console
-<img src="./docs/screenshots/machine-money-above-fold.png" width="100%" alt="Machine Money Console — Judge presets, live telemetry, and Lightning payment execution"/>
-<p><i>Single-click Judge Presets, real-time sensor telemetry, multi-vendor RFQ bidding, and BOLT-11 Lightning invoice settlement with cryptographic preimage proofs</i></p>
+### ⚡ 1. Live Lightning Node & Signet Settlement Infrastructure
+<img src="./docs/lnbits_signet_wallet_proof.png" width="100%" alt="LNbits Live Signet Wallet with 250-sat Invoices and Node API Configuration"/>
+<p><i>Live LNbits Signet node connectivity (<code>https://demo.lnbits.com</code>): Dedicated <code>AuRAG-Machine-Money</code> wallet (ID: <code>a4ce2f74c81c4b66b33efc0233fe8fcf</code>) with genuine 250-sat diagnostic invoices, payment hashes, and live API endpoints. Detailed report: <a href="./docs/REAL_SIGNET_TRANSACTION_PROOF.md">REAL_SIGNET_TRANSACTION_PROOF.md</a></i></p>
 
 ---
 
-### 📊 2. Machine Money — Execution Timeline & Anomaly Detection
+### 🛡️ 2. Zero-Simulation Boundary & Fail-Closed Settlement Audit
+<img src="./docs/real_signet_settlement_proof.png" width="100%" alt="AuRAG Real Signet Live Node Status and Fail-Closed Verification"/>
+<p><i>Fail-closed security proof: Dynamic live node indicator (<code>LIVE LIGHTNING • SIGNET • LIGHTNING NODE • Lnbits • 0 sats</code>), real BOLT11 invoice verification, and strict refusal to emit mock preimages or settle fake nominals when live node balance is 0 (Status: <code>FAILED</code>, 0 sats settled)</i></p>
+
+---
+
+### ⚡ 3. Machine Money — Autonomous Payment Console
+<img src="./docs/screenshots/machine-money-above-fold.png" width="100%" alt="Machine Money Console — Judge presets, NASA IMS empirical telemetry, and Lightning payment execution"/>
+<p><i>Single-click Judge Presets, NASA IMS Bearing Run-to-Failure (PCoE) 20 kHz telemetry, multi-vendor RFQ bidding, and BOLT-11 Lightning invoice settlement with cryptographic preimage proofs</i></p>
+
+---
+
+### 📊 4. Machine Money — Execution Timeline & Anomaly Detection
 <img src="./docs/screenshots/machine-money-execution-timeline.png" width="100%" alt="Machine Money Execution Timeline — 6-step autonomous lifecycle with live status tracking"/>
 <p><i>6-step live execution pipeline: Telemetry Ingestion → GraphRAG Analysis → Multi-Vendor RFQ → Invoice Issuance → Spending Policy Check → Settlement & Proof</i></p>
 
 ---
 
-### 🤝 3. Machine Money — Autonomous Multi-Vendor RFQ Marketplace
+### 🤝 5. Machine Money — Autonomous Multi-Vendor RFQ Marketplace
 <img src="./docs/screenshots/machine-money-rfq.png" width="100%" alt="Multi-Vendor RFQ Marketplace — 3 pre-approved synthetic vendor bids, multi-objective scoring, and SLA selection"/>
 <p><i>Autonomous RFQ bidding: 3 pre-approved synthetic vendor nodes evaluated via deterministic scoring (Cost × Latency × SLA) under configurable selection strategies</i></p>
 
 ---
 
-### 🔐 4. Machine Money — Cryptographic Payment Proof Verification
+### 🔐 6. Machine Money — Cryptographic Payment Proof Verification
 <img src="./docs/screenshots/machine-money-proof-drawer.png" width="100%" alt="Payment Proof Drawer — SHA-256 preimage verification, BOLT11 invoice, and Neo4j graph lineage"/>
 <p><i>Inspectable cryptographic proof package: SHA-256(preimage) matching payment hash, standards-compliant BOLT11 payment request, and Neo4j causal graph trail</i></p>
 
 ---
 
-### 🛡️ 5. Machine Money — Policy Escalation Gate (>500 Sats)
+### 🛡️ 7. Machine Money — Policy Escalation Gate (>500 Sats)
 <img src="./docs/screenshots/machine-money-policy-escalation.png" width="100%" alt="Policy Escalation Gate — Quoted amount (1,200 sats) exceeds 500-sat autonomous cap requiring human digital sign-off"/>
 <p><i>Zero-Trust policy enforcement: Quotes exceeding the 500-sat cap unconditionally halt in PENDING_APPROVAL; unilateral API bypass attempts rejected with HTTP 403</i></p>
 
 ---
 
-### ⚠️ 6. Machine Money — Provider Failure & Graceful Degradation
+### ⚠️ 8. Machine Money — Provider Failure & Graceful Degradation
 <img src="./docs/screenshots/machine-money-provider-failure.png" width="100%" alt="Provider Failure Simulation — Channel liquidity exhaustion handling with retry guidance and zero lost funds"/>
 <p><i>Resilience verification: Temporary channel failure safely preserves wallet balance (0 sats deducted), records structured failure audit, and outputs remediation guidance</i></p>
 
 ---
 
-### 💰 7. Machine Money — Industrial Economics & Explainability Drawer
+### 💰 9. Machine Money — Industrial Economics & Explainability Drawer
 <img src="./docs/screenshots/machine-money-economics.png" width="100%" alt="Industrial Economics Explainability Drawer — Step-by-step formula derivation, assumptions table, and sensitivity sandbox"/>
 <p><i>Step-by-step economic derivation ($1.17M modelled downtime exposure vs. 250-sat payment, 7,800,000:1 ratio) with interactive sensitivity sandbox and synthetic disclosures</i></p>
 
 ---
 
-### 🖥️ 8. Command Center — Operator Dashboard
+### 🖥️ 10. Command Center — Operator Dashboard
 <img src="./docs/screenshots/command-center.png" width="100%" alt="AuRAG Command Center — Industrial operations dashboard with system health, knowledge graph, and quick actions"/>
 <p><i>Industrial operations command center with system health monitoring, knowledge graph status, active alerts, and quick-action panels</i></p>
 
 ---
 
-### 📡 9. Predictive Watch — SCADA Telemetry Monitor
+### 📡 11. Predictive Watch — SCADA Telemetry Monitor
 <img src="./docs/screenshots/predictive-watch.png" width="100%" alt="Predictive Watch — Real-time SCADA telemetry monitoring with vibration, pressure, and temperature sensors"/>
 <p><i>Real-time SCADA sensor monitoring with vibration excursion detection, ISO 10816 zone classification, and automated anomaly alerting</i></p>
 
