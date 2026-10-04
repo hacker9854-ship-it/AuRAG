@@ -63,7 +63,7 @@ flowchart TD
 ## 3. Component Lineage Breakdown
 
 ### 3.1 Where `P-101A` Telemetry is Generated
-- **Primary Generator**: [`telemetry/generator.py:generate_reading()`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/telemetry/generator.py#L65-L101).
+- **Primary Generator**: [`telemetry/generator.py:generate_reading()`](../telemetry/generator.py#L65-L101).
 - **Mechanism**: Reads historical failure signatures `f.signature_json` associated with `(e:Equipment {tag_id: $tag})` from the Neo4j ontology.
 - **Baseline Healthy Assumptions**: Stored in Python in `NOMINAL` dict:
   ```python
@@ -80,7 +80,7 @@ flowchart TD
 - **Provenance Classification**: `SYNTHETIC_GENERATOR`. It is an engineered synthetic demonstration fixture simulating sensor drift towards known failure signatures.
 
 ### 3.2 Where `VIB-301` Sensor Values are Created
-- **Location**: [`backend/app/services/machine_money/service.py:execute_judge_scenario()`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/services/machine_money/service.py#L665-L677).
+- **Location**: [`backend/app/services/machine_money/service.py:execute_judge_scenario()`](../backend/app/services/machine_money/service.py#L665-L677).
 - **Values**:
   - `sensor_id`: `"VIB-301-BEARING"`
   - `vibration_mms`: `5.4` mm/s RMS (radial vibration)
@@ -95,23 +95,23 @@ flowchart TD
   - Zone C (Warning / Long-term damage): $4.5$ to $7.1$ mm/s RMS.
   - Zone D (Critical / Immediate damage): $> 7.1$ mm/s RMS.
 - **Code Locations**:
-  1. [`telemetry/predictive_intelligence.py:THRESHOLDS`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/telemetry/predictive_intelligence.py#L12-L16):
+  1. [`telemetry/predictive_intelligence.py:THRESHOLDS`](../telemetry/predictive_intelligence.py#L12-L16):
      ```python
      THRESHOLDS = {
          "vibration_de": {"nominal": 2.5, "warning": 6.5, "critical": 10.0},
          "temperature_de": {"nominal": 65.0, "warning": 85.0, "critical": 105.0},
      }
      ```
-  2. [`backend/app/services/machine_money/grounding.py:CANONICAL_VIBRATION_THRESHOLD`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/services/machine_money/grounding.py#L19): Fixed at `4.5` mm/s.
+  2. [`backend/app/services/machine_money/grounding.py:CANONICAL_VIBRATION_THRESHOLD`](../backend/app/services/machine_money/grounding.py#L19): Fixed at `4.5` mm/s.
 
 ### 3.4 Where Anomaly Events are Created
-- **Worker Level**: [`telemetry/worker.py:TelemetryWorker.run_cycle()`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/telemetry/worker.py#L53-L91) periodically scans equipment, applies similarity scoring against stored signatures via `match_reading()`, and persists `create_predictive_event()`.
-- **API Level**: [`backend/app/api/telemetry.py:scan()`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/api/telemetry.py#L49-L88) emits `predictive_event` if similarity exceeds threshold.
-- **Machine Money Trigger**: [`backend/app/api/machine_money.py:trigger_from_telemetry()`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/api/machine_money.py#L214-L235) bridges the predictive event into autonomous financial settlement.
+- **Worker Level**: [`telemetry/worker.py:TelemetryWorker.run_cycle()`](../telemetry/worker.py#L53-L91) periodically scans equipment, applies similarity scoring against stored signatures via `match_reading()`, and persists `create_predictive_event()`.
+- **API Level**: [`backend/app/api/telemetry.py:scan()`](../backend/app/api/telemetry.py#L49-L88) emits `predictive_event` if similarity exceeds threshold.
+- **Machine Money Trigger**: [`backend/app/api/machine_money.py:trigger_from_telemetry()`](../backend/app/api/machine_money.py#L214-L235) bridges the predictive event into autonomous financial settlement.
 
 ### 3.5 How Telemetry Reaches Judge Mode
 1. Judge Mode UI triggers `POST /api/machine-money/judge/execute`.
-2. Controller invokes [`MachineMoneyService.execute_judge_scenario()`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/services/machine_money/service.py#L638).
+2. Controller invokes [`MachineMoneyService.execute_judge_scenario()`](../backend/app/services/machine_money/service.py#L638).
 3. Stage 1 executes:
    - Sets `stage = ExecutionStage.ANOMALY_DETECTED`.
    - Records elapsed timing ($< 1$ms).

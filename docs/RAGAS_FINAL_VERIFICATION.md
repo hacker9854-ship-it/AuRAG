@@ -27,7 +27,7 @@ This document records the authoritative execution of the retrieval evaluation ga
 
 ## 2. Benchmark Case Breakdown (24 Operational Cases)
 
-Every question in [`agents/ground_truth.json`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/agents/ground_truth.json) was scored end-to-end through the agent supervisor graph against real indexed plant chunks (`data/documents/incident_log.md` and `pump_pm_sop.md`) and the complete industrial knowledge graph with **authentic statistical variance** (no synthetic 1.00 fixtures).
+Every question in [`agents/ground_truth.json`](../agents/ground_truth.json) was scored end-to-end through the agent supervisor graph against real indexed plant chunks (`data/documents/incident_log.md` and `pump_pm_sop.md`) and the complete industrial knowledge graph with **authentic statistical variance** (no synthetic 1.00 fixtures).
 
 | Case ID | Agent | Operational Query | Faithfulness | Context Precision | Answer Relevancy | Status |
 |:---|:---|:---|:---:|:---:|:---:|:---:|

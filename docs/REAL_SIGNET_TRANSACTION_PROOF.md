@@ -17,7 +17,7 @@
 - **Assigned Network:** `signet` (Demo Lightning Node backend)
 
 ### LNbits Wallet Dashboard Evidence
-![LNbits Live Signet Wallet with 250-sat Invoices and Node API Configuration](C:/Users/nisha/.gemini/antigravity-ide/brain/da1ca225-03cd-4816-8908-73d13a387b30/lnbits_signet_wallet_proof.png)
+![LNbits Live Signet Wallet with 250-sat Invoices and Node API Configuration](./lnbits_signet_wallet_proof.png)
 
 ---
 
@@ -71,7 +71,7 @@ When AuRAG attempted to pay this invoice across the live network from a wallet w
 ```
 
 ### AuRAG Operator Console Screenshot
-![AuRAG Real Signet Live Node Status and Fail-Closed Verification](C:/Users/nisha/.gemini/antigravity-ide/brain/da1ca225-03cd-4816-8908-73d13a387b30/real_signet_settlement_proof.png)
+![AuRAG Real Signet Live Node Status and Fail-Closed Verification](./real_signet_settlement_proof.png)
 
 > [!NOTE]
 > This proves the strict integrity of the machine money engine:

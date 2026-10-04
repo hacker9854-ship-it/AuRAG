@@ -3,7 +3,7 @@
 **Project:** AuRAG (Autonomous Retrieval-Augmented Graph)  
 **Target:** Bitshala BOSS Battle 2026 — Machine Money Track  
 **Execution Style:** Phase-gated, test-first, MCP-verified, commit-after-green  
-**Master Execution PRD:** Refer to [AuRAG_FINAL_PRD.md](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/AuRAG_FINAL_PRD.md) for the authoritative live roadmap, phased gates, and completion checklist.  
+**Master Execution PRD:** Refer to [AuRAG_FINAL_PRD.md](./AuRAG_FINAL_PRD.md) for the authoritative live roadmap, phased gates, and completion checklist.  
 **Master Goal:** Transform the AuRAG Machine Money implementation into a 100% judge-defensible, technically airtight, visually self-evident M2M payment system by eliminating all credibility gaps, reconciling documentation, standardizing metrics, and ensuring complete truthfulness between simulation and live Lightning settlement.
 
 ---

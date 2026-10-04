@@ -31,7 +31,7 @@ The NASA IMS test bench consisted of four Rexnord ZA-2115 double-row bearings mo
 ## 3. Subset Used in AuRAG
 
 Rather than duplicating hundreds of gigabytes of raw binary accelerometer dumps into git, AuRAG integrates a lightweight, verified, preprocessed representative progression fixture located at:
-[`telemetry/fixtures/nasa_ims_bearing_sample.json`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/telemetry/fixtures/nasa_ims_bearing_sample.json).
+[`telemetry/fixtures/nasa_ims_bearing_sample.json`](../telemetry/fixtures/nasa_ims_bearing_sample.json).
 
 The representative fixture captures five characteristic phases of the run-to-failure lifecycle from **Test 2 (Bearing 1)**:
 1. `NASA-IMS-T2-REC-001` (0.0h): Nominal baseline ($1.85$ mm/s RMS, $52.4$°C).

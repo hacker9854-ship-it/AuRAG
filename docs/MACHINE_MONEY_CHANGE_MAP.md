@@ -18,15 +18,15 @@
 
 | File Path | Current Role in Baseline | Implemented Changes | Risk Level | Rationale |
 | :--- | :--- | :--- | :--- | :--- |
-| [`backend/app/main.py`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/main.py) | Application entrypoint & router registry | Included `machine_money.router` under `/api` prefix | Low | Mounts Machine Money REST API routes without altering existing middlewares or endpoints. |
-| [`backend/app/db/models.py`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/db/models.py) | SQLAlchemy relational schema definitions | Added `PaymentRecord` model with foreign key link to `WorkOrder` | Low | Adds relational persistence for satoshi transactions, BOLT11 invoices, and preimages. |
-| [`backend/app/core/neo4j.py`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/core/neo4j.py) | Neo4j driver & resilient fallback graph session | Added `Payment` node traversal branch in `FallbackNeo4jSession` | Low | Guarantees offline demo resiliency if remote Neo4j Aura is unreachable. |
-| [`backend/app/services/automations/service.py`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/backend/app/services/automations/service.py) | Plant governance & automation policy engine | Seeded default policy `POL-LIGHTNING-MACHINE-MONEY` (500 sat cap) | Low | Integrates spending controls into existing industrial governance system. |
-| [`frontend/lib/api.ts`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/frontend/lib/api.ts) | Frontend API client & TypeScript interfaces | Added Machine Money interfaces and fetch wrappers | Low | Type-safe client communication for operator workspace. |
-| [`frontend/components/AppShell.tsx`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/frontend/components/AppShell.tsx) | Workspace route title resolver | Added `["/machine-money", "Machine Money"]` mapping | Low | Displays proper breadcrumbs and header titles. |
-| [`frontend/components/AppSidebar.tsx`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/frontend/components/AppSidebar.tsx) | Navigation sidebar | Added `Machine Money` menu item with `ZapIcon` | Low | Gives operator 1-click access to the new workspace. |
-| [`.gitignore`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/.gitignore) | Git exclusion patterns | Added `*.key`, `*.pem`, `*.macaroon` | Zero | Hardens repo against credential leakage. |
-| [`README.md`](file:///c:/Users/nisha/OneDrive/Documents/Downloads/AuRAG/README.md) | Project documentation & value proposition | Updated top-level title, value prop, and lifecycle flow | Zero | Accurately positions Machine Money for Bitshala BOSS Battle. |
+| [`backend/app/main.py`](../backend/app/main.py) | Application entrypoint & router registry | Included `machine_money.router` under `/api` prefix | Low | Mounts Machine Money REST API routes without altering existing middlewares or endpoints. |
+| [`backend/app/db/models.py`](../backend/app/db/models.py) | SQLAlchemy relational schema definitions | Added `PaymentRecord` model with foreign key link to `WorkOrder` | Low | Adds relational persistence for satoshi transactions, BOLT11 invoices, and preimages. |
+| [`backend/app/core/neo4j.py`](../backend/app/core/neo4j.py) | Neo4j driver & resilient fallback graph session | Added `Payment` node traversal branch in `FallbackNeo4jSession` | Low | Guarantees offline demo resiliency if remote Neo4j Aura is unreachable. |
+| [`backend/app/services/automations/service.py`](../backend/app/services/automations/service.py) | Plant governance & automation policy engine | Seeded default policy `POL-LIGHTNING-MACHINE-MONEY` (500 sat cap) | Low | Integrates spending controls into existing industrial governance system. |
+| [`frontend/lib/api.ts`](../frontend/lib/api.ts) | Frontend API client & TypeScript interfaces | Added Machine Money interfaces and fetch wrappers | Low | Type-safe client communication for operator workspace. |
+| [`frontend/components/AppShell.tsx`](../frontend/components/AppShell.tsx) | Workspace route title resolver | Added `["/machine-money", "Machine Money"]` mapping | Low | Displays proper breadcrumbs and header titles. |
+| [`frontend/components/AppSidebar.tsx`](../frontend/components/AppSidebar.tsx) | Navigation sidebar | Added `Machine Money` menu item with `ZapIcon` | Low | Gives operator 1-click access to the new workspace. |
+| [`.gitignore`](../.gitignore) | Git exclusion patterns | Added `*.key`, `*.pem`, `*.macaroon` | Zero | Hardens repo against credential leakage. |
+| [`README.md`](../README.md) | Project documentation & value proposition | Updated top-level title, value prop, and lifecycle flow | Zero | Accurately positions Machine Money for Bitshala BOSS Battle. |
 
 ---
 
