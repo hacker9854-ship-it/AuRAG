@@ -21,7 +21,7 @@
 | **Frontend ESLint Audit** | **0 Errors** (31 warnings) | 49.0s | PASS ✅ |
 | **Zero Secret Leakage Scan** | **350+ files scanned, 0 secrets** | 0.78s | PASS ✅ |
 | **Documentation Link Audit** | **103+ relative links checked, 0 broken** | 0.85s | PASS ✅ |
-| **Provider Mode** | `MOCK / SIMULATION` (with live LNbits fallback) | - | NOMINAL ✅ |
+| **Provider Mode** | 250-sat autonomous settlement flow implemented (demo defaults to mock; live LNbits Signet mode supported with fail-closed enforcement) | - | NOMINAL ✅ |
 | **Deployment Endpoints** | Frontend `http://localhost:3000` / Backend `http://localhost:8000` | - | CONFIGURED ✅ |
 
 ---

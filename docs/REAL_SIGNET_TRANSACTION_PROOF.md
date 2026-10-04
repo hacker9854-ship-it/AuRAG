@@ -1,8 +1,9 @@
-# Real Signet / LNbits Transaction & Settlement Proof
+# Real Signet / LNbits Integration & Fail-Closed Audit Proof
 
 > [!IMPORTANT]
-> **Zero Simulation Crossing / Strict Fail-Closed Execution:**
-> Per the judge integrity rules, when `MACHINE_MONEY_PROVIDER=lnbits`, AuRAG interacts directly with the live Lightning node API (`https://demo.lnbits.com`). It strictly forbids falling back to local preimages if a network payment fails or liquidity is absent.
+> **250-sat autonomous settlement flow implemented:**
+> Demo defaults to mock provider; live LNbits Signet mode is supported and fails closed when settlement cannot be completed.
+> Per judge integrity rules, when `MACHINE_MONEY_PROVIDER=lnbits`, AuRAG interacts directly with the live Lightning node API (`https://demo.lnbits.com`). It strictly forbids falling back to local preimages if a network payment fails or liquidity is absent.
 
 ---
 
@@ -20,7 +21,7 @@
 
 ---
 
-## 2. Real 250-Sat Invoice Executed on LNbits
+## 2. Real 250-Sat Invoice Issuance on LNbits
 
 AuRAG requested a 250-sat Lightning invoice from the LNbits API for industrial bearing maintenance:
 
@@ -40,14 +41,14 @@ AuRAG requested a 250-sat Lightning invoice from the LNbits API for industrial b
 
 ---
 
-## 3. Cryptographic Preimage Verification
+## 3. Invoice Cryptographic Binding (Payment Hash & Invoice Preimage)
 
 LNbits generated and registered the cryptographically binding preimage for this invoice:
 
 | Parameter | Value |
 |---|---|
 | **Payment Hash ($H$)** | `18a86ad31ca2dd3a67ff2a71203bd2e3fedb2fbf93252148fd0214abeab31fc5` |
-| **Settlement Preimage ($R$)** | `4fac299908f35b3589ad84b8cae3df9a68e71ac32cb49d68e150ef1e1c4e8603` |
+| **Invoice Preimage ($R$)** | `4fac299908f35b3589ad84b8cae3df9a68e71ac32cb49d68e150ef1e1c4e8603` |
 | **Mathematical Relation** | $\text{SHA-256}(R) \equiv H$ |
 | **Verification Result** | `hashlib.sha256(bytes.fromhex(preimage)).hexdigest() == payment_hash` $\to$ **`True`** |
 
@@ -76,4 +77,4 @@ When AuRAG attempted to pay this invoice across the live network from a wallet w
 > This proves the strict integrity of the machine money engine:
 > 1. **Zero Fake Settlements:** When liquidity is absent, exactly **0 sats** are settled and status is **`FAILED`**.
 > 2. **Real Network Interaction:** Live BOLT11 invoices, payment hashes, and LNbits wallet records are created via live HTTP calls to `demo.lnbits.com`.
-> 3. **Cryptographic Validation:** Preimages rigorously adhere to SHA-256 BOLT11 standards.
+> 3. **Honest Demarcation:** 250-sat autonomous settlement flow implemented. Demo defaults to mock provider; live LNbits Signet mode is supported and fails closed when settlement cannot be completed.
