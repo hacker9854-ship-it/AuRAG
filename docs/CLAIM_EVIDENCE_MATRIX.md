@@ -34,7 +34,7 @@
 
 Each row in this matrix was independently verified against:
 1. **Source Code:** Inspection of function definitions and docstrings in `backend/app`, `services/`, and `frontend/components`.
-2. **Automated Tests:** Execution via `pytest` (316 tests across full suite / 146 Machine Money & Bitcoin tests) and `vitest` (61 tests across 16 suites).
+2. **Automated Tests:** Execution via `pytest` (317 tests across full suite / 146 Machine Money & Bitcoin tests) and `vitest` (61 tests across 16 suites).
 3. **Documentation:** Regular expression audits of `README.md`, `PRD3.md`, and `AuRAG_FINAL_PRD.md` to ensure prohibited terms are absent.
 
 **Audit Sign-Off:** All 15 core claims comply with Section 0.1 (Truthfulness) rules.

@@ -47,10 +47,17 @@ data/**/*.tmp
 scratch/
 test-results/
 *.zip
-AuRAG-Submission.zip
+# Local video recordings
+*.webm
+*.mp4
+video_output/
+demo_videos/
 
 # Local scratch notes & session logs
 NOTES.md
 *.scratch.*
 scratch/
+dot.md
+video_storyboard_timeline.md
+video_voiceover_script.md
 

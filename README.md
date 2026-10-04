@@ -20,9 +20,9 @@
 </p>
 
 <p align="center">
-  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Pytest-316%2F316%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Pytest 316/316 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Pytest-317%2F317%20Passing-2ea44f?style=for-the-badge&logo=pytest&logoColor=white" alt="Pytest 317/317 Passing"/></a>
   <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Vitest-61%2F61%20Passing-729B1B?style=for-the-badge&logo=vitest&logoColor=white" alt="Vitest 61/61 Passing"/></a>
-  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Automated%20Checks-383%20Passing-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white" alt="Automated Checks 383 Passing"/></a>
+  <a href="./docs/CURRENT_TEST_SNAPSHOT.md"><img src="https://img.shields.io/badge/Automated%20Checks-384%20Passing-2ea44f?style=for-the-badge&logo=githubactions&logoColor=white" alt="Automated Checks 384 Passing"/></a>
   <a href="https://au-rag.vercel.app"><img src="https://img.shields.io/badge/Live%20Demo-au--rag.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo"/></a>
   <a href="https://aurag-production.up.railway.app/docs"><img src="https://img.shields.io/badge/API-Swagger%20Docs-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="API Docs"/></a>
 </p>
@@ -48,7 +48,7 @@
 > - 🌐 **Live Production App**: [au-rag.vercel.app/machine-money](https://au-rag.vercel.app/machine-money)
 > - 🎬 **3–5 Min Judge Demo Script**: [docs/JUDGE_DEMO_SCRIPT.md](./docs/JUDGE_DEMO_SCRIPT.md)
 > - 🔬 **Empirical Dataset Benchmark**: NASA IMS Bearing Run-to-Failure (`REPLAY-ASSET-01`)
-> - 🧪 **Test Evidence**: 100% Passing (383 automated checks passing)
+> - 🧪 **Test Evidence**: 100% Passing (384 automated checks total: 378 unit/integration tests passing + 6 browser E2E checks passing)
 > - 📜 **Full Technical Verification Report**: [docs/MACHINE_MONEY_VERIFICATION.md](./docs/MACHINE_MONEY_VERIFICATION.md)
 
 ---
@@ -267,7 +267,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 | **Payment Rails** | Manual Net-30 invoicing | ❌ None | **✅ Bitcoin Lightning Network (BOLT11 micro-settlement)** |
 | **Audit Trail** | Paper / ERP records | ❌ None | **✅ Cryptographic preimage + GraphRAG evidence chain** |
 | **Policy Enforcement** | Manual manager approval | ❌ None | **✅ Authoritative backend spending caps with auto-escalation** |
-| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 383 Automated Checks Total (377 unit/integration tests passing + 6 browser E2E checks passing)** |
+| **Automated Test Coverage** | Manual testing | Often 0 tests | **✅ 384 Automated Checks Total (378 unit/integration tests passing + 6 browser E2E checks passing)** |
 
 ---
 
@@ -284,7 +284,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🔄 **Deterministic Idempotency Protection** — SHA-256 idempotency cache rejecting duplicate physical anomaly triggers and network retries.
 - 📦 **Payment Proof Drawer & Evidence Pack** — Interactive sliding drawer for inspecting raw JSON, hex preimages, BOLT-11 invoices, GraphRAG failure codes (`FE-001`), and downloadable audit reports.
 - 🖥️ **Industrial Operations Cockpit** — 12 interactive Next.js 16 routes featuring dark mode, responsive layout (1080p → mobile), live execution timeline, and system readiness diagnostics.
-- 🧪 **Comprehensive Test Coverage** — 377 unit/integration tests passing (316 Backend Pytest + 61 Frontend Vitest) + 6 browser E2E checks passing (383 automated checks total) covering E2E lifecycle, NIP-47-inspired NWC simulation, multi-hop routing, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
+- 🧪 **Comprehensive Test Coverage** — 378 unit/integration tests passing (317 Backend Pytest + 61 Frontend Vitest) + 6 browser E2E checks passing (384 automated checks total) covering E2E lifecycle, NIP-47-inspired NWC simulation, multi-hop routing, policy boundaries, failure paths, QR encoding, and cryptographic proof verification.
 
 ---
 
@@ -320,7 +320,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 ![Docker](https://img.shields.io/badge/Docker-Container-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
 **Testing & Verification**  
-![Pytest](https://img.shields.io/badge/Pytest-316%20Tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Pytest-317%20Tests-0A9EDC?style=for-the-badge&logo=pytest&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-61%20Tests-729B1B?style=for-the-badge&logo=vitest&logoColor=white)
 
 </div>
@@ -420,10 +420,10 @@ Judges can reproduce all test suites and verify the architecture in under 60 sec
 git clone https://github.com/hacker9854-ship-it/AuRAG.git
 cd AuRAG
 
-# 2. Run all 316 Backend Tests (Pytest)
+# 2. Run all 317 Backend Tests (Pytest)
 pytest -q
 # Quick collect verification:
-pytest --collect-only -q  # Output: 316 tests collected
+pytest --collect-only -q  # Output: 317 tests collected
 
 # 3. Run all 61 Frontend Tests (Vitest)
 npm --prefix frontend test -- --run
@@ -525,7 +525,7 @@ AuRAG/
 ├── agents/                   # LangGraph Multi-Agent Team (RCA, Compliance, Copilot)
 ├── ingestion/                # Multimodal Ingestion (P&ID Drawings, OCR, PDFs)
 ├── telemetry/                # Synthetic SCADA Ingestion & Anomaly Matching
-├── tests/                    # 316 Automated Backend Tests (Pytest)
+├── tests/                    # 317 Automated Backend Tests (Pytest)
 │   ├── test_e2e_machine_money.py   # Full lifecycle E2E tests
 │   ├── test_machine_money_*.py     # Unit, integration, policy, failure tests
 │   └── ...
@@ -633,11 +633,11 @@ GET /api/v1/machine-money/budget/status
 
 | Test Suite | Scope | Result | Execution Time |
 |:-----------|:------|:------:|:--------------:|
-| **Backend Pytest** | Unit, Integration, E2E, BOLT11, NWC NIP-47 simulation, Policy, Failure-Path, Secret-Scan | **316 / 316 Passed** | ~60s |
+| **Backend Pytest** | Unit, Integration, E2E, BOLT11, NWC NIP-47 simulation, Policy, Failure-Path, Secret-Scan | **317 / 317 Passed** | ~60s |
 | **Frontend Vitest** | QR Decoding, Proof Verification, Judge Mode, Economics, Diagnostics, NWC simulation | **61 / 61 Passed** (16 suites) | ~40s |
-| **Unit & Integration Tests** | Combined backend + frontend suites | **377 unit/integration tests passing** | ~100s |
+| **Unit & Integration Tests** | Combined backend + frontend suites | **378 unit/integration tests passing** | ~100s |
 | **Browser E2E (Playwright)** | Desktop & Pixel 7 Mobile responsive flows | **6 browser E2E checks passing** | 26.5s |
-| **Total Automated Checks** | Full repository test coverage | **383 automated checks total** | ~126s combined |
+| **Total Automated Checks** | Full repository test coverage | **384 automated checks total** | ~126s combined |
 | **Next.js Production Build** | TypeScript strict, 12 routes, Turbopack | **0 Errors** | 11.1s |
 | **ESLint** | Full codebase lint analysis | **0 Errors, 0 Warnings** | ~5s |
 

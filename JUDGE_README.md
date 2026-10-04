@@ -138,10 +138,10 @@ AuRAG enforces a strict, honest line between **public-data replay fixtures** and
 To verify that the entire codebase is genuine, tested, and fully functional:
 
 ```bash
-# 1. Verify Full Backend Pytest Suite (316 tests collected & passing)
+# 1. Verify Full Backend Pytest Suite (317 tests collected & passing)
 pytest -q
 # Quick collect verification:
-pytest --collect-only -q  # Output: 316 tests collected
+pytest --collect-only -q  # Output: 317 tests collected
 
 # 2. Verify Frontend Vitest Suite (61 tests across 16 suites)
 cd frontend
@@ -160,9 +160,9 @@ npm run build
 ```
 
 **Result**: 100% Passing:
-- **377 unit/integration tests passing** (316 Backend Pytest + 61 Frontend Vitest)
+- **378 unit/integration tests passing** (317 Backend Pytest + 61 Frontend Vitest)
 - **6 browser E2E checks passing** (Playwright Desktop & Mobile)
-- **383 automated checks total** (0 Build Errors)
+- **384 automated checks total** (0 Build Errors)
 
 ---
 
