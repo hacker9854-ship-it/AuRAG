@@ -1,7 +1,18 @@
 # AuRAG Acceptance Report
 
+> [!WARNING]
+> **HISTORICAL VERIFICATION SNAPSHOT — NOT THE CURRENT RELEASE STATE**
+>
+> This document is preserved for historical audit purposes only (capturing the early Phase 1 baseline from September 27, 2026).
+> For the current authoritative submission status and verified metrics, consult:
+> - [CURRENT_TEST_SNAPSHOT.md](../CURRENT_TEST_SNAPSHOT.md) — 384 Automated Checks Passing (378 Unit/Integration + 6 Browser E2E)
+> - [RAGAS_FINAL_VERIFICATION.md](../RAGAS_FINAL_VERIFICATION.md) — 24/24 Evaluation Pipeline Verification
+> - [CLAIM_EVIDENCE_MATRIX.md](../CLAIM_EVIDENCE_MATRIX.md) — Grounded Claims & Technical Verification Matrix
+> - [MACHINE_MONEY_VERIFICATION.md](../MACHINE_MONEY_VERIFICATION.md) — Full Machine Money Subsystem Proof & Audit
+> - [JUDGE_DEMO_SCRIPT.md](../JUDGE_DEMO_SCRIPT.md) — Authoritative Step-by-Step Evaluation Walkthrough
+
 **Environment:** local Windows host plus Linux Docker  
-**Date:** September 27, 2026  
+**Historical Snapshot Date:** September 27, 2026  
 **Acceptance image:** `aurag:acceptance`
 
 ## Passed gates

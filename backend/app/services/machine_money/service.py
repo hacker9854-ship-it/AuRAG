@@ -200,7 +200,7 @@ class MachineMoneyService:
 
         # 2. Programmatic Spending Policy Check (Section 10 Governance)
         max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
-        autopay_enabled = os.environ.get("MACHINE_MONEY_AUTO_PAY_ENABLED", "false").lower() == "true"
+        autopay_enabled = os.environ.get("MACHINE_MONEY_AUTO_PAY_ENABLED", "true").lower() == "true"
 
         policy_decision = evaluate_lightning_payment_policy(
             db=db,
@@ -621,7 +621,7 @@ class MachineMoneyService:
         )
 
         max_autopay = int(os.environ.get("MACHINE_MONEY_MAX_AUTOPAY_SATS", "500"))
-        autopay_enabled = os.environ.get("MACHINE_MONEY_AUTO_PAY_ENABLED", "false").lower() == "true"
+        autopay_enabled = os.environ.get("MACHINE_MONEY_AUTO_PAY_ENABLED", "true").lower() == "true"
 
         policy_eval = evaluate_lightning_payment_policy(
             db=db,

@@ -494,7 +494,7 @@ class FallbackNeo4jSession:
 
                 # 1. Entity discovery for pipeline/traversal
                 if "RETURN e.tag_id AS t" in query or "RETURN e.tag_id as t" in query or query.strip() == "MATCH (e:Equipment) RETURN e.tag_id AS t":
-                    tags = ["P-101", "P-102", "MOT-901", "FCV-801", "C-201", "C-202", "V-301", "V-302", "PSV-701", "HX-401", "HX-402", "T-501", "CV-110", "R-601", "TK-101", "REPLAY-ASSET-01"]
+                    tags = ["P-101", "P-101A", "P-102", "MOT-901", "FCV-801", "C-201", "C-202", "V-301", "V-302", "PSV-701", "HX-401", "HX-402", "T-501", "CV-110", "R-601", "TK-101", "REPLAY-ASSET-01"]
                     return [{"t": t, "tag_id": t} for t in tags]
 
                 if "RETURN p.name AS n" in query or "RETURN p.name as n" in query or query.strip() == "MATCH (p:Person) RETURN p.name AS n":

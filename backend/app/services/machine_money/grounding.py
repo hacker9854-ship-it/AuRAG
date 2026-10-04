@@ -216,16 +216,17 @@ def get_grounded_evidence_package(
     )
 
     hits: List[Tuple[str, str, float]] = []
-    try:
-        from retrieval.hybrid import retrieve
+    if session is not None:
+        try:
+            from retrieval.hybrid import retrieve
 
-        hits = retrieve(session, query, top_k=5)
-    except Exception as exc:
-        logger.info(
-            "Hybrid retrieval offline or unavailable (%s); falling back to controlled demo fixture.",
-            exc,
-        )
-        hits = []
+            hits = retrieve(session, query, top_k=5)
+        except Exception as exc:
+            logger.info(
+                "Hybrid retrieval offline or unavailable (%s); falling back to controlled demo fixture.",
+                exc,
+            )
+            hits = []
 
     if hits:
         fe_candidates: List[str] = []

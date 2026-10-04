@@ -57,10 +57,10 @@ When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG tr
 
 ## 5. Verification & Testing Proof
 
-- **383 Automated Checks Total (100% Passing):**
-  - **377 unit/integration tests passing** (316 Backend Pytest + 61 Frontend Vitest).
+- **384 Automated Checks Total (100% Passing):**
+  - **378 unit/integration tests passing** (317 Backend Pytest + 61 Frontend Vitest).
   - **6 browser E2E checks passing** (Playwright Desktop & Pixel 7 Mobile responsive flows).
-  - **383 automated checks total** covering end-to-end integration, failure recovery, and zero regressions.
+  - **384 automated checks total** covering end-to-end integration, failure recovery, and zero regressions.
 - **Zero Secrets Committed:** Tested against `.gitignore` with `*.key`, `*.pem`, `*.macaroon` protection.
 
 ---
@@ -68,8 +68,11 @@ When a plant superintendent asks: *"Why did the machine spend money?"*, AuRAG tr
 ## 6. Project Links & Documentation
 
 - **GitHub Repository:** [https://github.com/hacker9854-ship-it/AuRAG](https://github.com/hacker9854-ship-it/AuRAG)
-- **Official Acceptance Document:** [`docs/MACHINE_MONEY_ACCEPTANCE.md`](./MACHINE_MONEY_ACCEPTANCE.md)
+- **Authoritative Test Snapshot:** [`docs/CURRENT_TEST_SNAPSHOT.md`](./CURRENT_TEST_SNAPSHOT.md)
+- **RAGAS Final Verification:** [`docs/RAGAS_FINAL_VERIFICATION.md`](./RAGAS_FINAL_VERIFICATION.md)
+- **Claim-to-Evidence Matrix:** [`docs/CLAIM_EVIDENCE_MATRIX.md`](./CLAIM_EVIDENCE_MATRIX.md)
+- **Machine Money Verification:** [`docs/MACHINE_MONEY_VERIFICATION.md`](./MACHINE_MONEY_VERIFICATION.md)
+- **Judge Demo Script (0:00–5:00):** [`docs/JUDGE_DEMO_SCRIPT.md`](./JUDGE_DEMO_SCRIPT.md)
 - **3-Minute Video Demo Script & Storyboard:** [`docs/BOSS_MACHINE_MONEY_DEMO.md`](./BOSS_MACHINE_MONEY_DEMO.md)
 - **System Architecture Specification:** [`docs/ARCHITECTURE_MACHINE_MONEY.md`](./ARCHITECTURE_MACHINE_MONEY.md)
-- **End-to-End Verification Report:** [`docs/E2E_VERIFICATION_REPORT.md`](./E2E_VERIFICATION_REPORT.md)
-- **Change Budget & Architecture Map:** [`docs/MACHINE_MONEY_CHANGE_MAP.md`](./MACHINE_MONEY_CHANGE_MAP.md)
+- **Historical PRD & Test Archive:** [`docs/archive/`](./archive/)

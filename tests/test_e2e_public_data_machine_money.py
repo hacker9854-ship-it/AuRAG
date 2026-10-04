@@ -145,7 +145,7 @@ async def test_e2e_full_chain_public_replay_to_proof_package(db_session):
 
     # 5. Stage 4: INVOICE_GENERATED verification
     invoice_evt = next(e for e in execution.events if e.stage == "INVOICE_GENERATED")
-    assert invoice_evt.data["bolt11"].startswith("lnbc") or invoice_evt.data["bolt11"].startswith("lnsb") or invoice_evt.data["bolt11"].startswith("lntb")
+    assert invoice_evt.data["bolt11"].startswith("lnbc") or invoice_evt.data["bolt11"].startswith("lntbs") or invoice_evt.data["bolt11"].startswith("lnsb") or invoice_evt.data["bolt11"].startswith("lntb")
 
     # 6. Stage 5: SETTLEMENT_CONFIRMED verification
     settle_evt = next(e for e in execution.events if e.stage == "SETTLEMENT_CONFIRMED")

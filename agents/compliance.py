@@ -90,7 +90,7 @@ def _select_compliance_context(
     selected_work_order_keys = {
         key
         for key, score in work_order_scores.items()
-        if (best_work_order_score > 0 and score == best_work_order_score) or (best_work_order_score == 0)
+        if best_work_order_score == 0 or score > 0
     }
 
     chunks = [

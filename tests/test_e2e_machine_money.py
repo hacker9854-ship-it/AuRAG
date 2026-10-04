@@ -181,7 +181,7 @@ def test_e2e_07_invoice_and_payment_settlement():
     assert inv_res.status_code == 200
     inv_data = inv_res.json()
     bolt11 = inv_data["invoice"]
-    assert bolt11.startswith("lnbc") or bolt11.startswith("lnsb") or bolt11.startswith("lntb")
+    assert bolt11.startswith("lnbc") or bolt11.startswith("lntbs") or bolt11.startswith("lnsb") or bolt11.startswith("lntb")
     assert inv_data["payment_hash"] is not None
 
     pay_res = client.post(
@@ -631,7 +631,7 @@ def test_e2e_16_qr_payload_exact_bolt11_regression():
     pid = inv_data["payment_id"]
 
     # 1. Invoice format adherence: Starts with Lightning prefix, no whitespace, valid charset
-    assert bolt11.startswith("lnbc") or bolt11.startswith("lnbcrt") or bolt11.startswith("lnsb") or bolt11.startswith("lntb")
+    assert bolt11.startswith("lnbc") or bolt11.startswith("lnbcrt") or bolt11.startswith("lntbs") or bolt11.startswith("lnsb") or bolt11.startswith("lntb")
     assert " " not in bolt11
     assert "\n" not in bolt11
     assert "\t" not in bolt11

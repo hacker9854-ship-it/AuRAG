@@ -51,6 +51,21 @@ def test_bolt11_encode_decode_roundtrip():
     assert dec["payee_pubkey"] == MOCK_NODE_PUBKEY
     assert dec["is_signature_valid"] is True
 
+    # BOLT #11 Signet compliance: signet prefix must be lntbs (BIP 173 tbs)
+    signet_invoice = encode_bolt11(
+        network="signet",
+        amount_sats=amount,
+        payment_hash_hex=payment_hash,
+        description=memo,
+    )
+    assert signet_invoice.startswith("lntbs2500n1")
+    assert is_valid_bolt11(signet_invoice) is True
+    dec_signet = decode_bolt11(signet_invoice)
+    assert dec_signet["network"] == "tbs"
+    assert dec_signet["amount_sats"] == 250
+    assert dec_signet["tags"]["payment_hash"] == payment_hash
+    assert dec_signet["is_signature_valid"] is True
+
 
 def test_bolt11_multipliers_and_amounts():
     """Verify exact satoshi amounts are preserved across various denominations."""

@@ -56,9 +56,9 @@
 | **Machine Money** | `MACHINE_MONEY_ENABLED` | Master switch for Lightning subsystem | System Config | Server-Only | `true` |
 | **Machine Money** | `MACHINE_MONEY_PROVIDER` | Adapter (`mock`, `lnbits`, `cln`) | System Config | Server-Only | `mock` (Zero cost simulation) |
 | **Machine Money** | `MACHINE_MONEY_NETWORK` | Network (`regtest`, `signet`, `mainnet`)| Bitcoin Node / Wallet | Server-Only | `regtest` |
-| **Machine Money** | `MACHINE_MONEY_AUTO_PAY_ENABLED` | Autonomous settlement authorization switch | Plant Policy | Server-Only | `false` |
+| **Machine Money** | `MACHINE_MONEY_AUTO_PAY_ENABLED` | Autonomous settlement authorization switch | Plant Policy | Server-Only | `true` |
 | **Machine Money** | `MACHINE_MONEY_MAX_AUTOPAY_SATS` | Max sats allowed per autonomous payment | Plant Policy | Server-Only | `500` sats |
-| **Machine Money** | `MACHINE_MONEY_AUTO_PAY_THRESHOLD_SATS` | Human-in-the-loop escalation limit | Plant Policy | Server-Only | `100` sats |
+| **Machine Money** | `MACHINE_MONEY_AUTO_PAY_THRESHOLD_SATS` | Human-in-the-loop escalation limit | Plant Policy | Server-Only | `500` sats |
 | **Machine Money** | `MACHINE_MONEY_PROVIDER_ALLOWLIST` | Permitted service provider node IDs | Vendor Registry | Server-Only | Pre-registered catalog |
 | **Machine Money** | `LNBITS_BASE_URL` | LNbits API instance URL | [LNbits.com](https://lnbits.com/) / Self-hosted | Server-Only | `https://legend.lnbits.com` |
 | **Machine Money** | `LNBITS_ADMIN_KEY` | Wallet payment admin key (Secret!) | LNbits Wallet Details | Server-Only | Required for live LNbits |

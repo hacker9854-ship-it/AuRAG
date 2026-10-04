@@ -204,7 +204,9 @@ def encode_bolt11(
         "mainnet": "bc",
         "bitcoin": "bc",
         "testnet": "tb",
-        "signet": "sb",
+        "signet": "tbs",
+        "tbs": "tbs",
+        "sb": "tbs",
     }
     clean_net = network.lower()
     if clean_net.startswith("ln"):
@@ -357,7 +359,7 @@ def decode_bolt11(invoice_str: str) -> Dict[str, Any]:
     body = hrp[2:]
 
     network = None
-    for net in ["bcrt", "bc", "tb", "sb"]:
+    for net in ["bcrt", "tbs", "bc", "tb", "sb"]:
         if body.startswith(net):
             network = net
             amt_str = body[len(net) :]

@@ -15,7 +15,7 @@ export interface Bolt11QRCodeProps {
 
 /**
  * Validates if the invoice payload follows recognized Lightning BOLT11 invoice conventions.
- * Valid prefixes: lnbc (mainnet), lnbcrt (regtest), lntb (testnet), lnsb (signet).
+ * Valid prefixes: lnbc (mainnet), lnbcrt (regtest), lntb (testnet), lntbs (signet).
  */
 export function isRecognizedInvoiceFormat(invoice: string): boolean {
   if (!invoice || typeof invoice !== "string") return false;
@@ -24,6 +24,7 @@ export function isRecognizedInvoiceFormat(invoice: string): boolean {
     trimmed.startsWith("lnbc") ||
     trimmed.startsWith("lnbcrt") ||
     trimmed.startsWith("lntb") ||
+    trimmed.startsWith("lntbs") ||
     trimmed.startsWith("lnsb")
   );
 }

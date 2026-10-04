@@ -35,9 +35,13 @@ AuRAG requested a 250-sat Lightning invoice from the LNbits API for industrial b
   "amount_msat": 250000,
   "memo": "AuRAG Real Signet 250-sat test",
   "payment_hash": "18a86ad31ca2dd3a67ff2a71203bd2e3fedb2fbf93252148fd0214abeab31fc5",
-  "bolt11": "lnbc2500n1p4vrmx9pp5rz5x45cu5twn5ell9fcjqw7ju0ldktaljvjjzj8aqg22h64nrlzscqzyssp50j7rfcmujnt53535djtnvq39pfghxzp98thgpeyuptrpu5f5845q9q7sqqqqqqqqqqqqqqqqqqqsqqqqqysgqdpsg964ys28ypfx2ctvypfkjemwv46zqv34xqkhxct5yp6x2um5mqz9gxqrrssrzjqwryaup9lh50kkranzgcdnn2fgvx390wgj5jd07rwr3vxeje0glclll4ttz7sp6kpvqqqqlgqqqqqeqqjqey04rc3lpdk9ndv7srgpdgvq3catlfuwmtkhdw6qukkhj0tsuk3r74nlk4vh2cummyxe7vgzh5jp0zzxl9mqp7ezye8wj7fautqw7aspwec609"
+  "bolt11": "lntbs2500n1p4vyekkpp5rz5x45cu5twn5ell9fcjqw7ju0ldktaljvjjzj8aqg22h64nrlzssp5xv420jyg55tfezujzez0n79fzwammexrvt796cphr7kjdat49qhsdpsg964ys28ypfx2ctvypfkjemwv46zqv34xqkhxct5yp6x2um5xqrrsscqpjgkv86xe7f8q539tu869h3zp9g6lrcnz9l8dhhqpfmxqs37k363k57329csczdcs82td2kgfl9mf53lpqtnr5kjfwd0art3k69yav6fqqywav98"
 }
 ```
+
+> [!NOTE]
+> **BOLT #11 Signet Prefix Specification (`lntbs`):**  
+> In accordance with [Lightning Network BOLT #11 (Payment Encoding)](https://github.com/lightning/bolts/blob/master/11-payment-encoding.md), Bitcoin Signet invoices use the `lntbs` prefix (BIP-173 `tbs`), distinguishing them from Mainnet (`lnbc`), Regtest (`lnbcrt`), and Testnet (`lntb`). AuRAG's internal BOLT11 encoder and decoder strictly enforce this specification.
 
 ---
 

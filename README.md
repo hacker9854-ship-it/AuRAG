@@ -663,20 +663,18 @@ Per PRD3 Task 6.3 (Audit 21.18), the matrix below maps every technical and archi
 | Document | Description |
 |:---------|:------------|
 | [**ARCHITECTURE.md**](./ARCHITECTURE.md) | Canonical system architecture, component diagrams, and Architecture Decision Records (ADRs) |
-| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 377 unit/integration tests passing, 6 browser E2E checks passing (383 automated checks total), build status |
+| [**CURRENT_TEST_SNAPSHOT.md**](./docs/CURRENT_TEST_SNAPSHOT.md) | Authoritative canonical verification snapshot: 378 unit/integration tests passing, 6 browser E2E checks passing (384 automated checks total), build status |
+| [**RAGAS_FINAL_VERIFICATION.md**](./docs/RAGAS_FINAL_VERIFICATION.md) | Authoritative RAGAS retrieval quality gate verification across 24 operational benchmark test queries |
 | [**CLAIM_EVIDENCE_MATRIX.md**](./docs/CLAIM_EVIDENCE_MATRIX.md) | Master claim-to-evidence verification matrix auditing 13 technical claims with allowed wording |
 | [**JUDGE_DEMO_SCRIPT.md**](./docs/JUDGE_DEMO_SCRIPT.md) | Precise 0:00–5:00 minute-by-minute judge demo script with talking points and screen actions |
 | [**MACHINE_MONEY_VERIFICATION.md**](./docs/MACHINE_MONEY_VERIFICATION.md) | Phase-by-phase verification report with Section 14 compliance scorecard |
 | [**CHANGELOG_MACHINE_MONEY.md**](./docs/CHANGELOG_MACHINE_MONEY.md) | Complete implementation changelog covering Phases 0–11 with commit hashes |
 | [**HACKATHON_ELIGIBILITY.md**](./docs/HACKATHON_ELIGIBILITY.md) | Provenance audit, event rules review, and eligibility sign-off |
-| [**Historical PRD Archive**](./docs/archive/README.md) | Archived development specifications (PRD 1–4, AuRAG_FINAL_PRD) preserved for auditability & provenance |
-| [**E2E_VERIFICATION_REPORT.md**](./docs/E2E_VERIFICATION_REPORT.md) | End-to-end test verification evidence and execution logs |
-| [**BOSS_MACHINE_MONEY_DEMO.md**](./docs/BOSS_MACHINE_MONEY_DEMO.md) | 3-minute video walkthrough storyboard and recording guide |
-| [**RAGAS_FINAL_VERIFICATION.md**](./docs/RAGAS_FINAL_VERIFICATION.md) | Authoritative RAGAS retrieval quality gate verification across 24 operational benchmark test queries |
 | [**PUBLIC_DATASET_PROVENANCE.md**](./docs/PUBLIC_DATASET_PROVENANCE.md) | NASA IMS Bearing Run-to-Failure dataset replay architecture and provenance audit |
 | [**VENDOR_FEDERATION.md**](./docs/VENDOR_FEDERATION.md) | 3 pre-approved synthetic vendor HTTP webhook microservices & RFQ dispatch specification |
 | [**TELEMETRY_PROVENANCE_AUDIT.md**](./docs/TELEMETRY_PROVENANCE_AUDIT.md) | Telemetry pipeline provenance audit distinguishing synthetic, public replay, and SCADA |
-| [**MACHINE_MONEY_ACCEPTANCE.md**](./docs/MACHINE_MONEY_ACCEPTANCE.md) | Official acceptance report with cryptographic proofs |
+| [**BOSS_MACHINE_MONEY_DEMO.md**](./docs/BOSS_MACHINE_MONEY_DEMO.md) | 3-minute video walkthrough storyboard and recording guide |
+| [**Historical Verification & PRD Archive**](./docs/archive/) | Archived early test snapshots (ACCEPTANCE_REPORT, E2E_VERIFICATION, etc.) preserved for historical audit |
 
 ---
 

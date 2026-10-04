@@ -1,10 +1,21 @@
 # AuRAG × Machine Money: Official Acceptance Document
 
+> [!WARNING]
+> **HISTORICAL VERIFICATION SNAPSHOT — NOT THE CURRENT RELEASE STATE**
+>
+> This document is preserved for historical audit purposes only.
+> For the current authoritative submission status and verified metrics, consult:
+> - [CURRENT_TEST_SNAPSHOT.md](../CURRENT_TEST_SNAPSHOT.md) — 384 Automated Checks Passing (378 Unit/Integration + 6 Browser E2E)
+> - [RAGAS_FINAL_VERIFICATION.md](../RAGAS_FINAL_VERIFICATION.md) — 24/24 Evaluation Pipeline Verification
+> - [CLAIM_EVIDENCE_MATRIX.md](../CLAIM_EVIDENCE_MATRIX.md) — Grounded Claims & Technical Verification Matrix
+> - [MACHINE_MONEY_VERIFICATION.md](../MACHINE_MONEY_VERIFICATION.md) — Full Machine Money Subsystem Proof & Audit
+> - [JUDGE_DEMO_SCRIPT.md](../JUDGE_DEMO_SCRIPT.md) — Authoritative Step-by-Step Evaluation Walkthrough
+
 **Document ID:** `DOC-ACCEPTANCE-BOSS-2026`  
 **Track:** Machine Money ($1,000 Prize) — Bitshala BOSS Battle 2026 (Devfolio)  
 **Author:** Niss (@hacker9854-ship-it) <mr.hacker9854@gmail.com>  
 **Repository:** [https://github.com/hacker9854-ship-it/AuRAG](https://github.com/hacker9854-ship-it/AuRAG)  
-**System Status:** **ACCEPTED & VERIFIED (All 34 Unit & E2E Integration Tests Passing)**
+**Historical Snapshot Status:** Preserved historical snapshot (34 legacy tests)
 
 ---
 

@@ -111,6 +111,7 @@ describe("BOLT11 QR Standards Compliance & Optical Decoding (FR-01 / Task 1.1)",
     expect(isRecognizedInvoiceFormat("lnbc2500u1...")).toBe(true);
     expect(isRecognizedInvoiceFormat("lnbcrt50u1...")).toBe(true);
     expect(isRecognizedInvoiceFormat("lntb1000u1...")).toBe(true);
+    expect(isRecognizedInvoiceFormat("lntbs250u1...")).toBe(true);
     expect(isRecognizedInvoiceFormat("lnsb250u1...")).toBe(true);
     expect(isRecognizedInvoiceFormat("  LNBCRT250U1... ")).toBe(true); // case-insensitive + trim
   });
