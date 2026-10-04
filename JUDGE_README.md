@@ -56,7 +56,7 @@
 Three punchy, indisputable proofs appear immediately:
 1. **🚨 Sensor Anomaly (NASA IMS-derived public-data replay fixture)**: Representative preprocessed replay derived from NASA IMS Bearing vibration excursion (**5.42 mm/s > 4.5 mm/s** ISO 10816 Zone C alarm) based on open science accelerometry (Rexnord ZA-2115, REC-042).
 2. **⚡ 250-Sat Autonomous Settlement Flow Implemented**: 250-sat autonomous settlement flow executed under our autonomous spending policy cap. Demo defaults to mock provider; live LNbits Signet mode is supported and fails closed when settlement cannot be completed (e.g. unfunded test wallet). The UI dynamically displays `MOCK / SIMULATION` or `LIVE LIGHTNING` based on the active `MACHINE_MONEY_PROVIDER` setting.
-3. **🔐 Cryptographic Preimage on Screen**: In mock evaluation mode, a 32-byte SHA-256 settlement preimage (`eaa9f3...`) is displayed on screen with a 1-click clipboard copy button and verified proof against the invoice payment hash (`sha256(preimage) == payment_hash`).
+3. **🔐 Cryptographic Preimage on Screen**: In mock evaluation mode, a cryptographic 32-byte SHA-256 settlement preimage (dynamically generated per-invoice; e.g. `eaa9f3...` in verification records) is displayed on screen with a 1-click clipboard copy button and verified mathematical proof against the invoice payment hash (`sha256(preimage) == payment_hash`).
 
 *(Optional: For technical judges wanting to inspect the deep GraphRAG reasoning, Neo4j Cypher queries, multi-vendor RFQ scoring, and Sphinx onion routing, inspect the **"Technical Audit & 6-Stage GraphRAG Pipeline"** section directly below the WOW card).*
 

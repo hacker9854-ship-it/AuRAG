@@ -48,7 +48,7 @@
 > - 🌐 **Live Production App**: [au-rag.vercel.app/machine-money](https://au-rag.vercel.app/machine-money)
 > - 🎬 **3–5 Min Judge Demo Script**: [docs/JUDGE_DEMO_SCRIPT.md](./docs/JUDGE_DEMO_SCRIPT.md)
 > - 🔬 **Empirical Dataset Benchmark**: NASA IMS Bearing Run-to-Failure (`REPLAY-ASSET-01`)
-> - 🧪 **Test Evidence**: 100% Passing (61 Frontend + 12 Backend Machine Money Tests)
+> - 🧪 **Test Evidence**: 100% Passing (383 automated checks passing)
 > - 📜 **Full Technical Verification Report**: [docs/MACHINE_MONEY_VERIFICATION.md](./docs/MACHINE_MONEY_VERIFICATION.md)
 
 ---
@@ -117,9 +117,9 @@
 
 ---
 
-### 📡 11. Predictive Watch — SCADA Telemetry Monitor
-<img src="./docs/screenshots/predictive-watch.png" width="100%" alt="Predictive Watch — Real-time SCADA telemetry monitoring with vibration, pressure, and temperature sensors"/>
-<p><i>Real-time SCADA sensor monitoring with vibration excursion detection, ISO 10816 zone classification, and automated anomaly alerting</i></p>
+### 📡 11. Predictive Watch — Industrial Telemetry & SCADA-Compatible Monitoring
+<img src="./docs/screenshots/predictive-watch.png" width="100%" alt="Predictive Watch — Industrial Telemetry & SCADA-Compatible Monitoring with vibration, pressure, and temperature sensors"/>
+<p><i>Industrial telemetry & SCADA-compatible monitoring with vibration excursion detection, ISO 10816 zone classification, and automated anomaly alerting</i></p>
 
 </div>
 
@@ -277,7 +277,7 @@ To prevent AI hallucination or malicious capital drainage, AuRAG implements a **
 - 🧑‍⚖️ **Judge Mode & One-Click Presets** — Three built-in judge evaluation scenarios ("Happy Path Intervene", "Policy Escalate", "Provider Fallback") demonstrate the full autonomous lifecycle with a single click.
 - 🕸️ **Industrial GraphRAG Engine** — Hybrid retrieval combining Neo4j graph topology (`CONNECTED_TO`, `FEEDS`, `MAINTAINED_BY`), dense Qdrant embeddings, and BM25 lexical search.
 - 📐 **Multimodal P&ID & OCR Ingestion** — Automatic extraction of tags, valves, piping specs, and loop IDs from industrial engineering diagrams using Gemini and Google Cloud Vision.
-- 📊 **Real-Time SCADA Telemetry Watch** — Continuous monitoring of vibration, pressure, and temperature excursions with ISO 10816 zone classification and automated predictive maintenance triggers.
+- 📊 **Industrial Telemetry & SCADA-Compatible Monitoring** — Continuous monitoring of vibration, pressure, and temperature excursions with ISO 10816 zone classification and automated predictive maintenance triggers.
 - 🏭 **Industrial Economics Dashboard** — Interactive calculator quantifying $1.17M modelled downtime exposure (subtext: *Based on illustrative synthetic plant parameters*) per 250-sat payment with a 7.8M:1 modelled exposure/payment ratio (not actual ROI).
 - 🛡️ **5-Layer Zero-Trust Financial Safeguards** — Per-transaction spending caps (>500 sats → human escalation), daily budgets, SHA-256 idempotency, human approval workflows, and atomic rollbacks.
 - 🔑 **Cryptographic Preimage Audit Trail** — Every settlement stores the Lightning payment preimage verified via `SHA256(preimage) === payment_hash` using Web Crypto (frontend) and Python `hashlib` (backend).

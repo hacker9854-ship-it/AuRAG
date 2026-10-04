@@ -9,7 +9,7 @@ This document records the authoritative execution of the retrieval evaluation ga
 | Parameter | Value | Status |
 |:---|:---|:---:|
 | **Evaluation Timestamp** | `2026-10-04 17:30:00 IST` (`12:00:00 UTC`) | Verified |
-| **Retrieval Architecture** | Hybrid Qdrant Cloud Vector + Okapi BM25 + Standalone Knowledge Graph | Real Production |
+| **Retrieval Architecture** | Production-capable hybrid retrieval stack (Qdrant Cloud Vector + Okapi BM25 + Standalone Knowledge Graph) | Verified |
 | **Embeddings Model** | `fastembed` (`sentence-transformers/all-MiniLM-L6-v2` ONNX) | Verified Local |
 | **Re-ranking Engine** | Cohere `rerank-v4.0-pro` | Live Cloud |
 | **Judge Engine** | Multi-Model Resilient Evaluator (`gemini-3.8-flash` / Groq OSS) | Active |
@@ -27,7 +27,7 @@ This document records the authoritative execution of the retrieval evaluation ga
 
 ## 2. Benchmark Case Breakdown (24 Operational Cases)
 
-Every question in [`agents/ground_truth.json`](../agents/ground_truth.json) was scored end-to-end through the agent supervisor graph against real indexed plant chunks (`data/documents/incident_log.md` and `pump_pm_sop.md`) and the complete industrial knowledge graph with **authentic statistical variance** (no synthetic 1.00 fixtures).
+Every question in [`agents/ground_truth.json`](../agents/ground_truth.json) was scored end-to-end through the agent supervisor graph against the benchmark corpus: synthetic/self-authored operational corpus (`data/documents/incident_log.md` and `pump_pm_sop.md`) and the complete industrial knowledge graph with **authentic statistical variance** (no synthetic 1.00 fixtures).
 
 | Case ID | Agent | Operational Query | Faithfulness | Context Precision | Answer Relevancy | Status |
 |:---|:---|:---|:---:|:---:|:---:|:---:|
