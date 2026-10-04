@@ -146,7 +146,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
             Empirical Anomaly Detection &amp; Autonomous Lightning Settlement
           </h2>
           <p className="text-xs text-muted-foreground max-w-2xl mt-1">
-            <span className="font-semibold text-cyan-500">Primary Hero Benchmark:</span> Real empirical vibration telemetry from the <strong className="text-foreground">NASA IMS Bearing Run-to-Failure dataset</strong> (Rexnord ZA-2115, 20 kHz PCB accelerometer) triggers an autonomous GraphRAG evidence check and instant Lightning micro-settlement.
+            <span className="font-semibold text-cyan-500">Primary Hero Benchmark:</span> NASA IMS-derived public-data replay fixture (<strong className="text-foreground">representative preprocessed replay derived from NASA IMS</strong> Bearing Run-to-Failure dataset, Rexnord ZA-2115, 20 kHz PCB accelerometer) triggers an autonomous GraphRAG evidence check and 250-sat autonomous settlement flow.
           </p>
         </div>
 
@@ -541,7 +541,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
                 Empirical Benchmark: NASA IMS Bearing Run-to-Failure Dataset
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40">
-                Real Open Science Data
+                NASA IMS Replay Fixture
               </span>
             </div>
             <span className="text-[11px] text-muted-foreground font-mono">
@@ -550,7 +550,7 @@ export function JudgeMode({ onExecutionComplete, className = "" }: JudgeModeProp
           </div>
 
           <p className="text-xs text-muted-foreground leading-relaxed">
-            AuRAG evaluates real empirical vibration data from Rexnord ZA-2115 double-row bearings running continuously at 2,000 RPM under 6,000 lbs radial load (sampled at 20 kHz by PCB 353B33 accelerometers) rather than fictional synthetic sensor values.
+            AuRAG evaluates a representative preprocessed replay derived from NASA IMS (Rexnord ZA-2115 double-row bearings running continuously at 2,000 RPM under 6,000 lbs radial load, sampled at 20 kHz by PCB 353B33 accelerometers) providing a realistic physical anomaly baseline.
           </p>
 
           {/* 5-Stage Progression Breakdown */}
