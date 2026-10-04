@@ -11,9 +11,10 @@
 **AuRAG is an Autonomous Industrial Machine Money Protocol.**
 
 * **The Problem**: When a refinery or manufacturing plant bearing degrades, traditional procurement takes **hours or days** of human bureaucracy. Unplanned downtime costs industry **$22,000 per minute**.
-* **The Solution**: We give the industrial machine its **own sovereign Bitcoin Lightning wallet** (BOLT-11 via LNbits).
-* **The "Why GraphRAG?" Breakthrough**: An autonomous machine holding private keys **cannot make blind payments**. GraphRAG is NOT a search box — it is the machine's *deterministic evidence & justification layer* (validating ISO 10816 standards, warranty contracts, and SOPs) before releasing satoshis.
-* **The Result**: Sensor Anomaly Detected ➔ Graph-Proven Repair Justification ➔ Autonomous Vendor RFQ ➔ 250-sat autonomous settlement flow executed under spending policy caps.
+* **The "Why Bitcoin?" Necessity**: Traditional banking rails require a human legal identity and KYC — an industrial slurry pump cannot hold a corporate bank account or Visa card. Furthermore, credit card fixed interchange fees ($0.30 + 2.9%) make sub-dollar micro-transactions mathematically impossible. **Bitcoin Lightning is the only sovereign, permissionless, sub-cent settlement rail on Earth that an autonomous machine can operate natively via cryptographic keys.**
+* **The 250-Sat M2M Economic Reality**: 250 satoshis ($0.15) does **NOT** hire a human mechanic ($1,500+). It is an **Autonomous Machine-to-Machine (M2M) Micro-Diagnostic Compute Fee** — paying an external edge AI node to run high-resolution 20 kHz wavelet FFT analysis and reserve a guaranteed 4-hour emergency vendor SLA window.
+* **The "Why GraphRAG?" Golden Defense**: *A SCADA sensor threshold detects physical symptoms; GraphRAG justifies financial expenditures.* A simple vibration alarm cannot verify whether an asset is under active OEM warranty (where third-party work voids coverage), what parts were installed in previous work order `WO-1002`, or what plant SOP `PROC-001` mandates. GraphRAG provides the contractual, historical, and regulatory justification layer before a single satoshi is released.
+* **The Result**: Sensor Anomaly Detected (NASA IMS 5.42 mm/s) ➔ Graph-Proven Expenditure Justification ➔ Autonomous Multi-Vendor RFQ ➔ 250-sat Diagnostic SLA Settled instantly under a zero-trust 500-sat policy cap.
 
 ```
 [NASA IMS Sensor Stream (20 kHz)]
@@ -139,13 +140,19 @@ To verify that the entire codebase is genuine, tested, and fully functional:
 
 ```bash
 # 1. Verify Full Backend Pytest Suite (317 tests collected & passing)
+# (Using repo virtualenv directly or active shell):
 pytest -q
+# Or direct executable path:
+# Windows: .\.venv\Scripts\pytest.exe -q
+# Linux/Mac: ./.venv/bin/pytest -q
+
 # Quick collect verification:
 pytest --collect-only -q  # Output: 317 tests collected
 
 # 2. Verify Frontend Vitest Suite (61 tests across 16 suites)
 cd frontend
 npm test -- --run
+cd ..
 
 # 3. Verify Core Machine Money, Public Data & Bitcoin Suites (30 tests)
 pytest tests/test_e2e_public_data_machine_money.py tests/test_e2e_machine_money.py tests/test_nwc_nip47.py -v
