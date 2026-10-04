@@ -64,7 +64,7 @@ def quote(req: RFQQuoteRequest):
         network="bcrt",
         amount_sats=amount_sats,
         payment_hash_hex=payment_hash,
-        description=f"[DEMO VENDOR NODE] {VENDOR_NAME} Comprehensive Rotary Dynamics & Overhaul",
+        description=f"[DEMO VENDOR NODE] {VENDOR_NAME} Multi-Sensor Cross-Coherence & Standby SLA",
     )
 
     return {
@@ -73,12 +73,12 @@ def quote(req: RFQQuoteRequest):
         "vendor_name": VENDOR_NAME,
         "node_pubkey": NODE_PUBKEY,
         "service_id": req.service_id,
-        "service_name": "Comprehensive Rotary Dynamics & Bearing Overhaul",
+        "service_name": "Multi-Sensor Cross-Coherence & Guaranteed Standby SLA",
         "amount_sats": amount_sats,
         "sla_hours": 2.5,
         "reliability_score": 0.975,
         "reputation_tier": "A",
-        "parts_included": ["Complete Bearing Assembly", "Synthetic Lubricant Pack"],
+        "parts_included": ["Cross-Spectral Coherence Model", "FEA Stress Wave Reconstruction", "30-Minute Standby Dispatch Window Lock"],
         "bolt11": bolt11,
         "payment_hash": payment_hash,
         "vendor_node_type": "DEMO VENDOR NODE",

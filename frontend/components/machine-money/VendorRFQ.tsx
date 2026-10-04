@@ -271,9 +271,14 @@ export function VendorRFQ({
                   <div className="p-2.5 rounded-xl bg-background/80 border border-border/50 space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] text-muted-foreground uppercase">Quote:</span>
-                      <span className="font-mono text-sm font-bold text-amber-500">
-                        {c.amount_sats} sats
-                      </span>
+                      <div className="text-right">
+                        <span className="font-mono text-sm font-bold text-amber-500">
+                          {c.amount_sats} sats
+                        </span>
+                        <span className="text-[9px] text-muted-foreground block font-mono">
+                          (M2M Compute SLA)
+                        </span>
+                      </div>
                     </div>
                     <div className="flex items-center justify-between text-[11px]">
                       <span className="text-muted-foreground">Dispatch SLA:</span>
@@ -304,11 +309,11 @@ export function VendorRFQ({
                     )}
                   </div>
 
-                  {/* Parts Included */}
+                  {/* Deliverables & SLA Scope */}
                   {c.parts_included && c.parts_included.length > 0 && (
                     <div className="space-y-1">
                       <span className="text-[9px] uppercase tracking-wider text-muted-foreground block">
-                        Included Materials:
+                        Diagnostic Scope &amp; SLA:
                       </span>
                       <div className="flex flex-wrap gap-1">
                         {c.parts_included.map((part, i) => (

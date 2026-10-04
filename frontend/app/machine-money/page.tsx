@@ -903,7 +903,7 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
                 </span>
                 <p className="text-xs leading-relaxed text-muted-foreground">
                   {trail?.explanation ||
-                    "This payment represents an autonomous M2M maintenance settlement. High-confidence vibration anomaly (5.8 mm/s on Slurry Pump P-101A) matched failure signature FE-001 in AuRAG's operational ontology, automatically generating Work Order WO-2026-P101. The transaction was verified against spending policy POL-LIGHTNING-MACHINE-MONEY (250 sats <= 500 sat cap) and settled instantaneously over the Lightning Network."}
+                    "This payment represents an autonomous M2M diagnostic compute fee & emergency 4-hr SLA reservation. High-confidence vibration anomaly (5.42 mm/s on Slurry Pump P-101A) matched failure signature FE-001 in AuRAG's operational ontology, automatically generating Work Order WO-2026-P101. The transaction was verified against spending policy POL-LIGHTNING-MACHINE-MONEY (250 sats <= 500 sat cap) and settled instantaneously over the Lightning Network."}
                 </p>
               </div>
 
@@ -967,19 +967,19 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
         <EvidenceSummaryCard
           equipmentId={equipmentTag}
           anomalyTitle="Radial Bearing Vibration Excursion"
-          vibrationValue="5.8 mm/s (Threshold: 4.5 mm/s)"
+          vibrationValue="5.42 mm/s (Threshold: 4.5 mm/s ISO Zone C)"
           confidence={confidence / 100}
           failureSignatureId={executionResult?.evidence_package?.matched_failure_event || "FE-001"}
           governingProcedure={executionResult?.evidence_package?.governing_procedure || "PROC-001"}
           relatedWorkOrder={executionResult?.evidence_package?.related_work_order || "WO-1002"}
           workOrderId={workOrderId}
-          serviceName="Precision Bearing Inspection & Laser Alignment"
+          serviceName="Edge AI 20 kHz Wavelet FFT & Diagnostic SLA Reservation"
           costSats={executionResult?.amount_sats || 250}
           policyCap={500}
           policyStatus={executionResult?.status === "PAID" || executionResult?.status === "SETTLED" ? "AUTHORIZED" : "PENDING_APPROVAL"}
           crossLayerJustification={
             executionResult?.evidence_package?.cross_layer_justification ||
-            "Predictive excursion on (P-101A) strongly correlates with historical failure signature (FE-001), triggering intervention Work Order (WO-1002) adhering to procedure (PROC-001). Spending 250 sats averts an estimated 4.5 hours of unbudgeted plant downtime."
+            "Predictive excursion on (P-101A) strongly correlates with historical failure signature (FE-001), triggering intervention Work Order (WO-1002) adhering to procedure (PROC-001). Deploying 250 sats for external edge AI FFT diagnosis & 4-hr SLA averts an estimated 4.5 hours of unbudgeted plant downtime ($1,170,000 exposure avoided)."
           }
           className="lg:col-span-2"
           onOpenGraphTrail={() => {

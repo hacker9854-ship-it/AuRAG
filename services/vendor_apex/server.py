@@ -64,7 +64,7 @@ def quote(req: RFQQuoteRequest):
         network="bcrt",
         amount_sats=amount_sats,
         payment_hash_hex=payment_hash,
-        description=f"[DEMO VENDOR NODE] {VENDOR_NAME} Precision Bearing Inspection",
+        description=f"[DEMO VENDOR NODE] {VENDOR_NAME} Edge AI 20 kHz Wavelet FFT Diagnostic",
     )
 
     return {
@@ -73,12 +73,12 @@ def quote(req: RFQQuoteRequest):
         "vendor_name": VENDOR_NAME,
         "node_pubkey": NODE_PUBKEY,
         "service_id": req.service_id,
-        "service_name": "Precision Bearing Inspection & Laser Alignment",
+        "service_name": "Edge AI 20 kHz Wavelet FFT & Diagnostic SLA Reservation",
         "amount_sats": amount_sats,
         "sla_hours": 1.2,
         "reliability_score": 0.994,
         "reputation_tier": "AAA",
-        "parts_included": ["Laser Coupling Targets", "Acoustic Sensor Pods", "Mobil SHC 100"],
+        "parts_included": ["20 kHz Wavelet FFT Spectrum", "Envelope Demodulation Analysis", "4-Hour Emergency Dispatch Window Lock"],
         "bolt11": bolt11,
         "payment_hash": payment_hash,
         "vendor_node_type": "DEMO VENDOR NODE",

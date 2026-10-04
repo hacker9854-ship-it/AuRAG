@@ -64,7 +64,7 @@ def quote(req: RFQQuoteRequest):
         network="bcrt",
         amount_sats=amount_sats,
         payment_hash_hex=payment_hash,
-        description=f"[DEMO VENDOR NODE] {VENDOR_NAME} Ultrasound Diagnostic Analysis",
+        description=f"[DEMO VENDOR NODE] {VENDOR_NAME} Express Ultrasound Feature Extraction",
     )
 
     return {
@@ -73,12 +73,12 @@ def quote(req: RFQQuoteRequest):
         "vendor_name": VENDOR_NAME,
         "node_pubkey": NODE_PUBKEY,
         "service_id": req.service_id,
-        "service_name": "Express Ultrasound Diagnostic & Vibration Analysis",
+        "service_name": "Express Ultrasound Feature Extraction & Rapid SLA",
         "amount_sats": amount_sats,
         "sla_hours": 0.8,
         "reliability_score": 0.989,
         "reputation_tier": "AA+",
-        "parts_included": ["Ultrasound Sensor Probe", "Sensor Coupling Gel"],
+        "parts_included": ["Resonant Bandpass Kurtosis Map", "Acoustic Feature Extraction", "1-Hour Critical Dispatch Window Lock"],
         "bolt11": bolt11,
         "payment_hash": payment_hash,
         "vendor_node_type": "DEMO VENDOR NODE",
