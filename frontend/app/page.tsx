@@ -150,7 +150,7 @@ export default function CommandCenterPage() {
                 nativeButton={false}
                 render={<Link href="/investigate" />}
               >
-                Inspect GraphRAG Justification Engine
+                Inspect GraphRAG Evidence Layer
                 <ArrowRightIcon data-icon="inline-end" />
               </Button>
             </div>
@@ -164,7 +164,7 @@ export default function CommandCenterPage() {
               </div>
               <p className="mt-3 font-heading text-lg font-medium leading-7 text-foreground">
                 Autonomous agents cannot make blind payments. GraphRAG is not a search box — it is the machine&apos;s
-                deterministic cryptographic justification engine before releasing satoshis.
+                deterministic evidence & justification layer before releasing satoshis.
               </p>
             </div>
 

@@ -12,7 +12,7 @@
 
 * **The Problem**: When a refinery or manufacturing plant bearing degrades, traditional procurement takes **hours or days** of human bureaucracy. Unplanned downtime costs industry **$22,000 per minute**.
 * **The Solution**: We give the industrial machine its **own sovereign Bitcoin Lightning wallet** (BOLT-11 via LNbits).
-* **The "Why GraphRAG?" Breakthrough**: An autonomous machine holding private keys **cannot make blind payments**. GraphRAG is NOT a search box — it is the machine's *deterministic cryptographic justification engine* (validating ISO 10816 standards, warranty contracts, and SOPs) before releasing satoshis.
+* **The "Why GraphRAG?" Breakthrough**: An autonomous machine holding private keys **cannot make blind payments**. GraphRAG is NOT a search box — it is the machine's *deterministic evidence & justification layer* (validating ISO 10816 standards, warranty contracts, and SOPs) before releasing satoshis.
 * **The Result**: Sensor Anomaly Detected ➔ Graph-Proven Repair Justification ➔ Autonomous Vendor RFQ ➔ 250-sat autonomous settlement flow executed under spending policy caps.
 
 ```

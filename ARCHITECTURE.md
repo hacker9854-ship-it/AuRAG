@@ -11,7 +11,7 @@
 
 AuRAG is an autonomous cyber-physical machine money protocol designed for industrial operations (refineries, chemical processing, automated manufacturing plants). It addresses a multi-billion dollar industrial inefficiency: **unplanned asset downtime costs $22,000 per minute**, yet maintenance procurement and diagnostic dispatch historically require hours or days of human bureaucratic approval.
 
-AuRAG transforms physical plant machinery into **sovereign economic actors** equipped with their own Bitcoin Lightning Network wallets (BOLT-11 via LNbits). An experimental NIP-47-inspired Nostr Wallet Connect simulation is included as a stretch goal. Crucially, an autonomous asset cannot make blind disbursements. AuRAG integrates a hybrid **Industrial GraphRAG Engine** as the machine's deterministic cryptographic justification layer—validating physical failure modes, operating procedures (SOPs), warranty constraints, and ISO standards before releasing satoshis.
+AuRAG transforms physical plant machinery into **sovereign economic actors** equipped with their own Bitcoin Lightning Network wallets (BOLT-11 via LNbits). An experimental NIP-47-inspired Nostr Wallet Connect simulation is included as a stretch goal. Crucially, an autonomous asset cannot make blind disbursements. AuRAG integrates a hybrid **Industrial GraphRAG Engine** as the machine's deterministic evidence & justification layer—validating physical failure modes, operating procedures (SOPs), warranty constraints, and ISO standards before releasing satoshis.
 
 ```mermaid
 flowchart TD
