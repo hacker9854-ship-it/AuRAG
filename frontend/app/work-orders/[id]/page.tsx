@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import { ArrowLeftIcon } from "lucide-react";
 
 import WorkOrderEditor from "@/components/work-orders/WorkOrderEditor";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   decideWorkOrder,
@@ -17,18 +17,36 @@ import {
 
 export default function WorkOrderDetailPage() {
   const params = useParams<{ id: string }>();
-  const workOrderId = decodeURIComponent(params.id);
+  const rawId = params?.id ? decodeURIComponent(params.id) : "";
+  const workOrderId = rawId.trim().replace(/\s+/g, "-");
   const [workOrder, setWorkOrder] = useState<WorkOrderRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let active = true;
+    setLoading(true);
+    setError(null);
+    if (!workOrderId) {
+      setError("No work order ID specified.");
+      setLoading(false);
+      return;
+    }
     getWorkOrder(workOrderId)
       .then((result) => {
-        if (active) setWorkOrder(result);
+        if (active) {
+          if (result && result.id) {
+            setWorkOrder(result);
+          } else {
+            setError(`Work order ${workOrderId} could not be loaded.`);
+          }
+        }
       })
       .catch((reason) => {
         if (active) setError(reason instanceof Error ? reason.message : "Work order is unavailable.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
       });
     return () => {
       active = false;
@@ -47,9 +65,28 @@ export default function WorkOrderDetailPage() {
           Back to work orders
         </Button>
 
-        {error ? (
-          <div className="rounded-xl border p-6 text-sm text-destructive">{error}</div>
-        ) : workOrder ? (
+        {loading ? (
+          <Skeleton className="h-[520px] rounded-xl" />
+        ) : error ? (
+          <div className="flex flex-col gap-4 rounded-xl border border-destructive/20 bg-destructive/10 p-6 text-sm text-destructive">
+            <p className="font-semibold">{error}</p>
+            <div className="flex flex-wrap gap-2 pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  getWorkOrder("WO-2026-003").then(setWorkOrder).catch(() => {});
+                  setError(null);
+                }}
+              >
+                Load Sample Work Order (WO-2026-003)
+              </Button>
+              <Link href="/work-orders" className={buttonVariants({ variant: "ghost", size: "sm" })}>
+                View all work orders
+              </Link>
+            </div>
+          </div>
+        ) : workOrder && workOrder.id ? (
           <WorkOrderEditor
             key={`${workOrder.id}-${workOrder.version}`}
             workOrder={workOrder}

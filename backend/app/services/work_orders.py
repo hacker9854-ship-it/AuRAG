@@ -205,6 +205,7 @@ def decide_work_order(
 
 
 def get_work_order(session, work_order_id: str) -> dict | None:
+    norm_id = str(work_order_id).strip().replace(" ", "-")
     row = session.run(
         """
         MATCH (w:WorkOrder {id:$work_order_id})
@@ -216,14 +217,17 @@ def get_work_order(session, work_order_id: str) -> dict | None:
                event.id AS predictive_event_id,
                collect(DISTINCT properties(decision)) AS decisions
         """,
-        work_order_id=work_order_id,
+        work_order_id=norm_id,
     ).single()
     if not row:
         return None
+    wo = row.get("work_order") or {}
+    if not wo and isinstance(row, dict) and row.get("id"):
+        wo = row
     return {
-        **row["work_order"],
-        "equipment": row.get("equipment"),
-        "predictive_event_id": row.get("predictive_event_id"),
+        **wo,
+        "equipment": row.get("equipment") or wo.get("equipment"),
+        "predictive_event_id": row.get("predictive_event_id") or wo.get("predictive_event_id"),
         "decisions": sorted(
             (decision for decision in row.get("decisions") or [] if decision),
             key=lambda item: item.get("created_at") or "",

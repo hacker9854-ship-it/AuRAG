@@ -578,7 +578,49 @@ class FallbackNeo4jSession:
                         m = [p for p in all_p if p["person_id"] == str(person_id)]
                         return m if m else [p1]
                     return all_p
-                if "fe.id AS fe_id" in query or "collect(DISTINCT" in query or ("FailureEvent" in query and "OCCURRED_ON" in query):
+                if "w:WorkOrder" in query or "WorkOrder" in query or "work_order" in query.lower():
+                    raw_wo_id = kwargs.get("work_order_id") or kwargs.get("id")
+                    if raw_wo_id:
+                        norm_id = str(raw_wo_id).strip().replace(" ", "-").upper()
+                        matched = _FALLBACK_WORK_ORDERS.get(norm_id)
+                        if not matched:
+                            # Fuzzy match ignoring hyphens/spaces
+                            for k, v in _FALLBACK_WORK_ORDERS.items():
+                                if k.upper() == norm_id or k.replace("-", "").upper() == norm_id.replace("-", ""):
+                                    matched = v
+                                    break
+                        if matched:
+                            return [
+                                {
+                                    "work_order": matched,
+                                    "equipment": matched.get("equipment"),
+                                    "predictive_event_id": matched.get("predictive_event_id"),
+                                    "decisions": matched.get("decisions", []),
+                                    "work_order_id": matched["id"],
+                                    "status": matched["status"],
+                                    "version": matched["version"],
+                                    **matched,
+                                }
+                            ]
+                        return []
+                    items = list(_FALLBACK_WORK_ORDERS.values())
+                    status_filter = kwargs.get("status")
+                    if status_filter:
+                        items = [w for w in items if w["status"].lower() == status_filter.lower()]
+                    return [
+                        {
+                            "work_order": w,
+                            "equipment": w.get("equipment"),
+                            "predictive_event_id": w.get("predictive_event_id"),
+                            "decisions": w.get("decisions", []),
+                            "work_order_id": w["id"],
+                            "status": w["status"],
+                            "version": w["version"],
+                            **w,
+                        }
+                        for w in items
+                    ]
+                if "fe.id AS fe_id" in query or ("FailureEvent" in query and ("OCCURRED_ON" in query or "fe.id" in query or "fe_id" in query)):
                     return [
                         {
                             "fe_id": "FE-001",
@@ -646,39 +688,6 @@ class FallbackNeo4jSession:
                                 {"id": "WO-1012", "type": "Preventive", "status": "Open", "description": "Scheduled tank integrity inspection on TK-101"},
                             ],
                         },
-                    ]
-                if "WorkOrder" in query or "work_order" in query.lower():
-                    wo_id = kwargs.get("work_order_id") or kwargs.get("id")
-                    if wo_id and wo_id in _FALLBACK_WORK_ORDERS:
-                        w = _FALLBACK_WORK_ORDERS[wo_id]
-                        return [
-                            {
-                                "work_order": w,
-                                "equipment": w.get("equipment"),
-                                "predictive_event_id": w.get("predictive_event_id"),
-                                "decisions": w.get("decisions", []),
-                                "work_order_id": w["id"],
-                                "status": w["status"],
-                                "version": w["version"],
-                                **w,
-                            }
-                        ]
-                    items = list(_FALLBACK_WORK_ORDERS.values())
-                    status_filter = kwargs.get("status")
-                    if status_filter:
-                        items = [w for w in items if w["status"].lower() == status_filter.lower()]
-                    return [
-                        {
-                            "work_order": w,
-                            "equipment": w.get("equipment"),
-                            "predictive_event_id": w.get("predictive_event_id"),
-                            "decisions": w.get("decisions", []),
-                            "work_order_id": w["id"],
-                            "status": w["status"],
-                            "version": w["version"],
-                            **w,
-                        }
-                        for w in items
                     ]
                 if "PredictiveEvent" in query or "predictive_event" in query.lower() or "Notification" in query or "notification" in query.lower():
                     evt_id = kwargs.get("event_id", "PE-2026-001")
