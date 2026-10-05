@@ -1015,6 +1015,12 @@ RETURN eq.tag_id, evt.event_id, wo.id, p.amount_sats, sp.provider_id`}
       <NovelBitcoinProtocol
         initialCapSats={500}
         activeInterventionSats={executionResult?.amount_sats || 250}
+        onPaymentSettled={async () => {
+          try {
+            const fresh = await listMachineMoneyPayments(20);
+            setPayments(fresh);
+          } catch {}
+        }}
       />
 
       {/* --------------------------------------------------------------------- */}

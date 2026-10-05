@@ -44,12 +44,14 @@ export interface NovelBitcoinProtocolProps {
   initialCapSats?: number;
   activeInterventionSats?: number;
   className?: string;
+  onPaymentSettled?: (receipt: NWCPayResponse) => void;
 }
 
 export function NovelBitcoinProtocol({
   initialCapSats = 500,
   activeInterventionSats = 250,
   className = "",
+  onPaymentSettled,
 }: NovelBitcoinProtocolProps) {
   // --- NWC State ---
   const [nwcInfo, setNwcInfo] = useState<NWCInfoResponse | null>(null);
@@ -115,6 +117,9 @@ export function NovelBitcoinProtocol({
         memo: `Autonomous Diagnostic Settlement (${nwcAmount} sats)`,
       });
       setNwcReceipt(res);
+      if (onPaymentSettled) {
+        onPaymentSettled(res);
+      }
     } catch (err: any) {
       setNwcError(err.message || "NWC execution failed");
     } finally {
