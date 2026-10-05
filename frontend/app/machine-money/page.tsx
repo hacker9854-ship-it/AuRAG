@@ -713,23 +713,39 @@ export default function MachineMoneyPage() {
                   <Badge variant="outline" className="text-[11px] text-primary border-primary/40 bg-primary/10 font-bold">
                     DRY-RUN VALIDATION COMPLETE: 0 SATS MOVED
                   </Badge>
+                  {simulationResult?.simulation_id && (
+                    <Badge variant="outline" className="text-[10px] font-mono border-border">
+                      ID: {simulationResult.simulation_id}
+                    </Badge>
+                  )}
                 </div>
                 <CardTitle className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
                   <SlidersIcon className="size-4 text-primary" />
-                  Zero-Risk Simulation Output
+                  Zero-Risk Simulation Output (Dry-Run Mode)
                 </CardTitle>
                 <CardDescription className="text-xs text-muted-foreground">
-                  Full deterministic state pipeline validation executed with zero financial exposure.
+                  Full deterministic state pipeline validation executed with <strong>zero financial exposure</strong>. Satoshis remain locked in plant treasury.
                 </CardDescription>
               </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 text-xs text-muted-foreground hover:text-foreground"
-                onClick={() => setActiveScenario(null)}
-              >
-                Close
-              </Button>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <Button
+                  size="sm"
+                  className="h-8 text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-slate-950 gap-1.5 shadow-sm"
+                  onClick={() => handleTriggerTelemetry(94, "WO-2026-P101")}
+                >
+                  <PlayIcon className="size-3 fill-current" />
+                  Now Run Real Settlement (Scenario 1)
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 text-xs text-muted-foreground hover:text-foreground"
+                  onClick={() => setActiveScenario(null)}
+                >
+                  Close
+                </Button>
+              </div>
             </div>
           </CardHeader>
           <CardContent className="pt-4 text-xs space-y-3">
@@ -749,6 +765,16 @@ export default function MachineMoneyPage() {
                 <div className="font-mono text-xs font-bold text-primary truncate">IDEMP-P-101A-bearing-inspection</div>
                 <p className="text-[11px] text-muted-foreground">Prevents replay attacks and duplicate invoices across relays.</p>
               </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 space-y-1 text-[11px]">
+              <span className="font-bold text-primary flex items-center gap-1.5">
+                <ShieldCheckIcon className="size-3.5" />
+                Why Run Dry-Run Simulation?
+              </span>
+              <p className="text-muted-foreground leading-relaxed">
+                Industrial plant operators use Zero-Risk Simulation to test telemetry ingress, GraphRAG reasoning, spending policy clearance, and network routes <strong>without risking actual satoshis</strong>. Once proven, the operator or plant agent can switch to live autonomous execution with 100% confidence.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -920,8 +946,15 @@ export default function MachineMoneyPage() {
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">Policy Decision:</span>
-                <Badge variant="success" className="text-[10px]">
-                  Allowed (250 &le; 500)
+                <Badge
+                  variant={activeScenario === 2 ? "warning" : "success"}
+                  className="text-[10px]"
+                >
+                  {activeScenario === 2
+                    ? "Escalation: 1,200 > 500 Cap"
+                    : activeScenario === 3
+                    ? "Dry-Run Clearance (250 <= 500)"
+                    : "Allowed (250 <= 500)"}
                 </Badge>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
@@ -940,10 +973,18 @@ export default function MachineMoneyPage() {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-bold text-amber-400">STAGE E</span>
                 <Badge
-                  variant={executionResult?.status === "PAID" || executionResult?.status === "SETTLED" ? "success" : "warning"}
+                  variant={
+                    activeScenario === 3
+                      ? "info"
+                      : executionResult?.status === "PAID" || executionResult?.status === "SETTLED"
+                      ? "success"
+                      : "warning"
+                  }
                   className="font-semibold text-[10px]"
                 >
-                  {executionResult?.status === "PAID" || executionResult?.status === "SETTLED"
+                  {activeScenario === 3
+                    ? "Dry-Run (0 Sats Moved)"
+                    : executionResult?.status === "PAID" || executionResult?.status === "SETTLED"
                     ? "Paid (Settled)"
                     : "Pending → Paid"}
                 </Badge>
@@ -983,7 +1024,9 @@ export default function MachineMoneyPage() {
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">Routing Fee:</span>
-                <span className="font-mono text-muted-foreground">0 sats (Local routing)</span>
+                <span className="font-mono text-muted-foreground">
+                  {activeScenario === 3 ? "0 sats (Simulated Dry-Run)" : "0 sats (Local routing)"}
+                </span>
               </div>
               {executionResult?.payment_hash && executionResult?.preimage && (
                 <div className="pt-2 border-t border-border/40 space-y-2">
@@ -1012,8 +1055,15 @@ export default function MachineMoneyPage() {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-mono font-bold text-emerald-600">STAGE F</span>
-                <Badge variant="success" className="font-semibold text-[10px]">
-                  WO Funded
+                <Badge
+                  variant={activeScenario === 3 ? "outline" : activeScenario === 2 ? "warning" : "success"}
+                  className="font-semibold text-[10px]"
+                >
+                  {activeScenario === 3
+                    ? "Dry-Run Only"
+                    : activeScenario === 2
+                    ? "Pending Sign-Off"
+                    : "WO Funded"}
                 </Badge>
               </div>
               <CardTitle className="text-base flex items-center gap-2">
@@ -1033,8 +1083,15 @@ export default function MachineMoneyPage() {
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
                 <span className="text-muted-foreground">Work Order Status:</span>
-                <Badge variant="success" className="text-[10px]">
-                  FUNDED / DISPATCHED
+                <Badge
+                  variant={activeScenario === 3 ? "outline" : activeScenario === 2 ? "warning" : "success"}
+                  className="text-[10px]"
+                >
+                  {activeScenario === 3
+                    ? "SIMULATION PREVIEW (0 SATS)"
+                    : activeScenario === 2
+                    ? "HELD IN APPROVAL QUEUE"
+                    : "FUNDED / DISPATCHED"}
                 </Badge>
               </div>
               <div className="flex justify-between items-center p-2 rounded bg-muted/50">
