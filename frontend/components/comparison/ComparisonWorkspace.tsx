@@ -20,8 +20,14 @@ function AnswerPane({
   title: string;
   description: string;
   icon: typeof NetworkIcon;
-  answer: ComparisonAnswer;
+  answer?: ComparisonAnswer;
 }) {
+  const citations = answer?.citations || [];
+  const retrievedContext = answer?.retrieved_context || [];
+  const responseText = answer?.agent_response || "No response generated.";
+  const latency = answer?.latency_ms ?? 0;
+  const sourceCount = answer?.source_count ?? retrievedContext.length;
+
   return (
     <Card className="h-full">
       <CardHeader className="border-b">
@@ -32,7 +38,7 @@ function AnswerPane({
         </CardAction>
       </CardHeader>
       <CardContent className="flex flex-col gap-5">
-        <p className="text-sm leading-7">{answer.agent_response}</p>
+        <p className="text-sm leading-7">{responseText}</p>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-lg bg-muted/45 p-3">
@@ -40,22 +46,22 @@ function AnswerPane({
               <TimerIcon />
               Response latency
             </div>
-            <div className="data-mono mt-1 text-lg font-semibold">{answer.latency_ms} ms</div>
+            <div className="data-mono mt-1 text-lg font-semibold">{latency} ms</div>
           </div>
           <div className="rounded-lg bg-muted/45 p-3">
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <DatabaseIcon />
               Retrieved sources
             </div>
-            <div className="data-mono mt-1 text-lg font-semibold">{answer.source_count}</div>
+            <div className="data-mono mt-1 text-lg font-semibold">{sourceCount}</div>
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
           <div className="text-xs font-medium tracking-wide text-muted-foreground uppercase">Citations used</div>
           <div className="flex flex-wrap gap-1.5">
-            {answer.citations.length ? (
-              answer.citations.map((citation) => (
+            {citations.length ? (
+              citations.map((citation) => (
                 <Badge key={citation} variant="outline">
                   {citation}
                 </Badge>
@@ -67,9 +73,9 @@ function AnswerPane({
         </div>
 
         <details className="rounded-lg border p-3">
-          <summary className="cursor-pointer text-sm font-medium">Retrieved context</summary>
+          <summary className="cursor-pointer text-sm font-medium">Retrieved context ({retrievedContext.length})</summary>
           <div className="mt-3 flex flex-col gap-3">
-            {answer.retrieved_context.map(([key, text]) => (
+            {retrievedContext.map(([key, text]) => (
               <div key={key} className="rounded-md bg-muted/45 p-3">
                 <Badge variant="outline">{key}</Badge>
                 <p className="mt-2 text-xs leading-5 text-muted-foreground">{text}</p>
@@ -90,6 +96,7 @@ export default function ComparisonWorkspace({ data }: { data: ComparisonResponse
     plain_only_sources: [],
   };
   const relationshipCount = metrics.graph_relationship_evidence || 0;
+  const graphOnlyCount = metrics.graph_only_sources?.length || 0;
 
   return (
     <div className="flex flex-col gap-5">
@@ -120,7 +127,7 @@ export default function ComparisonWorkspace({ data }: { data: ComparisonResponse
           </CardHeader>
           <CardContent>
             <div className="data-mono text-2xl font-semibold">
-              {data.comparison_metrics.graph_only_sources.length}
+              {graphOnlyCount}
             </div>
             <p className="mt-1 text-xs text-muted-foreground">Sources found only through GraphRAG</p>
           </CardContent>
@@ -132,13 +139,13 @@ export default function ComparisonWorkspace({ data }: { data: ComparisonResponse
           title="GraphRAG"
           description="Neo4j vector + Qdrant + BM25 + graph traversal, then reranking."
           icon={NetworkIcon}
-          answer={data.graph_rag}
+          answer={data?.graph_rag}
         />
         <AnswerPane
           title="Dense-only RAG"
           description="Qdrant semantic vector retrieval only; no graph traversal or keyword channel."
           icon={DatabaseIcon}
-          answer={data.plain_rag}
+          answer={data?.plain_rag}
         />
       </section>
     </div>

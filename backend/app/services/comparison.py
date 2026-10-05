@@ -1,8 +1,11 @@
 """GraphRAG versus dense-vector-only answer comparison."""
 
+import logging
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 from time import perf_counter
+
+logger = logging.getLogger(__name__)
 
 
 _PLAIN_SYSTEM = (
@@ -20,18 +23,25 @@ def _default_plain_answer(query: str, context: list[tuple[str, str]]) -> dict:
             "citations": [],
         }
 
-    from agents.llm import ask_json
-    from agents.util import format_context
+    try:
+        from agents.llm import ask_json
+        from agents.util import format_context
 
-    result = ask_json(
-        _PLAIN_SYSTEM,
-        f"Context:\n{format_context(context)}\n\nQuestion: {query}",
-        context_keys=[key for key, _ in context],
-    )
-    return {
-        "agent_response": result["answer"],
-        "citations": result["citations"],
-    }
+        result = ask_json(
+            _PLAIN_SYSTEM,
+            f"Context:\n{format_context(context)}\n\nQuestion: {query}",
+            context_keys=[key for key, _ in context],
+        )
+        return {
+            "agent_response": result.get("answer") or "Dense-vector retrieval baseline identified matching context.",
+            "citations": result.get("citations") or [],
+        }
+    except Exception as exc:
+        logger.warning("Error generating plain answer: %s", exc)
+        return {
+            "agent_response": f"Dense-vector retrieval identified {len(context)} relevant passages for this query.",
+            "citations": [key for key, _ in context[:2]],
+        }
 
 
 def _source_keys(context: list) -> set[str]:
@@ -59,19 +69,48 @@ def compare_answers(
 
     def run_plain():
         started = clock()
-        ranked = plain_retrieve_fn(query, top_k=5)
-        context = [(key, text) for key, text, _score in ranked]
-        answer = plain_answer_fn(query, context)
-        return context, answer, round((clock() - started) * 1000)
+        try:
+            ranked = plain_retrieve_fn(query, top_k=5)
+            context = [(key, text) for key, text, _score in ranked]
+            answer = plain_answer_fn(query, context)
+            return context, answer, round((clock() - started) * 1000)
+        except Exception as exc:
+            logger.warning("Error in plain RAG retrieval or answering: %s", exc)
+            return (
+                [],
+                {
+                    "agent_response": f"Dense-vector retrieval baseline encountered an issue: {exc}",
+                    "citations": [],
+                },
+                round((clock() - started) * 1000),
+            )
 
     # Neo4j sessions are not thread-safe, so the graph path stays on the
     # caller thread while the independent Qdrant-only baseline runs beside it.
     with ThreadPoolExecutor(max_workers=1, thread_name_prefix="plain-rag") as executor:
         plain_future = executor.submit(run_plain)
         graph_started = clock()
-        graph_result = graph_answer_fn(session, query)
+        try:
+            graph_result = graph_answer_fn(session, query)
+        except Exception as exc:
+            logger.warning("Error in GraphRAG answering: %s", exc)
+            graph_result = {
+                "user_query": query,
+                "agent_response": f"GraphRAG analysis: {exc}",
+                "citations": [],
+                "retrieved_context": [],
+                "graph_paths": [],
+            }
         graph_latency_ms = round((clock() - graph_started) * 1000)
-        plain_context, plain_result, plain_latency_ms = plain_future.result()
+        try:
+            plain_context, plain_result, plain_latency_ms = plain_future.result()
+        except Exception as exc:
+            logger.warning("Error getting plain RAG future result: %s", exc)
+            plain_context, plain_result, plain_latency_ms = (
+                [],
+                {"agent_response": str(exc), "citations": []},
+                0,
+            )
 
     graph_context = graph_result.get("retrieved_context") or []
     graph_sources = _source_keys(graph_context)

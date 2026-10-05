@@ -1,10 +1,14 @@
 """GraphRAG versus plain dense-vector RAG comparison endpoint."""
 
+import logging
+
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from backend.app.core.neo4j import get_session
 from backend.app.services.comparison import compare_answers
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -24,6 +28,7 @@ def comparison(request: ComparisonRequest, session=Depends(get_session)) -> dict
     try:
         return compare_answers(session, query)
     except Exception as exc:
+        logger.exception("Comparison failed for query: %s", query)
         raise HTTPException(
             status_code=503,
             detail={"error": "comparison_failed", "detail": str(exc)},

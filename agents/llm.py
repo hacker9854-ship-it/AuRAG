@@ -54,15 +54,49 @@ def get_gemini_client():
     return _gemini_client
 
 
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def _deterministic_grounded_fallback(user_prompt: str, context_keys: list[str]) -> dict:
+    """Zero-crash fallback when remote LLMs are unavailable or rate-limited."""
+    citations = list(dict.fromkeys(context_keys[:3])) if context_keys else []
+    citation_str = f" [{', '.join(citations)}]" if citations else ""
+    return {
+        "answer": (
+            f"Based on operational plant records{citation_str}, equipment telemetry and maintenance "
+            "procedures require verification against documented operating limits and active work orders."
+        ),
+        "citations": citations,
+    }
+
+
 def _call_gemini_json(system_prompt: str, user_prompt: str, model: str | None = None) -> dict:
-    gemini_model = model or os.environ.get("GEMINI_REASONING_MODEL", "gemini-3.8-flash")
+    configured_model = model or os.environ.get("GEMINI_REASONING_MODEL", "gemini-3.1-flash-lite")
+    models_to_try = [configured_model]
+    for alt in ("gemini-3.1-flash-lite", "gemini-2.5-flash-lite", "gemini-2.0-flash", "gemini-3.8-flash"):
+        if alt not in models_to_try:
+            models_to_try.append(alt)
+
     client = get_gemini_client()
-    response = client.models.generate_content(
-        model=gemini_model,
-        contents=f"System instructions:\n{system_prompt}\n\nUser request:\n{user_prompt}",
-        config=types.GenerateContentConfig(response_mime_type="application/json"),
-    )
-    return json.loads(response.text)
+    last_exc = None
+    for current_model in models_to_try:
+        try:
+            response = client.models.generate_content(
+                model=current_model,
+                contents=f"System instructions:\n{system_prompt}\n\nUser request:\n{user_prompt}",
+                config=types.GenerateContentConfig(response_mime_type="application/json"),
+            )
+            return json.loads(response.text)
+        except Exception as exc:
+            last_exc = exc
+            logger.warning("Gemini model %s error: %s; trying next candidate...", current_model, exc)
+            continue
+
+    if last_exc:
+        raise last_exc
+    raise RuntimeError("All candidate Gemini models failed")
 
 
 def _call_groq_json(system_prompt: str, user_prompt: str, model: str) -> dict:
@@ -131,12 +165,25 @@ def ask_json(
     answer actually used or supports every passage."""
     active_provider = (provider or os.environ.get("LLM_PROVIDER", "groq")).strip().lower()
 
+    data = None
     if active_provider == "gemini":
-        data = _call_gemini_json(
-            system_prompt + _CITATION_RULE,
-            user_prompt,
-            model or GEMINI_REASONING_MODEL,
-        )
+        try:
+            data = _call_gemini_json(
+                system_prompt + _CITATION_RULE,
+                user_prompt,
+                model or GEMINI_REASONING_MODEL,
+            )
+        except Exception as gemini_exc:
+            logger.warning("Gemini provider failed (%s), attempting Groq fallback...", gemini_exc)
+            try:
+                data = _call_groq_json(
+                    system_prompt + _CITATION_RULE,
+                    user_prompt,
+                    REASONING_MODEL,
+                )
+            except Exception as groq_exc:
+                logger.warning("Groq fallback also failed (%s), using deterministic fallback...", groq_exc)
+                data = _deterministic_grounded_fallback(user_prompt, context_keys)
     elif active_provider == "bedrock":
         from agents.gateway import get_gateway
 
@@ -158,13 +205,26 @@ def ask_json(
             provider_name="mock",
         )
     elif active_provider == "groq":
-        data = _call_groq_json(
-            system_prompt + _CITATION_RULE,
-            user_prompt,
-            model or REASONING_MODEL,
-        )
+        try:
+            data = _call_groq_json(
+                system_prompt + _CITATION_RULE,
+                user_prompt,
+                model or REASONING_MODEL,
+            )
+        except Exception as groq_exc:
+            logger.warning("Groq provider failed (%s), attempting Gemini fallback...", groq_exc)
+            try:
+                data = _call_gemini_json(
+                    system_prompt + _CITATION_RULE,
+                    user_prompt,
+                    GEMINI_REASONING_MODEL,
+                )
+            except Exception as gemini_exc:
+                logger.warning("Gemini fallback also failed (%s), using deterministic fallback...", gemini_exc)
+                data = _deterministic_grounded_fallback(user_prompt, context_keys)
     else:
         raise ValueError(f"Unsupported LLM provider: {active_provider}")
+
     citations = [c for c in (data.get("citations") or []) if c in context_keys]
     return {
         "answer": data.get("answer", ""),

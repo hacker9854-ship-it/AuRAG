@@ -376,11 +376,23 @@ export async function postComparison(query: string): Promise<ComparisonResponse>
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query }),
   });
-  const data = await res.json();
-  if (data && data.error) {
-    throw new Error(data.detail || data.error);
+  let data: any;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(`Failed to parse comparison response (HTTP ${res.status})`);
   }
-  return data;
+  if (!res.ok) {
+    const errorMsg =
+      (typeof data?.detail === "object" ? data.detail?.detail || data.detail?.error : data?.detail) ||
+      data?.error ||
+      `Comparison request failed (HTTP ${res.status})`;
+    throw new Error(errorMsg);
+  }
+  if (!data || !data.graph_rag || !data.plain_rag) {
+    throw new Error(data?.error || "Malformed comparison response received from server");
+  }
+  return data as ComparisonResponse;
 }
 
 export interface EvaluationRecord {
