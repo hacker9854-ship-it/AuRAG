@@ -213,8 +213,10 @@ export function VendorRFQ({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
           {rfq?.candidates.map((c) => {
-            const isWinner = c.candidate_id === selectedCandidateId;
+            const activeId = selectedCandidateId || rfq?.selected_vendor?.candidate_id;
+            const isWinner = c.candidate_id === activeId;
             const exceedsCap = !c.within_policy_cap;
+            const isOverride = isWinner && rfq && rfq.selected_vendor && c.candidate_id !== rfq.selected_vendor.candidate_id;
 
             return (
               <div
@@ -244,7 +246,7 @@ export function VendorRFQ({
                       </span>
                       {isWinner && (
                         <span className="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500 text-slate-950 flex items-center gap-0.5">
-                          <CheckCircle2 className="w-2.5 h-2.5" /> Best
+                          <CheckCircle2 className="w-2.5 h-2.5" /> {isOverride ? "Override" : "Best"}
                         </span>
                       )}
                     </div>
@@ -363,7 +365,7 @@ export function VendorRFQ({
                       handleManualSelect(c);
                     }}
                   >
-                    {isWinner ? "Selected Winner" : "Select Quote"}
+                    {isWinner ? (isOverride ? "Selected Winner (Override)" : "Selected Winner") : "Select Quote"}
                   </Button>
                 </div>
               </div>
@@ -373,45 +375,57 @@ export function VendorRFQ({
       </div>
 
       {/* Explainable Decision Rationale Box */}
-      {rfq && (
-        <div
-          data-testid="rfq-rationale-box"
-          className="p-4 bg-muted/40 rounded-xl border border-border/60 space-y-2 text-xs"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-            <span className="font-semibold text-foreground flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Explainable Autonomous Selection Rationale</span>
-            </span>
-            <span className="font-mono text-[10px] text-muted-foreground bg-muted/80 px-2 py-0.5 rounded border border-border/40">
-              Rule: {String(rfq.scoring_model?.rule || rfq.strategy)}
-            </span>
-          </div>
-          <p className="text-muted-foreground leading-relaxed text-xs">
-            {rfq.selection_rationale}
-          </p>
-          <div className="p-2 rounded-lg bg-background/60 border border-border/40 flex items-center justify-between text-[11px] font-mono">
-            <span className="text-muted-foreground text-[10px] uppercase font-bold">Scoring Model:</span>
-            <span className="text-primary text-[10px]">Score = (0.5 &times; CostNorm) + (0.3 &times; LatencyNorm) + (0.2 &times; SLANorm)</span>
-          </div>
-          <div className="pt-2 border-t border-border/40 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
-            <span>
-              RFQ ID: <strong className="font-mono text-foreground">{rfq.rfq_id}</strong>
-            </span>
-            <span>
-              Selected Provider: <strong className="text-foreground">{rfq.selected_vendor.vendor_name}</strong>
-            </span>
-            <span>
-              Sats: <strong className="font-mono text-amber-500">{rfq.selected_vendor.amount_sats} sats</strong>
-            </span>
-            {rfq.selected_vendor.score !== undefined && (
-              <span>
-                Composite Score: <strong className="font-mono text-emerald-500">{rfq.selected_vendor.score}/100</strong>
+      {rfq && (() => {
+        const activeId = selectedCandidateId || rfq.selected_vendor?.candidate_id;
+        const activeCandidate = rfq.candidates.find((c) => c.candidate_id === activeId) || rfq.selected_vendor;
+        const isOverride = activeCandidate && rfq.selected_vendor && activeCandidate.candidate_id !== rfq.selected_vendor.candidate_id;
+
+        return (
+          <div
+            data-testid="rfq-rationale-box"
+            className="p-4 bg-muted/40 rounded-xl border border-border/60 space-y-2 text-xs"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+              <span className="font-semibold text-foreground flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>
+                  {isOverride
+                    ? "Operator Manual Selection (Override Active)"
+                    : "Explainable Autonomous Selection Rationale"}
+                </span>
               </span>
-            )}
+              <span className="font-mono text-[10px] text-muted-foreground bg-muted/80 px-2 py-0.5 rounded border border-border/40">
+                {isOverride ? "Mode: Operator Override" : `Rule: ${String(rfq.scoring_model?.rule || rfq.strategy)}`}
+              </span>
+            </div>
+            <p className="text-muted-foreground leading-relaxed text-xs">
+              {isOverride
+                ? `Operator manually selected ${activeCandidate.vendor_name} (${activeCandidate.vendor_id}) overriding the autonomous recommendation (${rfq.selected_vendor.vendor_name}). Dispatching diagnostic quote of ${activeCandidate.amount_sats} sats with ${activeCandidate.sla_hours}h SLA.`
+                : rfq.selection_rationale}
+            </p>
+            <div className="p-2 rounded-lg bg-background/60 border border-border/40 flex items-center justify-between text-[11px] font-mono">
+              <span className="text-muted-foreground text-[10px] uppercase font-bold">Scoring Model:</span>
+              <span className="text-primary text-[10px]">Score = (0.5 &times; CostNorm) + (0.3 &times; LatencyNorm) + (0.2 &times; SLANorm)</span>
+            </div>
+            <div className="pt-2 border-t border-border/40 flex flex-wrap items-center justify-between gap-2 text-[10px] text-muted-foreground">
+              <span>
+                RFQ ID: <strong className="font-mono text-foreground">{rfq.rfq_id}</strong>
+              </span>
+              <span>
+                Selected Provider: <strong className="text-foreground">{activeCandidate.vendor_name}</strong>
+              </span>
+              <span>
+                Sats: <strong className="font-mono text-amber-500">{activeCandidate.amount_sats} sats</strong>
+              </span>
+              {activeCandidate.score !== undefined && (
+                <span>
+                  Composite Score: <strong className="font-mono text-emerald-500">{activeCandidate.score}/100</strong>
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
